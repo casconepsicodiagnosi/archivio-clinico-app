@@ -875,7 +875,7 @@ input,select,textarea{border-radius:14px}
 .dlg{border-radius:26px}
 .banner{border-radius:18px}
 .chkrow{border-radius:16px}
-nav .ns{display:none!important}
+nav .nvs{display:none!important}
 .dlg{--dlgb:#FBF7EE}
 html[data-eff=dark] .dlg{--dlgb:#20241A}
 @keyframes ovIn{from{opacity:0}to{opacity:1}}
@@ -917,8 +917,8 @@ html[data-eff=dark] .dlg{--dlgb:#20241A}
   .cnav button,#app:not(.comp) header.top nav button{border-radius:26px;min-height:54px}
   #app:not(.comp) header.top nav{overflow:visible;gap:2px}
   #app:not(.comp) header.top nav button{flex:1 1 0;min-width:0;padding:6px 0;font-size:10px;letter-spacing:-.01em}
-  #app:not(.comp) header.top nav button .nl{display:none!important}
-  #app:not(.comp) header.top nav button .ns{display:block!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  #app:not(.comp) header.top nav button .nvl{display:none!important}
+  #app:not(.comp) header.top nav button .nvs{display:block!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
   #app:not(.comp) header.top nav button svg{width:21px;height:21px}
   .cbadge{box-shadow:0 0 0 2px var(--green-deep)}
   .cmain,#app:not(.comp) main{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))}
@@ -1286,7 +1286,7 @@ function render(){
   const nav=[['dash','Dashboard','Home'],['pats','Pazienti'],['agenda','Agenda'],['imp','Importa'],['mod','Modelli'],['sec','Sicurezza'],['set','Impostazioni','Opzioni']];
   const cur=S.view==='pat'?'pats':S.view,key=S.view+'|'+(S.pid||''),enter=key!==S._k;S._k=key;
   r.innerHTML='<div id="app"><header class="top"><div class="topin"><a class="brand" href="#" data-act="go" data-v="dash" aria-label="Vai alla dashboard">'+LOGO+'<span class="brand-t"><span class="brand-name">Archivio clinico</span><span class="brand-role">Simone Cascone · Psicologo</span></span></a><nav aria-label="Navigazione principale">'+
-    nav.map(n=>'<button class="'+(cur===n[0]?'on':'')+'" data-act="go" data-v="'+n[0]+'"'+(cur===n[0]?' aria-current="page"':'')+'><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+IC[n[0]]+'"/></svg><span class="nl">'+n[1]+'</span><span class="ns" aria-hidden="true">'+(n[2]||n[1])+'</span></button>').join('')+
+    nav.map(n=>'<button class="'+(cur===n[0]?'on':'')+'" data-act="go" data-v="'+n[0]+'"'+(cur===n[0]?' aria-current="page"':'')+'><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+IC[n[0]]+'"/></svg><span class="nvl">'+n[1]+'</span><span class="nvs" aria-hidden="true">'+(n[2]||n[1])+'</span></button>').join('')+
     '</nav>'+themeBtn('lockb tbtn')+'<button class="lockb" data-act="lock"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 11h12v9H6zM8 11V8a4 4 0 018 0v3"/></svg><span>Blocca</span></button></div></header><main'+(enter?' class="enter"':(S.view==='pat'&&S._tk!==S.tab?' class="tabin"':''))+'>'+vMain()+'</main></div>';
   S._tk=S.tab;decorate();stagger();
   if(S.view==='sec')loadSnaps();
