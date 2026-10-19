@@ -6043,9 +6043,14 @@ async function selfTest(){
 })();
 </script><script>
 (function(){if(!('serviceWorker' in navigator))return;
-  addEventListener('load',function(){navigator.serviceWorker.register('sw.js').then(function(r){
-    r.addEventListener('updatefound',function(){var w=r.installing;if(!w)return;w.addEventListener('statechange',function(){
-      if(w.state==='installed'&&navigator.serviceWorker.controller){try{toast('È pronta una nuova versione dell’app: chiudila del tutto e riaprila.')}catch(e){}}})});
+  var had=!!navigator.serviceWorker.controller,done=false;
+  /* quando la nuova versione prende il controllo: sulla schermata d'accesso (password vuota) si ricarica da sola */
+  navigator.serviceWorker.addEventListener('controllerchange',function(){if(!had||done)return;done=true;
+    try{var pw=document.querySelector('input[name=pw]');if((typeof S==='undefined'||S.screen!=='app')&&(!pw||!pw.value)){location.reload();return}}catch(e){}
+    try{toast('Nuova versione dell’app installata: si attiva alla prossima apertura.')}catch(e){}});
+  addEventListener('load',function(){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){
+    try{r.update()}catch(e){}
+    document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){try{r.update()}catch(e){}}});
   }).catch(function(){})});
 })();
 </script></body></html>
