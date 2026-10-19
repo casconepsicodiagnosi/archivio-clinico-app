@@ -992,6 +992,9 @@ html[data-eff=dark] .dlg{--dlgb:#20241A}
   .ctiles{gap:10px}.ctile{padding:14px;min-height:118px}
 }
 
+/* chiave di trasferimento */
+.tkbox{font:600 19px/1.6 ui-monospace,Menlo,monospace;letter-spacing:.05em;text-align:center;padding:14px 10px;margin:12px 0;border:1px dashed var(--sand);border-radius:14px;background:var(--paper);user-select:all;-webkit-user-select:all;word-break:break-all}
+
 /* tema scuro */
 html[data-eff=dark]{--glass:32,36,26;--glass2:19,21,14;--green:#3B4122;--green-deep:#2A2E17;--green-soft:#7F8A56;--gtx:#CBD39E;--cream:#13150E;--cream-2:#1C1F14;--paper:#1A1D13;--card:#20241A;--hero:#1E2216;--terra:#D27C58;--terra-dark:#E5A07F;--terra-light:#C0724F;--terra-bg:#3A261C;--ink:#EEE7D7;--body:#D3CCBA;--mut:#B5AB96;--line:#363B2B;--sand:#4C5239;--pri2:#2C3220;--ok:#BDD596;--ok2:#27311B;--warn:#EBC57E;--warn2:#3A2F15;--bad:#F3A898;--bad2:#40211B;color-scheme:dark}
 html[data-eff=dark] body{background:var(--cream);color:var(--ink)}
@@ -3696,6 +3699,59 @@ async function pkOpen(pw,text){
   let k;try{k=await kek(pw,unb64(h.salt),it);return await decJ(k,{iv:unb64(h.iv),ct:unb64(h.ct)})}
   catch(e){throw new Error('Password non corretta, oppure il file è danneggiato.')}}
 
+/* ---------- chiave di trasferimento: si inserisce una volta sola, poi niente più password ---------- */
+const TK_AL=REC_AL;
+const tkSum=c=>{let a=0;for(let i=0;i<c.length;i++)a=(a+(TK_AL.indexOf(c[i])+1)*(i+3))%1024;return TK_AL[(a>>5)&31]+TK_AL[a&31]};
+function tkMake(){const c=Array.from(rnd(22),b=>TK_AL[b&31]).join('');return c+tkSum(c)}
+const tkNorm=s=>String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+const tkValid=k=>/^[A-HJ-NP-Z2-9]{24}$/.test(k)&&tkSum(k.slice(0,22))===k.slice(22);
+const tkFmt=k=>(k.match(/.{4}/g)||[]).join('-');
+const tkKid=async k=>(await sha256(enc.encode('kid:'+k))).slice(0,8);
+const tkAll=()=>{const s=D().set;return [s.tk].concat(Array.isArray(s.tkOld)?s.tkOld:[]).filter(Boolean)};
+async function pkSealK(key,obj){
+  const salt=rnd(16),k=await kek(key,salt,1000),p=await encJ(k,obj);
+  return JSON.stringify({fmt:'acpk',v:2,k:'tk',kid:await tkKid(key),salt:b64(salt),iter:1000,iv:b64(p.iv),ct:b64(p.ct)})}
+function pkHead(text){
+  let h;try{h=JSON.parse(text)}catch(e){throw new Error('Questo file non è un pacchetto dell’archivio.')}
+  if(!h||h.fmt!=='acpk'||!h.salt||!h.iv||!h.ct)throw new Error('Questo file non è un pacchetto dell’archivio.');
+  return h}
+const pkIsKey=h=>h&&h.k==='tk';
+async function pkOpenK(h){
+  const c=tkAll();
+  if(!c.length)throw new Error('Manca la chiave di trasferimento. '+(isComp()?'Inseriscila in Impostazioni › Chiave di trasferimento.':'Creala in Importa › Chiave per il telefono.'));
+  const it=Number(h.iter);if(!(it>=1000&&it<=1000000))throw new Error('Pacchetto non valido.');
+  for(const k of c){
+    if(h.kid&&await tkKid(k)!==h.kid)continue;
+    try{return await decJ(await kek(k,unb64(h.salt),it),{iv:unb64(h.iv),ct:unb64(h.ct)})}catch(e){}}
+  throw new Error('La chiave di trasferimento non è quella giusta per questo file. Controlla che sul Mac e sul telefono ci sia la stessa chiave.')}
+function pkErr(msg){modal('<h3>Non riesco ad aprire il file</h3><p>'+esc(msg)+'</p><div class="row end"><button class="btn pri" data-act="close">Chiudi</button></div>')}
+function pickFile(accept,cb){
+  const o=document.getElementById('pk_tmp');if(o)o.remove();
+  const i=document.createElement('input');i.type='file';i.id='pk_tmp';i.accept=accept;i.style.display='none';document.body.appendChild(i);
+  i.addEventListener('change',()=>{const f=i.files&&i.files[0];i.remove();if(f)cb(f)});i.click()}
+function tkAttrs(){setTimeout(()=>{const i=document.getElementById('f_tk');if(i){i.setAttribute('autocapitalize','characters');i.setAttribute('autocorrect','off');i.setAttribute('spellcheck','false');i.setAttribute('autocomplete','off')}},0)}
+A.tkSet=()=>{
+  formModal('Chiave di trasferimento',[{k:'tk',l:'Chiave (24 lettere e numeri)',req:1,h:D().set.tk?'Sostituisce la chiave che c’è ora.':'La trovi sul Mac in Importa › Chiave per il telefono. Puoi copiarla lì e incollarla qui.'}],{},async o=>{
+    const k=tkNorm(o.tk);
+    if(!tkValid(k))throw new Error('La chiave non è corretta: controlla di averla scritta tutta (24 caratteri, senza 0, 1, O, I).');
+    const s=D().set;if(s.tk&&s.tk!==k){s.tkOld=[s.tk].concat(s.tkOld||[]).slice(0,3)}s.tk=k;
+    log('Chiave di trasferimento impostata','');await save();render();toast('Chiave salvata. Da ora non serve più la password per esportare.')});
+  tkAttrs()};
+A.pkgKey=async()=>{
+  const s=D().set;if(!s.tk){s.tk=tkMake();log('Chiave di trasferimento creata','');await save()}
+  modal('<h3>Chiave per il telefono</h3><p class="small">Scrivila sul telefono <b>una sola volta</b> (Impostazioni › Chiave di trasferimento). Dopo, esportare e importare non chiede più nessuna password.</p>'+
+   '<div class="tkbox" id="tkv">'+esc(tkFmt(s.tk))+'</div>'+
+   '<p class="small mut">Il modo più comodo è Copia, poi incolla sul telefono (gli appunti passano da soli dal Mac all’iPhone se hanno lo stesso Apple ID). Non mandarla per messaggio o email: è la chiave dei tuoi pacchetti.</p>'+
+   '<div class="row"><button class="btn pri" data-act="tkCopy">Copia</button><button class="btn" data-act="tkNew">Nuova chiave</button><button class="btn" data-act="tkSet">Ho già una chiave</button><button class="btn" data-act="close">Chiudi</button></div>')};
+A.tkCopy=async()=>{
+  const k=tkFmt(D().set.tk||'');let ok=false;
+  try{const el=document.getElementById('tkv'),r=document.createRange();r.selectNodeContents(el);const sel=getSelection();sel.removeAllRanges();sel.addRange(r);ok=document.execCommand('copy');sel.removeAllRanges()}catch(e){}
+  if(!ok){try{await navigator.clipboard.writeText(k);ok=true}catch(e){}}
+  toast(ok?'Chiave copiata. Incollala sul telefono.':'Non riesco a copiarla: scrivila a mano.')};
+A.tkNew=async()=>{
+  if(!await ask('<p>Creo una nuova chiave: dovrai metterla di nuovo sul telefono. I pacchetti già creati con la chiave attuale si aprono comunque sul Mac.</p>',{ok:'Crea nuova chiave',danger:false}))return;
+  const s=D().set;if(s.tk)s.tkOld=[s.tk].concat(s.tkOld||[]).slice(0,3);s.tk=tkMake();log('Chiave di trasferimento rinnovata','');await save();A.pkgKey()};
+
 /* ---------- tipi di voce ---------- */
 const fz=s=>String(s==null?'':s).replace(/[\\/:*?"<>|_\r\n\t]+/g,' ').replace(/\s+-\s+/g,' ').replace(/\s+/g,' ').trim();
 const oneL=s=>String(s==null?'':s).replace(/\s*[\r\n]+\s*/g,' ').trim();
@@ -3846,7 +3902,7 @@ async function ctBuild(pw,all){
   const items=OUT().filter(x=>all||!x.batch);
   if(!items.length)throw new Error('Non c’è niente da esportare.');
   const files=await ctFiles(items),batch='B'+uid(),t=new Date();
-  const sealed=await pkSeal(pw,{kind:'raccolta',batch,t:t.toISOString(),files});
+  const payload={kind:'raccolta',batch,t:t.toISOString(),files},sealed=pw?await pkSeal(pw,payload):await pkSealK(D().set.tk,payload);
   const p2_=n=>String(n).padStart(2,'0');
   const name='Raccolta_'+today()+'_'+p2_(t.getHours())+p2_(t.getMinutes())+'.acpk';
   const file=new File([sealed],name,{type:'application/octet-stream'});
@@ -3854,12 +3910,16 @@ async function ctBuild(pw,all){
   log('Pacchetto di raccolta creato',files.length+' voci');await save();
   S.pkg={file,batch,n:files.length};return S.pkg}
 forms.cexp=async f=>{
-  const err=f.querySelector('.err'),pw=f.elements.pw.value,pw2=f.elements.pw2.value;err.textContent='';
-  if(pw.length<12){err.textContent='Scrivi la password dell’archivio del Mac (almeno 12 caratteri).';return}
-  if(pw!==pw2){err.textContent='Le due password non coincidono: ricontrolla, altrimenti il Mac non riuscirà ad aprire il pacchetto.';return}
+  const err=f.querySelector('.err');err.textContent='';
+  const prev=D().set.tk;let typed=null;
+  if(!prev){
+    typed=tkNorm(f.elements.tk&&f.elements.tk.value);
+    if(!tkValid(typed)){err.textContent='La chiave non è corretta: sono 24 lettere e numeri (senza 0, 1, O, I). La trovi sul Mac in Importa › Chiave per il telefono.';return}
+  }
   const b=f.querySelector('button:not([type=button])'),h0=b?b.innerHTML:'';if(b){b.disabled=true;b.textContent='Cifratura in corso…'}
-  try{await ctBuild(pw,!!(f.elements.all&&f.elements.all.checked));render()}
-  catch(e){err.textContent=e.message;if(b){b.disabled=false;b.innerHTML=h0}}
+  try{if(typed){D().set.tk=typed}
+    await ctBuild(null,!!(f.elements.all&&f.elements.all.checked));render()}
+  catch(e){if(typed)D().set.tk=prev;err.textContent=e.message;if(b){b.disabled=false;b.innerHTML=h0}}
 };
 A.cagain=()=>{S.pkg=null;render()};
 A.cdl=()=>{const f=S.pkg&&S.pkg.file;if(f)dl(f.name,f)};
@@ -3881,14 +3941,17 @@ A.crcPick=()=>formModal('Ricevuta del Mac',[{k:'file',l:'File RICEVUTA_….acrc'
   const ids=new Set(r.ids.map(String)),n=await ctDrop(x=>ids.has(x.id));render();toast(n?n+' voci cancellate dal telefono':'Nessuna voce corrispondente: erano già state cancellate.')});
 
 /* ---------- elenco pazienti e agenda dal Mac ---------- */
-A.plPick=()=>formModal('Elenco dal Mac',[{k:'file',l:'File ELENCO_….acpk',t:'file',req:1,accept:'.acpk'},{k:'pw',l:'Password dell’archivio del Mac',t:'password',req:1}],{},async o=>{
-  const p=await pkOpen(o.pw,await o.file.text());
+function plApply(p){
   if(p.kind!=='elenco')throw new Error('Questo è un pacchetto di un altro tipo: serve il file ELENCO dal Mac.');
   const s=x=>String(x==null?'':x).slice(0,40);
   const pz=(Array.isArray(p.pz)?p.pz:[]).slice(0,5000).map(x=>({c:s(x.c),i:s(x.i)})).filter(x=>/^PZ-\d+$/.test(x.c));
   const ag=(Array.isArray(p.ag)?p.ag:[]).slice(0,3000).map(x=>({d:s(x.d),o:s(x.o),u:Number(x.u)||50,c:s(x.c),i:s(x.i)})).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x.d));
-  D().plist={at:today(),pz,ag};log('Elenco dal Mac caricato',pz.length+' codici');await save();render();
-  toast('Elenco caricato: '+pz.length+' pazienti, '+ag.length+' appuntamenti')});
+  D().plist={at:today(),pz,ag};log('Elenco dal Mac caricato',pz.length+' codici');return save().then(()=>{render();toast('Elenco caricato: '+pz.length+' pazienti, '+ag.length+' appuntamenti')})}
+A.plPick=()=>pickFile('.acpk',async f=>{
+  const text=await f.text();let h;try{h=pkHead(text)}catch(e){pkErr(e.message);return}
+  if(pkIsKey(h)){try{await plApply(await pkOpenK(h))}catch(e){pkErr(e.message)}return}
+  formModal('Elenco dal Mac (file vecchio)',[{k:'pw',l:'Password dell’archivio del Mac',t:'password',req:1}],{},async o=>{await plApply(await pkOpen(o.pw,text))},
+    '<p class="small mut">Questo file è del vecchio tipo e chiede la password. Con la chiave di trasferimento non servirà più.</p>')});
 
 /* ---------- lato Mac: aprire il pacchetto e preparare l'elenco ---------- */
 function plistPayload(){
@@ -3898,28 +3961,27 @@ function plistPayload(){
   const lim=new Date(Date.now()+120*86400000).toISOString().slice(0,10);
   const ag=D().appts.filter(a=>a.stato==='previsto'&&a.data>=today()&&a.data<=lim&&by[a.pid]).map(a=>({d:a.data,o:a.ora||'',u:a.durata||50,c:by[a.pid].cod,i:ini(by[a.pid])})).sort((a,b)=>(a.d+a.o).localeCompare(b.d+b.o));
   return {kind:'elenco',t:new Date().toISOString(),pz,ag}}
-A.pkgPlist=()=>formModal('Elenco per il telefono',[{k:'pw',l:'Password di questo archivio',t:'password',req:1},{k:'pw2',l:'Ripeti la password',t:'password',req:1}],{},async o=>{
-  if(o.pw.length<12||o.pw!==o.pw2)throw new Error('Le due password non coincidono, oppure sono troppo corte.');
-  const meta=await idbGet('kv','meta');
-  try{await decB(await kek(o.pw,meta.salt,meta.iter),meta.wrapPw)}catch(e){throw new Error('Questa non è la password dell’archivio.')}
-  const pl=plistPayload(),sealed=await pkSeal(o.pw,pl);
+A.pkgPlist=async()=>{
+  if(!D().set.tk){await A.pkgKey();toast('Prima metti questa chiave sul telefono, poi crea l’elenco.');return}
+  const pl=plistPayload(),sealed=await pkSealK(D().set.tk,pl);
   dl('ELENCO_per_telefono_'+today()+'.acpk',new Blob([sealed],{type:'application/octet-stream'}));
   log('Elenco per il telefono creato',pl.pz.length+' codici, '+pl.ag.length+' appuntamenti');saveSoon();
-  toast('Elenco creato: '+pl.pz.length+' pazienti. Mandalo al telefono con AirDrop.')},
-  '<p class="small mut">Contiene solo codici paziente, iniziali e gli appuntamenti dei prossimi 4 mesi: nessun nome completo. È cifrato con la password dell’archivio.</p>');
+  toast('Elenco creato: '+pl.pz.length+' pazienti. Mandalo al telefono con AirDrop e caricalo da Impostazioni.')};
 A.pkgPick=()=>{const i=$('#pkgf');if(i)i.click()};
-document.addEventListener('change',e=>{
+async function pkgGo(p,f){
+  if(p.kind!=='raccolta')throw new Error('Questo pacchetto è di un altro tipo: l’elenco pazienti va caricato sul telefono, non sul Mac.');
+  if(!Array.isArray(p.files)||!p.files.length)throw new Error('Il pacchetto è vuoto.');
+  const files=p.files.map(x=>{const F=new File([unb64(String(x.d||''))],String(x.n||'file'),{type:String(x.m||'')});F._pk=String(p.batch||'');F._pi=String(x.i||'');return F});
+  S.pkgRc={batch:String(p.batch||''),ids:[]};await impLoad(files);
+  (S.imp||[]).forEach(it=>{if(it.f&&it.f._pi&&pkSeenAt(it.f)&&!S.pkgRc.ids.includes(it.f._pi))S.pkgRc.ids.push(it.f._pi)});
+  toast('Pacchetto aperto: '+files.length+(files.length===1?' voce':' voci')+'. Controlla l’anteprima e importa.')}
+document.addEventListener('change',async e=>{
   const t=e.target;if(!t||t.id!=='pkgf')return;
   const f=t.files&&t.files[0];t.value='';if(!f)return;
-  formModal('Pacchetto dal telefono',[{k:'pw',l:'Password di questo archivio',t:'password',req:1}],{},async o=>{
-    const p=await pkOpen(o.pw,await f.text());
-    if(p.kind!=='raccolta')throw new Error('Questo pacchetto è di un altro tipo: l’elenco pazienti va caricato sul telefono, non sul Mac.');
-    if(!Array.isArray(p.files)||!p.files.length)throw new Error('Il pacchetto è vuoto.');
-    const files=p.files.map(x=>{const F=new File([unb64(String(x.d||''))],String(x.n||'file'),{type:String(x.m||'')});F._pk=String(p.batch||'');F._pi=String(x.i||'');return F});
-    S.pkgRc={batch:String(p.batch||''),ids:[]};await impLoad(files);
-    (S.imp||[]).forEach(it=>{if(it.f&&it.f._pi&&pkSeenAt(it.f)&&!S.pkgRc.ids.includes(it.f._pi))S.pkgRc.ids.push(it.f._pi)});
-    toast('Pacchetto aperto: '+files.length+(files.length===1?' voce':' voci')+'. Controlla l’anteprima e importa.')},
-    '<p class="small mut">'+esc(f.name)+'</p>');
+  const text=await f.text();let h;try{h=pkHead(text)}catch(er){pkErr(er.message);return}
+  if(pkIsKey(h)){try{await pkgGo(await pkOpenK(h),f)}catch(er){pkErr(er.message)}return}
+  formModal('Pacchetto dal telefono (file vecchio)',[{k:'pw',l:'Password di questo archivio',t:'password',req:1}],{},async o=>{await pkgGo(await pkOpen(o.pw,text),f)},
+    '<p class="small mut">'+esc(f.name)+' · file del vecchio tipo: chiede la password. Con la chiave di trasferimento non servirà più.</p>');
 });
 const _impRun11=A.impRun;
 A.impRun=async function(){
@@ -3937,8 +3999,8 @@ A.pkgRcpt=()=>{const r=S.pkgRc;if(!r||!r.ids.length)return;
   dl('RICEVUTA_'+today()+'.acrc',new Blob([JSON.stringify({fmt:'acrc',v:1,batch:r.batch,t:new Date().toISOString(),ids:r.ids})],{type:'application/octet-stream'}));
   log('Ricevuta per il telefono creata',r.ids.length+' voci');saveSoon()};
 function pkgCardHTML(){
-  let h='<div class="card pkgc"><div class="bar"><div><h3>Dal telefono: pacchetto cifrato</h3><p class="small mut" style="margin:2px 0 0">Apri qui il file .acpk arrivato con AirDrop: dopo la password vedrai la stessa anteprima dell’importazione da file, e nulla si scrive finché non confermi.</p></div>'+
-   '<div class="row"><button class="btn pri" data-act="pkgPick">Apri un pacchetto</button><button class="btn" data-act="pkgPlist">Elenco per il telefono</button></div></div>'+
+  let h='<div class="card pkgc"><div class="bar"><div><h3>Dal telefono: pacchetto cifrato</h3><p class="small mut" style="margin:2px 0 0">Apri qui il file .acpk arrivato con AirDrop: senza altre password vedrai la stessa anteprima dell’importazione da file, e nulla si scrive finché non confermi.</p></div>'+
+   '<div class="row"><button class="btn pri" data-act="pkgPick">Apri un pacchetto</button><button class="btn" data-act="pkgPlist">Elenco per il telefono</button><button class="btn" data-act="pkgKey">Chiave per il telefono</button></div></div>'+
    '<input type="file" id="pkgf" accept=".acpk" hidden>';
   const r=S.pkgRc;
   if(r&&r.ids.length)h+='<div class="banner ok small" style="margin-top:12px"><b>Importate '+r.ids.length+(r.ids.length===1?' voce':' voci')+' dal telefono.</b> Scarica la ricevuta e aprila sul telefono (Impostazioni › Svuota): il telefono cancella da solo quelle voci.<div class="row" style="margin-top:8px"><button class="btn sm pri" data-act="pkgRcpt">Scarica la ricevuta</button></div></div>';
@@ -3981,17 +4043,20 @@ function vCOut(){
 function vCExp(){
   const L=OUT(),p=L.filter(x=>!x.batch).length,s=L.filter(x=>x.batch).length,K=S.pkg;
   let h='<h1>Esporta</h1>';
-  if(K)h+='<div class="card cdone"><h3>Pacchetto pronto</h3><p><b>'+esc(K.file.name)+'</b><br><span class="small mut">'+K.n+(K.n===1?' voce':' voci')+' · cifrato con la password del Mac</span></p><div class="row"><button class="btn pri" data-share="1">Invia con AirDrop o salva</button><button class="btn" data-act="cdl">Scarica</button></div><p class="small mut">Sul Mac: Importa › Apri un pacchetto. Dopo l’importazione il Mac ti dà una ricevuta: aprila qui in Impostazioni e il telefono cancella da solo le voci.</p></div>';
+  if(K)h+='<div class="card cdone"><h3>Pacchetto pronto</h3><p><b>'+esc(K.file.name)+'</b><br><span class="small mut">'+K.n+(K.n===1?' voce':' voci')+' · cifrato con la chiave di trasferimento</span></p><div class="row"><button class="btn pri" data-share="1">Invia con AirDrop o salva</button><button class="btn" data-act="cdl">Scarica</button></div><p class="small mut">Sul Mac: Importa › Apri un pacchetto. Dopo l’importazione il Mac ti dà una ricevuta: aprila qui in Impostazioni e il telefono cancella da solo le voci.</p></div>';
   if(K&&!p)return h+'<p class="small mut">Se il Mac non riceve il pacchetto puoi ricrearlo.</p><button class="btn" data-act="cagain">Ricrea il pacchetto</button>';
   if(!p&&!s)return h+'<div class="card cempty"><p><b>Non c’è niente da esportare.</b></p><button class="btn pri" data-act="cgo" data-v="cnew">Crea una voce</button></div>';
-  return h+'<div class="card"><h3>Crea il pacchetto cifrato</h3><p class="small mut">Le voci vengono messe in un unico file, cifrato con la <b>password dell’archivio del Mac</b>. Senza quella password nessuno può leggerlo, nemmeno se resta in Download o in AirDrop.</p>'+
+  const hasK=!!D().set.tk;
+  return h+'<div class="card"><h3>Crea il pacchetto cifrato</h3><p class="small mut">Le voci vengono messe in un unico file, cifrato con la <b>chiave di trasferimento</b>. Senza quella chiave nessuno può leggerlo, nemmeno se resta in Download o in AirDrop.</p>'+
    '<p><b>'+p+'</b> '+(p===1?'voce pronta':'voci pronte')+(s?' · '+s+' già '+(s===1?'esportata':'esportate'):'')+'</p>'+
-   '<form data-form="cexp" autocomplete="off"><div class="grid">'+fieldHTML({k:'pw',l:'Password dell’archivio del Mac',t:'password',req:1})+fieldHTML({k:'pw2',l:'Ripeti la password',t:'password',req:1})+'</div>'+
+   '<form data-form="cexp" autocomplete="off">'+
+   (hasK?'':'<div class="grid"><label class="fld"><span>Chiave di trasferimento del Mac</span><input name="tk" id="f_tk" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" required><small>Solo la prima volta. La trovi sul Mac in Importa › Chiave per il telefono (Copia, poi incolla qui). Dopo non te la chiede più.</small></label></div>')+
    (s?'<label class="chkrow"><input type="checkbox" name="all"> Includi anche le '+s+' già esportate (se il Mac non le ha ricevute)</label>':'')+
    '<div class="err"></div><button class="btn pri"'+(p||s?'':' disabled')+'>Crea il pacchetto</button></form></div>'}
 function vCSet(){
   const P=PLI(),ex=OUT().filter(x=>x.batch).length,s=D().set,cur=s.idleMin||5,opts=IDLE_OPT.indexOf(cur)<0?IDLE_OPT.concat([cur]).sort((a,b)=>a-b):IDLE_OPT;
   return '<h1>Impostazioni</h1>'+
+   '<div class="card"><h3>Chiave di trasferimento</h3><p class="small mut">'+(s.tk?'<b>Impostata.</b> Esporti senza password. Se la cambi sul Mac, inserisci qui la nuova.':'Non ancora impostata. Serve una sola volta: la crei sul Mac (Importa › Chiave per il telefono) e la incolli qui.')+'</p><button class="btn'+(s.tk?'':' pri')+'" data-act="tkSet">'+(s.tk?'Cambia la chiave':'Inserisci la chiave')+'</button></div>'+
    '<div class="card"><h3>Pazienti e agenda dal Mac</h3><p class="small mut">'+(P.at?'Caricato il '+fd(P.at)+': <b>'+P.pz.length+'</b> pazienti (solo codice e iniziali), <b>'+P.ag.length+'</b> appuntamenti.':'Nessun elenco caricato. Senza elenco scrivi tu il codice PZ-… ogni volta, ed è la scelta più riservata.')+'</p><button class="btn" data-act="plPick">'+(P.at?'Aggiorna l’elenco':'Carica l’elenco dal Mac')+'</button></div>'+
    '<div class="card"><h3>Svuota il telefono</h3><p class="small mut">Dopo aver importato sul Mac, apri la ricevuta che il Mac ti ha dato: il telefono cancella da solo le voci importate.</p><div class="row"><button class="btn pri" data-act="crcPick">Apri la ricevuta</button><button class="btn" data-act="cclear"'+(ex?'':' disabled')+'>Cancella le '+ex+' già esportate</button></div></div>'+
    '<div class="card"><h3>Blocco automatico</h3><form data-form="lockset"><div class="grid">'+fieldHTML({k:'idleMin',l:'Blocca dopo',t:'select',o:opts.map(m=>[String(m),m===1?'1 minuto':m+' minuti'])},String(cur))+fieldHTML({k:'pw',l:'Password per confermare',t:'password',req:1})+'</div>'+
