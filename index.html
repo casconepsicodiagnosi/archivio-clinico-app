@@ -1129,14 +1129,14 @@ html[data-eff=dark] .lc-d.mx{color:#fff;text-shadow:0 0 3px #000,0 0 3px #000,0 
 .fi-m{flex:1;min-width:0}.mdl .fitem{flex-wrap:wrap}
 
 /* v37 · bottoni principali in terracotta (Mac e telefono) */
-.btn.pri{background:var(--terra);border-color:var(--terra);color:#fff;box-shadow:0 6px 14px -8px rgba(172,84,55,.7),inset 0 1px 0 rgba(255,255,255,.14)}
-.btn.pri:hover{background:var(--terra-dark);border-color:var(--terra-dark)}
+.btn.pri{background:#94503A;border-color:#94503A;color:#FBF3E2;box-shadow:0 6px 14px -9px rgba(120,62,40,.6),inset 0 1px 0 rgba(255,255,255,.10)}
+.btn.pri:hover{background:#82452F;border-color:#82452F}
 .btn.pri:disabled{opacity:.55}
 
 /* v37 · telefono: stessa palette, più morbida (solo con html.mob) */
 html.mob{--cream:#F4ECDF;--paper:#FCF8EF;--card:#FFFDF9;--line:#E6DAC4}
 html.mob body{background-image:radial-gradient(1100px 520px at 50% -8%,rgba(255,250,240,.7) 0,transparent 70%)}
-html.mob header.top,html.mob body::before{background:linear-gradient(180deg,color-mix(in srgb,var(--green) 86%,#fff),var(--green))}
+html.mob header.top,html.mob body::before{background:var(--green);background:linear-gradient(180deg,color-mix(in srgb,var(--green) 86%,#fff),var(--green))}
 html.mob .card,html.mob .ctile,html.mob .crow{border-color:#EADFCA;border-radius:20px;box-shadow:0 1px 2px rgba(90,60,25,.05),0 10px 24px -14px rgba(90,60,25,.30)}
 html.mob .ctile-i{background:var(--pri2);color:var(--green)}
 html.mob .ctile:nth-child(3n+2) .ctile-i{background:#F5E1D2;color:#8F4527}
@@ -4532,7 +4532,9 @@ function recTick(){
 A.recGo=async()=>{
   recErr('');
   if(REC.mr&&REC.mr.state==='recording'){REC.mr.stop();return}
-  if(REC.busy)return;REC.busy=1;try{await recStart()}finally{REC.busy=0}};
+  if(REC.busy)return;
+  {const rv=$('#rec-rv');if(rv&&rv.innerHTML){recErr('Prima scegli cosa fare della registrazione interrotta: Recupera oppure Scarta.');return}}
+  REC.busy=1;try{await recStart()}finally{REC.busy=0}};
 async function recStart(){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder){recErr('Questo dispositivo non permette di registrare dall’app.');return}
   if(REC.url){try{URL.revokeObjectURL(REC.url)}catch(e){}REC.url=null}REC.blob=null;recUI('idle');
@@ -4807,6 +4809,7 @@ migrate=function(d){
   const r=_mig35.apply(this,arguments);
   ['fPag','fDoc','fList','fInv','fModelli'].forEach(k=>{if(!Array.isArray(r[k]))r[k]=[]});
   if(!r.fSet||typeof r.fSet!=='object')r.fSet={};
+  r.fModelli=r.fModelli.filter(m=>m&&typeof m==='object'&&m.v&&typeof m.v==='object'&&typeof m.nome==='string');
   const def=fSetDef();Object.keys(def).forEach(k=>{if(r.fSet[k]===undefined)r.fSet[k]=def[k]});
   return r};
 const fPatF=p=>Object.assign({cf:'',tipo:'pf',opp:false,denom:'',piva:'',indirizzo:'',cap:'',comune:'',prov:'',nazione:'IT',coddest:'',pec:''},(p&&p.fisc)||{});
@@ -5530,7 +5533,7 @@ A.fTsXml=async()=>{
 /* ====================== v37 · classe «mob» e animazione del filo sotto il titolo ====================== */
 (()=>{const _r=render;let last='';
   render=function(){
-    try{document.documentElement.classList.toggle('mob',!!(TOUCH||isComp()))}catch(e){}
+    try{document.documentElement.classList.toggle('mob',!!(isComp()||(!S.db&&TOUCH&&matchMedia('(max-width:760px)').matches)))}catch(e){}
     const x=_r.apply(this,arguments);
     try{if(document.documentElement.classList.contains('mob')){const v=(S.screen||'')+'|'+(S.view||'')+'|'+(S.pid||'');
       if(v!==last){last=v;document.querySelectorAll('#root h1').forEach(h=>h.classList.add('ttl-go'))}}}catch(e){}
