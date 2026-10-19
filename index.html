@@ -1451,14 +1451,29 @@ html[data-eff=dark] .card,html[data-eff=dark] .ctile,html[data-eff=dark] .crow{b
 /* ---- revisione 20/10 (3) ---- */
 @media screen {
   /* Dwarf in testata più opaco, meno acceso */
-  .dwarf-mark { filter:saturate(.5) contrast(.92) brightness(1.02); opacity:.9; }
-  html[data-eff="dark"] .dwarf-mark { filter:saturate(.5) brightness(.9); opacity:.85; }
+  .dwarf-mark { filter:saturate(.8) brightness(1.06); opacity:1; }
+  html[data-eff="dark"] .dwarf-mark { filter:saturate(.8) brightness(1.02); opacity:1; }
   /* barra in alto più presente: fondo carta, bordo e un'ombra leggera che la staccano dalla pagina */
   html:root header.top { background:var(--card); border-bottom:1px solid var(--line); box-shadow:0 6px 18px -10px rgba(65,70,37,.28); }
   html[data-eff="dark"] header.top { box-shadow:0 6px 18px -10px rgba(0,0,0,.6); }
   /* marchio sulle schermate d'accesso: su un riquadro chiaro, leggibile sopra le forme di sfondo */
   html:root .gate .gate-brand { padding:8px 14px 8px 10px; border-radius:18px; background:rgba(var(--glass),.88); border:1px solid var(--line);
     box-shadow:0 8px 22px -14px rgba(65,70,37,.45); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+}
+
+/* ---- revisione 20/10 (4): testata della Raccolta sul telefono ----
+   Sull'app installata la barra di stato di iOS ha il testo bianco: una testata chiara rendeva
+   invisibili ora e batteria e la barra sembrava «sparire». Torna verde, con testi crema. */
+@media screen {
+  html:root.mob #app.comp header.top { background:linear-gradient(180deg,#4A502B,var(--green)); border-bottom:0; box-shadow:0 8px 22px -12px rgba(43,46,23,.55); }
+  html[data-eff="dark"].mob #app.comp header.top { background:#2B2E17; box-shadow:0 8px 22px -12px rgba(0,0,0,.7); }
+  html:root.mob body::before { background:var(--green); }
+  html[data-eff="dark"].mob body::before { background:#2B2E17; }
+  html:root.mob #app.comp header.top .dwarf-wordmark { color:#F1E4CF; border-right-color:rgba(241,228,207,.28); }
+  html:root.mob #app.comp header.top .brand-name { color:#F1E4CF; }
+  html:root.mob #app.comp header.top .brand-role { color:#CDBFA6; }
+  html:root.mob #app.comp header.top .lockb { color:#F1E4CF; border-color:rgba(241,228,207,.45); background:transparent; }
+  html:root.mob #app.comp header.top .lockb.on, html:root.mob #app.comp header.top .lockb:active { background:#F1E4CF; color:#414625; }
 }
 
 </style></head><body>
