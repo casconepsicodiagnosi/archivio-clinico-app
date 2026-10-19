@@ -995,6 +995,27 @@ html[data-eff=dark] .dlg{--dlgb:#20241A}
 /* chiave di trasferimento */
 .tkbox{font:600 19px/1.6 ui-monospace,Menlo,monospace;letter-spacing:.05em;text-align:center;padding:14px 10px;margin:12px 0;border:1px dashed var(--sand);border-radius:14px;background:var(--paper);user-select:all;-webkit-user-select:all;word-break:break-all}
 
+/* v33: schermata di accesso su telefono: dentro lo schermo, sotto la tacca, lucchetto senza sovrapposizioni */
+.gate-brand{top:max(22px,calc(env(safe-area-inset-top,0px) + 10px))}
+.gate-theme{top:max(22px,calc(env(safe-area-inset-top,0px) + 10px))}
+.pwrow .pwi{transition:opacity .15s}
+@media(max-width:600px){
+  .pwrow .pwi~input{padding-left:46px!important;transition:padding-left .15s}
+  .pwrow:has(input:not(:placeholder-shown)) .pwi,.pwrow:has(input:focus) .pwi{opacity:0}
+  .pwrow:has(input:not(:placeholder-shown)) .pwi~input,.pwrow:has(input:focus) .pwi~input{padding-left:16px!important}
+  .gate:has(.lk-wrap){padding-top:max(84px,calc(env(safe-area-inset-top,0px) + 74px));padding-bottom:max(24px,calc(env(safe-area-inset-bottom,0px) + 12px));align-items:flex-start}
+  .lk-wrap{gap:16px}
+  .lk-hero .lk-st,.lk-hero .lk-feat{display:none}
+  .lk-hero h1{font-size:clamp(30px,9vw,40px);margin:12px 0 0}
+  .lk-wrap .auth.lk{padding:24px 20px 20px}
+  .lk-t{font-size:24px;margin-bottom:12px}
+  .lk-badge{width:46px;height:46px;border-radius:15px;margin-bottom:10px}
+  /* mentre scrivi la parte alta si toglie, così il campo resta sopra la tastiera */
+  html.typing .lk-hero,html.kb .lk-hero{display:none}
+  html.typing .lk-badge,html.typing .lk-t,html.kb .lk-badge,html.kb .lk-t{display:none}
+  html.typing .gate:has(.lk-wrap),html.kb .gate:has(.lk-wrap){padding-top:max(88px,calc(env(safe-area-inset-top,0px) + 82px))}
+}
+
 /* tema scuro */
 html[data-eff=dark]{--glass:32,36,26;--glass2:19,21,14;--green:#3B4122;--green-deep:#2A2E17;--green-soft:#7F8A56;--gtx:#CBD39E;--cream:#13150E;--cream-2:#1C1F14;--paper:#1A1D13;--card:#20241A;--hero:#1E2216;--terra:#D27C58;--terra-dark:#E5A07F;--terra-light:#C0724F;--terra-bg:#3A261C;--ink:#EEE7D7;--body:#D3CCBA;--mut:#B5AB96;--line:#363B2B;--sand:#4C5239;--pri2:#2C3220;--ok:#BDD596;--ok2:#27311B;--warn:#EBC57E;--warn2:#3A2F15;--bad:#F3A898;--bad2:#40211B;color-scheme:dark}
 html[data-eff=dark] body{background:var(--cream);color:var(--ink)}
@@ -4214,6 +4235,18 @@ A.showRestore=async()=>{
     S.screen='lock';closeModal();render();toast(c.bad||c.missing?'Backup ripristinato con '+(c.bad+c.missing)+' documenti mancanti o danneggiati.':'Backup ripristinato. Sblocca con la password.');
   });
 };
+
+/* ---------- v33: schermata di accesso su telefono ---------- */
+/* niente focus automatico sul telefono: la tastiera la apri tu, e la pagina non scivola verso il basso */
+let lastTap33=0;try{addEventListener('pointerdown',()=>{lastTap33=Date.now()},true)}catch(e){}
+const unfocus33=()=>{try{const a=document.activeElement;
+  if(S.screen==='lock'&&a&&a.matches&&a.matches('input')&&Date.now()-lastTap33>1500){a.blur();document.documentElement.classList.remove('typing')}
+  scrollTo(0,0)}catch(e){}};
+const _render33=render;
+render=function(){
+  const r=_render33.apply(this,arguments);
+  try{if(TOUCH&&S.screen==='lock'){document.querySelectorAll('input[autofocus]').forEach(i=>i.removeAttribute('autofocus'));unfocus33();requestAnimationFrame(()=>{unfocus33();requestAnimationFrame(unfocus33)});setTimeout(unfocus33,200)}}catch(e){}
+  return r};
 
 /* ---------- 10. AVVIO ---------- */
 async function selfTest(){
