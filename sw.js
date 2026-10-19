@@ -1,5 +1,5 @@
 /* Archivio clinico - funzionamento senza rete. Conserva solo i file dell'app, mai dati. */
-const V='ac-354dcf220ad7';
+const V='ac-01e9c85f2d6d';
 const FILES=["./", "./index.html", "./manifest.webmanifest", "./apple-touch-icon.png", "./icon-192.png", "./icon-512.png"];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

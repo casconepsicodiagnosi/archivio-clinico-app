@@ -212,7 +212,7 @@ nav button.on{background:#F1E4CF;color:var(--gtx)}nav button.on svg{stroke:var(-
 @media(max-width:620px){.topin{flex-wrap:wrap;row-gap:6px}.brand{order:1}.lockb{order:2;margin-left:auto}nav{order:3;flex:1 0 100%;justify-content:flex-start;padding-bottom:4px}nav button span{display:inline}nav button{padding:8px 13px}}
 
 /* cronologia, v0.4 */
-:root{--t-ses:#414625;--t-doc:#3F6A8A;--t-con:#A8741A;--t-test:#7A4E8C;--t-stato:#6E6A5E;--t-dx:#A13A2B;--t-ep:#1F7A6B}
+:root{--t-ses:#414625;--t-app:#5B7A99;--t-doc:#3F6A8A;--t-con:#A8741A;--t-test:#7A4E8C;--t-stato:#6E6A5E;--t-dx:#A13A2B;--t-ep:#1F7A6B}
 .tlf{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
 .tlf button{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--c);background:var(--card);color:var(--c);border-radius:99px;padding:3px 11px 3px 8px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
 .tlf button i{width:9px;height:9px;background:var(--c);display:inline-block}
@@ -1113,6 +1113,20 @@ html[data-eff=dark] .lc-d.mx{color:#fff;text-shadow:0 0 3px #000,0 0 3px #000,0 
 .fbar .row,.bar .row{gap:8px;flex-wrap:wrap}
 .banner ul{margin:6px 0 6px 18px;padding:0}
 @media(max-width:700px){.fgrid{grid-template-columns:1fr}.ftab th,.ftab td{padding:9px 8px}}
+
+.recrv{display:flex;flex-direction:column;gap:6px;margin:8px 0;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card)}
+
+.tk.sh-app{border-radius:9px;opacity:.85}
+.pmk{display:inline-flex;align-items:center;gap:4px;margin:0 auto 0 8px;padding:1px 8px 1px 6px;border-radius:99px;border:1px solid transparent;font:600 11px/1.5 inherit;cursor:default;background:none}
+.pmk svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.pmk.ok{color:var(--ok);background:var(--ok2);border-color:#CBD9AF}
+.pmk.no{color:var(--warn);background:var(--warn2);border-color:#EBD39A;cursor:pointer}
+.pmk.na{color:var(--mut);border-color:var(--line)}
+.pstat{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.pstat svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.mdl{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.mdl .row{align-items:center}
+.fi-m{flex:1;min-width:0}.mdl .fitem{flex-wrap:wrap}
 
 /* tema scuro */
 html[data-eff=dark]{--glass:32,36,26;--glass2:19,21,14;--green:#3B4122;--green-deep:#2A2E17;--green-soft:#7F8A56;--gtx:#CBD39E;--cream:#13150E;--cream-2:#1C1F14;--paper:#1A1D13;--card:#20241A;--hero:#1E2216;--terra:#D27C58;--terra-dark:#E5A07F;--terra-light:#C0724F;--terra-bg:#3A261C;--ink:#EEE7D7;--body:#D3CCBA;--mut:#B5AB96;--line:#363B2B;--sand:#4C5239;--pri2:#2C3220;--ok:#BDD596;--ok2:#27311B;--warn:#EBC57E;--warn2:#3A2F15;--bad:#F3A898;--bad2:#40211B;color-scheme:dark}
@@ -2421,6 +2435,7 @@ A.playAudio=async d=>{
 /* cronologia del paziente: tipi distinti per forma, colore, icona ed etichetta */
 const TLT={
   ses:['Seduta','--t-ses','M4 5h16v11H9l-5 4z'],
+  app:['Appuntamento','--t-app','M5 5h14v15H5zM5 10h14M9 3v4M15 3v4'],
   doc:['Documento','--t-doc','M6 3h9l4 4v14H6zM14 3v5h5'],
   con:['Consenso','--t-con','M5 12l4 4 10-10'],
   test:['Test e scale','--t-test','M5 20V10M12 20V4M19 20v-7'],
@@ -2430,7 +2445,8 @@ const TLT={
 };
 function timelineHTML(pid){
   const ev=[],H=S.tlh||[];
-  byP(D().sessions,pid).forEach(s=>ev.push([s.data,'ses','Seduta '+s.tipo,s.durata?s.durata+' minuti':'']));
+  byP(D().sessions,pid).forEach(s=>ev.push([s.data,'ses','Seduta '+s.tipo,s.durata?s.durata+' minuti':'',typeof tlMark==='function'?tlMark('ses',s):'']));
+  byP(D().appts,pid).filter(a=>a.stato==='previsto').forEach(a=>ev.push([a.data,'app','Appuntamento '+(a.tipo||''),(a.ora||'')+(a.durata?' · '+a.durata+' minuti':''),typeof tlMark==='function'?tlMark('app',a):'']));
   byP(D().docs,pid).forEach(d=>ev.push([d.dataCarico||d.dataDoc,'doc',d.audio?'Registrazione audio':d.scan?'Scansione di test':'Documento',d.nome]));
   byP(D().consents,pid).forEach(c=>ev.push([c.data,'con',c.firmato?'Consenso firmato':'Consenso non firmato',c.tipo]));
   byP(D().scales,pid).forEach(c=>ev.push([c.data,'test','Scala '+c.scala,'Punteggio '+c.punti]));
@@ -2447,7 +2463,7 @@ function timelineHTML(pid){
     const mo=String(e[0]).slice(0,7);
     if(mo!==last){last=mo;const x=ymd(String(e[0]));h+='<li class="tm">'+esc(new Date(x.y,x.m-1,1).toLocaleDateString('it-IT',{month:'long',year:'numeric'}))+'</li>'}
     const T=TLT[e[1]];
-    h+='<li style="--c:var('+T[1]+')"><span class="tk sh-'+e[1]+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+T[2]+'"/></svg></span><div class="tc"><div class="tt"><span class="tn">'+esc(e[2])+'</span><span class="td">'+fd(e[0])+'</span></div>'+(e[3]?'<div class="tx">'+esc(e[3])+'</div>':'')+'</div></li>';
+    h+='<li style="--c:var('+T[1]+')"><span class="tk sh-'+e[1]+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+T[2]+'"/></svg></span><div class="tc"><div class="tt"><span class="tn">'+esc(e[2])+'</span>'+(e[4]||'')+'<span class="td">'+fd(e[0])+'</span></div>'+(e[3]?'<div class="tx">'+esc(e[3])+'</div>':'')+'</div></li>';
   });
   return chips+(L.length?'<ul class="tl2">'+h+'</ul>':'<p class="mut small">Nessun elemento con i filtri scelti.</p>');
 }
@@ -4424,18 +4440,49 @@ try{(function(){
 
 /* ---------- registratore ---------- */
 const REC={mr:null,ch:[],stream:null,tm:0,t0:0,blob:null,mime:'',sec:0,url:null,go:null};
-const REC_MAX=900;/* 15 minuti */
+const REC_MAX=10800,REC_BPS=32000;/* 3 ore, voce a 32 kbps (circa 43 MB) */
 const micIc='M12 15a3 3 0 003-3V6a3 3 0 00-6 0v6a3 3 0 003 3zM6 11a6 6 0 0012 0M12 17v4';
-const mmss=s=>{s=Math.max(0,Math.floor(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+const mmss=s=>{s=Math.max(0,Math.floor(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),c=String(s%60).padStart(2,'0');return h?h+':'+String(m).padStart(2,'0')+':'+c:m+':'+c};
 function recMime(){try{for(const m of ['audio/mp4','audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus'])if(MediaRecorder.isTypeSupported(m))return m}catch(e){}return ''}
 const recExt=m=>/mp4|aac/i.test(m)?'m4a':/ogg/i.test(m)?'ogg':'webm';
 const audMime=ext=>({m4a:'audio/mp4',mp4:'audio/mp4',aac:'audio/aac',mp3:'audio/mpeg',wav:'audio/wav',ogg:'audio/ogg',opus:'audio/ogg',webm:'audio/webm',caf:'audio/x-caf'})[String(ext||'').toLowerCase()]||'audio/mp4';
+/* tenere lo schermo acceso durante la registrazione e salvare una bozza cifrata ogni 20 secondi,
+   così se l'app si chiude o il Mac va in sospensione la registrazione fatta fin lì si può recuperare */
+async function recWake(on){
+  try{if(on){if(navigator.wakeLock&&!REC.wl)REC.wl=await navigator.wakeLock.request('screen');if(REC.wl)REC.wl.addEventListener('release',()=>{REC.wl=null})}
+  else if(REC.wl){const w=REC.wl;REC.wl=null;await w.release()}}catch(e){REC.wl=null}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&REC.mr&&REC.mr.state==='recording')recWake(true)});
+async function recDraftFlush(){
+  if(REC.fl||!S.key||!REC.pend||!REC.pend.length)return;REC.fl=1;
+  try{
+    const bl=REC.pend;REC.pend=[];
+    const bytes=new Uint8Array(await new Blob(bl).arrayBuffer());
+    const n=REC.pn||0;
+    await idbPut('kv','recp:'+n,await encB(S.key,bytes));REC.pn=n+1;
+    await idbPut('kv','recd',{n:REC.pn,mime:REC.mime,t0:REC.t0,sec:Math.round((Date.now()-REC.t0)/1000)})
+  }catch(e){}finally{REC.fl=0}}
+async function recDraftClear(){
+  try{const d=await idbGet('kv','recd');if(d)for(let i=0;i<d.n;i++)await idbDel('kv','recp:'+i);await idbDel('kv','recd')}catch(e){}
+  REC.pn=0;REC.pend=[]}
+async function recDraftInfo(){try{return await idbGet('kv','recd')||null}catch(e){return null}}
+A.recRecover=async()=>{
+  const d=await recDraftInfo();if(!d||!S.key)return;recErr('');
+  try{
+    const parts=[];for(let i=0;i<d.n;i++){const e=await idbGet('kv','recp:'+i);if(!e)break;parts.push(await decB(S.key,e))}
+    if(!parts.length)throw new Error('La bozza non è più leggibile.');
+    const b=new Blob(parts,{type:d.mime||'audio/webm'});
+    recFree(false);if(REC.url){try{URL.revokeObjectURL(REC.url)}catch(e){}}
+    REC.mime=d.mime||'audio/webm';REC.blob=b;REC.sec=d.sec||0;REC.url=URL.createObjectURL(b);
+    const r=$('#rec-rv');if(r)r.remove();recUI('done');
+    recErr('')}
+  catch(e){recErr(e.message||String(e))}};
+A.recDiscardDraft=async()=>{await recDraftClear();const r=$('#rec-rv');if(r)r.remove()};
 function recFree(all){
   try{if(REC.mr&&REC.mr.state!=='inactive'){REC.mr.onstop=null;REC.mr.ondataavailable=null;REC.mr.stop()}}catch(e){}
   REC.mr=null;
   if(REC.stream){try{REC.stream.getTracks().forEach(t=>t.stop())}catch(e){}REC.stream=null}
-  clearInterval(REC.tm);REC.tm=0;
-  if(all){if(REC.url){try{URL.revokeObjectURL(REC.url)}catch(e){}}REC.url=null;REC.blob=null;REC.go=null;REC.sec=0;REC.ch=[]}}
+  clearInterval(REC.tm);REC.tm=0;recWake(false);
+  if(all){if(REC.url){try{URL.revokeObjectURL(REC.url)}catch(e){}}REC.url=null;REC.blob=null;REC.go=null;REC.sec=0;REC.ch=[];REC.pend=[]}}
 function recUI(st,msg){
   const g=$('#rec-go'),s=$('#rec-s'),sv=$('#rec-sv'),a=$('#rec-a'),t=$('#rec-t');if(!g)return;
   g.classList.toggle('on',st==='rec');
@@ -4444,11 +4491,12 @@ function recUI(st,msg){
   if(a){if(st==='done'&&REC.url){a.src=REC.url;a.hidden=false}else{a.hidden=true;try{a.removeAttribute('src');a.load()}catch(e){}}}
   if(t&&st==='done')t.textContent=mmss(REC.sec);
   if(t&&st==='idle')t.textContent='0:00';
-  if(s)s.textContent=msg||(st==='rec'?'Registrazione in corso… tocca il pulsante per fermare.':st==='done'?'Pronta: ascoltala, poi salva oppure registra di nuovo.':'Tocca il microfono per iniziare (massimo 15 minuti).')}
+  if(s)s.textContent=msg||(st==='rec'?'Registrazione in corso… tocca il pulsante per fermare.':st==='done'?'Pronta: ascoltala, poi salva oppure registra di nuovo.':'Tocca il microfono per iniziare (massimo 3 ore).')}
 function recErr(m){const e=$('#rec-e');if(e)e.textContent=m||''}
 function recTick(){
   const el=$('#rec-t');if(!el){recFree(true);return}
   const s=(Date.now()-REC.t0)/1000;el.textContent=mmss(s);try{bump()}catch(e){}/* mentre registri il blocco automatico non scatta */
+  if(Math.floor(s)%20===0&&Math.floor(s)!==REC.lf){REC.lf=Math.floor(s);recDraftFlush()}
   if(s>=REC_MAX&&REC.mr&&REC.mr.state==='recording')REC.mr.stop()}
 A.recGo=async()=>{
   recErr('');
@@ -4462,33 +4510,38 @@ async function recStart(){
   catch(e){recErr(TOUCH?'Non riesco a usare il microfono. Se hai rifiutato il permesso: Impostazioni › Safari › Microfono (o Impostazioni dell’app) per riattivarlo.':'Non riesco a usare il microfono. Sul Mac: Impostazioni di Sistema › Privacy e sicurezza › Microfono, poi consenti Archivio clinico.');return}
   if(!$('#rec-go')){stream.getTracks().forEach(t=>t.stop());return}/* finestra chiusa nel frattempo */
   REC.stream=stream;const mime=recMime();let mr;
-  try{mr=mime?new MediaRecorder(stream,{mimeType:mime,audioBitsPerSecond:48000}):new MediaRecorder(stream,{audioBitsPerSecond:48000})}
+  try{mr=mime?new MediaRecorder(stream,{mimeType:mime,audioBitsPerSecond:REC_BPS}):new MediaRecorder(stream,{audioBitsPerSecond:REC_BPS})}
   catch(e){try{mr=new MediaRecorder(stream)}catch(e2){recFree();recErr('Il formato di registrazione non è disponibile su questo dispositivo.');return}}
-  REC.mr=mr;REC.ch=[];REC.mime=mr.mimeType||mime||'audio/mp4';
-  mr.ondataavailable=e=>{if(e.data&&e.data.size)REC.ch.push(e.data)};
+  REC.mr=mr;REC.ch=[];REC.pend=[];REC.pn=0;REC.mime=mr.mimeType||mime||'audio/mp4';
+  mr.ondataavailable=e=>{if(e.data&&e.data.size){REC.ch.push(e.data);REC.pend.push(e.data)}};
+  mr.onerror=()=>{recErr('La registrazione si è interrotta: salvo quello che c’è.');try{if(mr.state==='recording')mr.stop()}catch(e){}};
+  try{stream.getAudioTracks().forEach(t=>t.addEventListener('ended',()=>{if(REC.mr&&REC.mr.state==='recording'){recErr('Il microfono è stato scollegato: salvo quello che ho registrato.');REC.mr.stop()}}))}catch(e){}
   mr.onstop=()=>{
     const sec=Math.round((Date.now()-REC.t0)/1000);
     try{REC.stream&&REC.stream.getTracks().forEach(t=>t.stop())}catch(e){}REC.stream=null;clearInterval(REC.tm);REC.tm=0;REC.mr=null;
     const b=new Blob(REC.ch,{type:REC.mime});REC.ch=[];
     if(!b.size){recErr('La registrazione è vuota. Riprova.');recUI('idle');return}
-    REC.blob=b;REC.sec=sec;REC.url=URL.createObjectURL(b);recUI('done')};
+    REC.blob=b;REC.sec=sec;REC.url=URL.createObjectURL(b);recUI('done');recDraftFlush()};
+  await recDraftClear();
   REC.t0=Date.now();
   try{mr.start(1000)}catch(e){recFree();recErr('Non riesco ad avviare la registrazione.');return}
-  recUI('rec');REC.tm=setInterval(recTick,250)}
+  recUI('rec');recWake(true);REC.tm=setInterval(recTick,250)}
 A.recSave=async()=>{
   if(!REC.blob||!REC.go)return;recErr('');
   const sv=$('#rec-sv');if(sv)sv.disabled=true;
   const r={blob:REC.blob,mime:REC.mime,ext:recExt(REC.mime),sec:REC.sec,titolo:(($('#rec-ti')||{}).value||'').trim(),pz:(($('#rec-pz')||{}).value||'').trim(),cat:(($('#rec-cat')||{}).value||'')};
-  try{await REC.go(r);recFree(true);closeModal()}
+  try{await REC.go(r);await recDraftClear();recFree(true);closeModal()}
   catch(e){recErr(e.message||String(e));if(sv)sv.disabled=false}};
 function recModal(o){
   recFree(true);REC.go=o.onSave;
   modal('<h3>'+esc(o.title)+'</h3><div class="recbox"><div class="rect" id="rec-t" aria-hidden="true">0:00</div>'+
    '<button type="button" class="recgo" id="rec-go" data-act="recGo" aria-label="Avvia la registrazione">'+svgI(micIc)+'</button>'+
-   '<div class="recs small mut" id="rec-s" role="status">Tocca il microfono per iniziare (massimo 15 minuti).</div>'+
-   '<audio id="rec-a" controls hidden></audio></div>'+
+   '<div class="recs small mut" id="rec-s" role="status">Tocca il microfono per iniziare (massimo 3 ore).</div>'+
+   '<audio id="rec-a" controls hidden></audio></div><div id="rec-rv"></div>'+
    '<label class="fld"><span>Titolo (facoltativo)</span><input id="rec-ti" maxlength="80" autocomplete="off" placeholder="Per esempio: Idee dopo la supervisione"></label>'+(o.pzHTML||'')+
-   '<div class="err" id="rec-e"></div><div class="row end"><button type="button" class="btn" data-act="close">Annulla</button><button type="button" class="btn pri" id="rec-sv" data-act="recSave" disabled>Salva</button></div>')}
+   '<div class="err" id="rec-e"></div><div class="row end"><button type="button" class="btn" data-act="close">Annulla</button><button type="button" class="btn pri" id="rec-sv" data-act="recSave" disabled>Salva</button></div>');
+  recDraftInfo().then(d=>{const r=$('#rec-rv');if(!d||!r||!d.n)return;
+    r.innerHTML='<div class="recrv"><b>Registrazione interrotta</b><span class="small mut">L’ultima registrazione non è stata salvata: ci sono '+mmss(d.sec||0)+' recuperabili.</span><span class="row"><button type="button" class="btn sm pri" data-act="recRecover">Recupera</button><button type="button" class="btn sm" data-act="recDiscardDraft">Scarta</button></span></div>'})}
 const _close34=closeModal;
 closeModal=function(){recFree(true);return _close34.apply(this,arguments)};
 
@@ -4500,11 +4553,7 @@ CT.memo={l:'Memo vocale',s:'La tua voce, cifrata sul telefono',ic:micIc,pz:2,pho
   f:()=>[],name:(v,z)=>'MEMO_'+(z?z+'_':'')+v.data+(v.titolo?'_'+fz(v.titolo):''),
   sum:v=>fd(v.data)+' · '+mmss(v.sec||0)+(v.titolo?' · '+oneL(v.titolo).slice(0,28):'')};
 CT_ORDER.splice(CT_ORDER.indexOf('nota')+1,0,'notap');
-const _vCNew34=vCNew;
-vCNew=function(){
-  const h=_vCNew34.apply(this,arguments);
-  const hero='<button class="memohero" data-act="cnewT" data-t="memo"><span class="memohero-i">'+svgI(micIc)+'</span><span class="memohero-t"><b>Memo vocale</b><small>Registra la tua voce: si esporta come gli altri file</small></span><span class="memohero-c">'+svgI(CI.chev)+'</span></button>';
-  return h.replace('<div class="ctiles">',hero+'<div class="ctiles">')};
+/* il telefono non registra più dall'app (iOS ferma il microfono a schermo bloccato): gli audio si registrano con «Memo vocali» e si caricano dal Mac */
 const _ctOpen34=ctOpen;
 ctOpen=function(type,it){
   if(type==='memo'){it?memoView(it):memoNew();return}
@@ -4569,7 +4618,7 @@ const npAud=()=>D().docs.filter(d=>d.np).sort((a,b)=>(b.dataReg||'').localeCompa
 const npWho=rif=>{const p=rif?D().patients.find(x=>x.id===rif):null;return p?nm(p):''};
 async function npAddAudio(o){
   const bytes=o.bytes||new Uint8Array(await o.blob.arrayBuffer());
-  if(bytes.length>MAXDOC)throw new Error('Il file è troppo grande (massimo 10 MB).');
+  if(bytes.length>MAXAUDIO)throw new Error('Il file è troppo grande (massimo 80 MB).');
   const id=uid(),ext=String(o.ext||'m4a').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,5)||'m4a',d=o.date||today();
   const nome=(fz(o.titolo||'')||'Registrazione')+' – '+d+'.'+ext;
   await idbPut('docs',id,await encB(S.key,bytes));
@@ -4627,7 +4676,7 @@ A.npUp=()=>formModal('Carica un file audio',[{k:'file',l:'File audio',t:'file',a
   const f=o.file;if(!f)throw new Error('Scegli un file audio.');
   const ext=((f.name.match(/\.([^.]+)$/)||[])[1]||'').toLowerCase();
   if(!AUD_EXT.includes(ext))throw new Error('Formato non riconosciuto: usa un file audio (.m4a, .mp3, .wav…).');
-  if(f.size>MAXDOC)throw new Error('Il file è troppo grande (massimo 10 MB).');
+  if(f.size>MAXAUDIO)throw new Error('Il file è troppo grande (massimo 80 MB): esportalo in m4a o mp3.');
   await npAddAudio({bytes:new Uint8Array(await f.arrayBuffer()),mime:f.type||audMime(ext),ext,titolo:o.titolo||f.name.replace(/\.[^.]+$/,''),rif:o.rif,cat:o.cat})});
 A.npEditAud=d=>{
   const m=D().docs.find(x=>x.id===d.id&&x.np);if(!m)return;
@@ -4725,7 +4774,7 @@ function fSet(){const d=D();if(!d.fSet||typeof d.fSet!=='object')d.fSet={};const
 const _mig35=migrate;
 migrate=function(d){
   const r=_mig35.apply(this,arguments);
-  ['fPag','fDoc','fList','fInv'].forEach(k=>{if(!Array.isArray(r[k]))r[k]=[]});
+  ['fPag','fDoc','fList','fInv','fModelli'].forEach(k=>{if(!Array.isArray(r[k]))r[k]=[]});
   if(!r.fSet||typeof r.fSet!=='object')r.fSet={};
   const def=fSetDef();Object.keys(def).forEach(k=>{if(r.fSet[k]===undefined)r.fSet[k]=def[k]});
   return r};
@@ -4825,6 +4874,34 @@ A.fSetReset=async()=>{
   const d=fSetDef(),s=fSet();['nome','cognome','cf','piva','indirizzo','cap','comune','prov','regioneAlbo','provAlbo','nalbo','dalbo','iban','pec','email','tel'].forEach(k=>{s[k]=d[k]});
   log('Dati dello studio azzerati (modello)','');await save();render()};
 
+
+/* ====================== modelli dei dati dello studio ====================== */
+const F_STUDIO_K=['nome','cognome','cf','piva','indirizzo','cap','comune','prov','albo','regioneAlbo','provAlbo','nalbo','dalbo','iban','pec','email','tel','logo'];
+const fModSnap=()=>{const s=fSet(),o={};F_STUDIO_K.forEach(k=>{o[k]=s[k]});return o};
+const fModFind=id=>D().fModelli.find(x=>x.id===id);
+function fModNome(txt,ex){
+  const n=String(txt||'').trim().slice(0,60);if(!n)throw new Error('Scrivi un nome per il modello.');
+  if(D().fModelli.some(x=>x.id!==(ex&&ex.id)&&x.nome.toLowerCase()===n.toLowerCase()))throw new Error('Esiste già un modello con questo nome.');return n}
+A.fModNew=()=>formModal('Salva come modello',[{k:'nome',l:'Nome del modello',req:1,h:'Per esempio «Studio Catania» o «Sostituzione estate». Salvo i dati dello studio come sono adesso.'}],{nome:''},async o=>{
+  const n=fModNome(o.nome);D().fModelli.push({id:uid(),nome:n,v:fModSnap()});log('Modello dello studio salvato','');await save();render()});
+A.fModApply=async d=>{
+  const m=fModFind(d.id);if(!m)return;
+  if(!await ask('<p>Sostituire i <b>dati dello studio</b> con quelli del modello «'+esc(m.nome)+'»? I documenti già emessi non cambiano. Se vuoi tenere i dati attuali, salvali prima come modello.</p>',{ok:'Usa il modello',danger:false}))return;
+  const s=fSet();F_STUDIO_K.forEach(k=>{if(m.v[k]!==undefined)s[k]=m.v[k]});log('Modello dello studio applicato','');await save();render();toast('Dati dello studio: modello «'+m.nome+'»')};
+A.fModUpd=async d=>{
+  const m=fModFind(d.id);if(!m)return;
+  if(!await ask('<p>Aggiornare il modello «'+esc(m.nome)+'» con i dati dello studio di adesso?</p>',{ok:'Aggiorna',danger:false}))return;
+  m.v=fModSnap();log('Modello dello studio aggiornato','');await save();render()};
+A.fModRen=d=>{const m=fModFind(d.id);if(!m)return;
+  formModal('Rinomina il modello',[{k:'nome',l:'Nome',req:1}],{nome:m.nome},async o=>{m.nome=fModNome(o.nome,m);await save();render()})};
+A.fModDel=async d=>{const m=fModFind(d.id);if(!m||!await ask('<p>Eliminare il modello «'+esc(m.nome)+'»? I dati dello studio attuali non cambiano.</p>',{ok:'Elimina'}))return;
+  D().fModelli=D().fModelli.filter(x=>x.id!==m.id);await save();render()};
+function fModHTML(){
+  const L=D().fModelli||[];
+  return '<div class="mdl"><div class="small mut"><b>Modelli</b> — salva più versioni dei dati dello studio e riapplicale con un tocco.</div>'+
+   (L.length?L.map(m=>'<div class="fitem"><div class="fi-m"><b>'+esc(m.nome)+'</b><div class="small mut">'+esc([m.v.cognome,m.v.nome].filter(x=>x&&!FPH(x)).join(' ')||'—')+(m.v.piva?' · '+esc(m.v.piva):'')+'</div></div><span class="row"><button class="btn sm pri" data-act="fModApply" data-id="'+m.id+'">Usa</button><button class="btn sm" data-act="fModUpd" data-id="'+m.id+'">Aggiorna</button><button class="btn sm" data-act="fModRen" data-id="'+m.id+'">Rinomina</button><button class="btn sm" data-act="fModDel" data-id="'+m.id+'">Elimina</button></span></div>').join(''):'<p class="small mut" style="margin:0">Nessun modello salvato.</p>')+
+   '<div class="row"><button class="btn sm" data-act="fModNew">+ Salva i dati attuali come modello</button></div></div>'}
+
 /* dati fiscali del paziente */
 A.fPat=d=>{
   const p=D().patients.find(x=>x.id===d.id);if(!p)return;const f=fPatF(p);
@@ -4846,6 +4923,41 @@ tPan=function(p){
   const f=fPatF(p),e=fPatCheck(p);
   return _tPan35.apply(this,arguments)+'<div class="card"><div class="bar"><h3 style="margin:0">Dati fiscali</h3><button class="btn sm" data-act="fPat" data-id="'+p.id+'">'+(p.fisc?'Modifica':'Aggiungi')+'</button></div>'+
    '<p class="small mut" style="margin:6px 0 0">'+esc((F_TIPI.find(x=>x[0]===f.tipo)||[])[1]||'')+(f.cf?' · '+esc(f.cf):' · codice fiscale non inserito')+(f.opp?' · <b>opposizione al Sistema TS</b>':'')+'</p>'+(e.length?'<p class="small" style="color:var(--terra);margin:4px 0 0">'+esc(e.join('; '))+'</p>':'')+'</div>'};
+
+
+/* ====================== stato dei pagamenti del paziente ====================== */
+/* una seduta è «pagata» se ha un pagamento collegato; si può segnare «non dovuta» (gratuita, prova, recupero).
+   I pagamenti non collegati a una seduta contano come anticipi: ciascuno copre una seduta da pagare. */
+function fPayStat(pid){
+  const ses=D().sessions.filter(x=>x.pid===pid&&x.data<=today());
+  const pags=fPags().filter(x=>x.pid===pid&&x.imp>0);
+  const linked=new Set(pags.filter(x=>x.sid).map(x=>x.sid));
+  let paid=0,free=0;const unpaid=[];
+  ses.forEach(x=>{if(linked.has(x.id))paid++;else if(x.nopay)free++;else unpaid.push(x)});
+  const adv=pags.filter(x=>!x.sid).length;
+  const open=Math.max(0,unpaid.length-adv);
+  return {tot:ses.length,paid,free,unpaid,adv,open,ok:open===0}}
+const _svgOk='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',_svgNo='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7v6M12 17h.01"/></svg>';
+function tlMark(kind,o){
+  if(kind==='ses'){
+    if(o.data>today())return '';
+    if(fPags().some(x=>x.sid===o.id&&x.imp>0))return '<span class="pmk ok" title="Pagamento registrato">'+_svgOk+'Pagata</span>';
+    if(o.nopay)return '<button class="pmk na" data-act="fSesNoPay" data-id="'+o.id+'" title="Segnata come non dovuta: tocca per annullare">Non dovuta</button>';
+    return '<button class="pmk no" data-act="fPagSes" data-id="'+o.id+'" title="Tocca per registrare il pagamento">'+_svgNo+'Da pagare</button>'}
+  if(kind==='app')return '<span class="pmk na">'+(o.data<today()?'Da registrare':'In programma')+'</span>';
+  return ''}
+A.fSesNoPay=async d=>{
+  const x=D().sessions.find(y=>y.id===d.id);if(!x)return;
+  if(x.nopay){x.nopay=false;log('Seduta di nuovo da pagare','',x.pid)}
+  else{if(!await ask('<p>Segnare questa seduta come <b>non dovuta</b> (gratuita, prova, recupero)? Non conterà tra quelle da pagare.</p>',{ok:'Segna non dovuta'}))return;x.nopay=true;log('Seduta segnata come non dovuta','',x.pid)}
+  await save();render()};
+const _vPatNew35=vPatNew;
+vPatNew=function(){
+  const h=_vPatNew35.apply(this,arguments),p=pat(S.pid);if(!p)return h;
+  const st=fPayStat(p.id);
+  const b=!st.tot?'':st.ok?'<span class="badge ok pstat" data-act="tab" data-t="ses" title="Tutte le sedute hanno un pagamento">'+_svgOk+'Pagamenti in regola</span>'
+   :'<span class="badge warn pstat" data-act="tab" data-t="ses" title="Sedute senza pagamento registrato">'+st.open+(st.open===1?' seduta da pagare':' sedute da pagare')+'</span>';
+  return h.replace('<div class="phd-m">','<div class="phd-m">'+b)};
 
 /* listino */
 A.fListNew=()=>fListForm(null);
@@ -4895,7 +5007,7 @@ A.fPagDel=async d=>{
   D().fPag=D().fPag.filter(x=>x.id!==it.id);log('Pagamento eliminato','',it.pid);await save();render()};
 const _tSes35=tSes;
 tSes=function(p){return _tSes35.apply(this,arguments).replace(/(<button class="btn sm" data-act="editRec" data-coll="sessions" data-id="([A-Za-z0-9_-]+)">Modifica<\/button>)/g,(m,b,id)=>{
-  const has=fPags().some(x=>x.sid===id);return (has?'<span class="badge ok" title="Pagamento registrato">Pagata</span>':'<button class="btn sm" data-act="fPagSes" data-id="'+id+'">Registra pagamento</button>')+b})};
+  const has=fPags().some(x=>x.sid===id),np=(D().sessions.find(x=>x.id===id)||{}).nopay;return (has?'<span class="badge ok" title="Pagamento registrato">Pagata</span>':np?'<button class="btn sm" data-act="fSesNoPay" data-id="'+id+'" title="Tocca per annullare">Non dovuta</button>':'<button class="btn sm" data-act="fPagSes" data-id="'+id+'">Registra pagamento</button><button class="btn sm" data-act="fSesNoPay" data-id="'+id+'">Non dovuta</button>')+b})};
 
 /* ====================== documenti ====================== */
 function fDocBuild(pid,pagIds,o){
@@ -5233,7 +5345,7 @@ function fImpTab(){
   return '<div class="card"><div class="bar"><h3 style="margin:0">Studio</h3><button class="btn sm" data-act="fSetStudio">Modifica</button></div>'+
     kv('Nome',fStudioName())+kv('Codice fiscale',s.cf)+kv('Partita IVA',s.piva)+kv('Sede',[s.indirizzo,s.cap,s.comune,s.prov].join(' '))+kv('Albo',s.albo+' · '+s.regioneAlbo+' · n. '+s.nalbo)+kv('IBAN',s.iban)+
     (inc.length?'<p class="small mut" style="margin:8px 0 0">I valori tra <code>{{…}}</code> sono segnaposto: si possono lasciare finché non hai i dati definitivi (per esempio la partita IVA).</p>':'')+
-    '<div class="row" style="margin-top:10px"><button class="btn sm" data-act="fSetReset">Prepara come modello (azzera i dati)</button></div></div>'+
+    '<div class="row" style="margin-top:10px"><button class="btn sm" data-act="fSetReset">Azzera i dati (segnaposto)</button></div>'+fModHTML()+'</div>'+
    '<div class="card"><div class="bar"><h3 style="margin:0">Regime e contributi</h3><button class="btn sm" data-act="fSetRegime">Modifica</button></div>'+
     kv('Regime',s.regime==='forfettario'?'Forfettario':'Ordinario (esente art. 10 n. 18)')+kv('Contributo integrativo ENPAP',s.enpap?s.enpapAliq+'%':'No')+kv('Bollo',fEur(s.bolloImp)+' oltre '+fEur(s.bolloSoglia)+(s.bolloAdd?', addebitato':', a mio carico'))+kv('Formato del numero',s.numFmt)+'</div>'+
    '<div class="card"><div class="bar"><h3 style="margin:0">Listino</h3><button class="btn sm" data-act="fListNew">+ Prestazione</button></div>'+
@@ -5291,7 +5403,7 @@ impApply=async function(it,made){
 
 /* sicurezza dei dati: gli ID dei nuovi elenchi vengono ripuliti come gli altri */
 (()=>{const _s=sanitizeDb;sanitizeDb=function(d){let n=_s.apply(this,arguments);
-  ['fPag','fDoc','fList','fInv'].forEach(c=>{if(Array.isArray(d[c]))d[c].forEach(x=>{if(!x||typeof x!=='object')return;['id','pid','did','sid','stornoDi','prest'].forEach(k=>{if(typeof x[k]==='string'){const v=cleanId(x[k]);if(v!==x[k]){x[k]=v;n++}}});if(typeof x.data==='string'&&x.data!==''&&!okYmd(x.data)){const m=/^(\d{4}-\d{2}-\d{2})/.exec(x.data);x.data=m?m[1]:'';n++}})});
+  ['fPag','fDoc','fList','fInv','fModelli'].forEach(c=>{if(Array.isArray(d[c]))d[c].forEach(x=>{if(!x||typeof x!=='object')return;['id','pid','did','sid','stornoDi','prest'].forEach(k=>{if(typeof x[k]==='string'){const v=cleanId(x[k]);if(v!==x[k]){x[k]=v;n++}}});if(typeof x.data==='string'&&x.data!==''&&!okYmd(x.data)){const m=/^(\d{4}-\d{2}-\d{2})/.exec(x.data);x.data=m?m[1]:'';n++}})});
   return n}})();
 
 /* ====================== Sistema TS: file nel tracciato ufficiale (730_precompilata.xsd) ====================== */
