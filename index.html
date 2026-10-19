@@ -3115,7 +3115,7 @@ function vImp(){
   return '<h1>Importa da file</h1>'+
   '<ol class="impsteps"><li><b>1</b><span>Prepara il file<small>Parti da un modello e rinominalo</small></span></li><li><b>2</b><span>Trascinalo qui<small>Anche più file insieme</small></span></li><li><b>3</b><span>Controlla e conferma<small>Nulla si scrive prima del tuo ok</small></span></li></ol>'+
   '<div class="card impdrop" id="impdrop" tabindex="0" data-act="impPick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V5M7.5 9.5L12 5l4.5 4.5M5 15v4h14v-4"/></svg><div><b>Trascina qui i file, oppure clicca per sceglierli</b><div class="small mut">Word, PDF, Excel, testo, immagini · fino a 10 MB ciascuno · il nome del file dice dove inserirlo</div></div></div>'+
-  '<input type="file" id="impf" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.md,.rtf,.odt,.ods,.jpg,.jpeg,.png" hidden>'+
+  '<input type="file" id="impf" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.md,.rtf,.odt,.ods,.jpg,.jpeg,.png,.acpk" hidden>'+
   '<div id="impList">'+impListHTML()+'</div>'+
   '<div class="card imptpl"><div class="bar"><div><h3>Modelli da scaricare</h3><p class="small mut" style="margin:2px 0 0">Uno per ogni tipo, già con il nome giusto da adattare. Compilali e rinominali anche altrove, poi importali qui.</p></div><div class="row"><button class="btn sm" data-act="tplZip" data-f="docx">Tutti in Word/Excel (.zip)</button><button class="btn sm" data-act="tplZip" data-f="txt">Tutti in testo (.zip)</button></div></div>'+
   '<div class="imgt">'+types.map(k=>{const t=IMP_TPL[k],T=IMP_T.find(x=>x[0]===k);return '<div class="img"><div class="img-h"><span class="img-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+t.ic+'"/></svg></span><div class="img-t">'+esc(T[1])+'</div></div><div class="img-d">'+esc(t.des)+'</div><code>'+esc(t.nome)+'.ext</code><div class="img-b"><span>Scarica modello:</span>'+t.fmt.map(f=>'<button class="btn sm" data-act="tplDl" data-k="'+k+'" data-f="'+f+'">'+TPL_LBL[f]+'</button>').join('')+'</div></div>'}).join('')+'</div></div>'+
@@ -3977,14 +3977,21 @@ async function pkgGo(p,f){
   S.pkgRc={batch:String(p.batch||''),ids:[]};await impLoad(files);
   (S.imp||[]).forEach(it=>{if(it.f&&it.f._pi&&pkSeenAt(it.f)&&!S.pkgRc.ids.includes(it.f._pi))S.pkgRc.ids.push(it.f._pi)});
   toast('Pacchetto aperto: '+files.length+(files.length===1?' voce':' voci')+'. Controlla l’anteprima e importa.')}
-document.addEventListener('change',async e=>{
-  const t=e.target;if(!t||t.id!=='pkgf')return;
-  const f=t.files&&t.files[0];t.value='';if(!f)return;
+async function pkgOpenFile(f){
   const text=await f.text();let h;try{h=pkHead(text)}catch(er){pkErr(er.message);return}
   if(pkIsKey(h)){try{await pkgGo(await pkOpenK(h),f)}catch(er){pkErr(er.message)}return}
   formModal('Pacchetto dal telefono (file vecchio)',[{k:'pw',l:'Password di questo archivio',t:'password',req:1}],{},async o=>{await pkgGo(await pkOpen(o.pw,text),f)},
-    '<p class="small mut">'+esc(f.name)+' · file del vecchio tipo: chiede la password. Con la chiave di trasferimento non servirà più.</p>');
-});
+    '<p class="small mut">'+esc(f.name)+' · file del vecchio tipo: chiede la password. Con la chiave di trasferimento non servirà più.</p>')}
+document.addEventListener('change',e=>{
+  const t=e.target;if(!t||t.id!=='pkgf')return;
+  const f=t.files&&t.files[0];t.value='';if(f)pkgOpenFile(f)});
+/* un pacchetto .acpk trascinato o scelto nell'Importa da file viene aperto come pacchetto */
+const _impLoad11=impLoad;
+impLoad=async function(files){
+  const L=[...files],isPk=f=>/\.acpk$/i.test((f&&f.name)||''),pk=L.filter(isPk),rest=L.filter(f=>!isPk(f));
+  if(!pk.length)return _impLoad11.apply(this,arguments);
+  if(rest.length)await _impLoad11.call(this,rest);
+  for(const f of pk)await pkgOpenFile(f)};
 const _impRun11=A.impRun;
 A.impRun=async function(){
   const pre=(S.imp||[]).filter(x=>x.f&&x.f._pk&&x.sel&&x.pl&&x.pl.st!=='err');
