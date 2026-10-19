@@ -1287,11 +1287,10 @@ html[data-eff=dark] .card,html[data-eff=dark] .ctile,html[data-eff=dark] .crow{b
 
   /* 4. Dashboard: applicare .dwarf-dashboard soltanto alla testata .hx. */
   html:root .hx.dwarf-dashboard { grid-template-columns:minmax(0,1fr) minmax(200px,285px); gap:28px; min-height:270px; padding:24px 32px; background:var(--cream); border:0; border-radius:0; }
-  html:root .hx.dwarf-dashboard>.hx-bg,html:root .hx.dwarf-dashboard .hx-rule { display:none; }
+  html:root .hx.dwarf-dashboard>.hx-bg { display:none; }
   html:root .hx.dwarf-dashboard .hx-text { grid-column:1; grid-row:1; padding:0; gap:13px; }
   html:root .hx.dwarf-dashboard .hx-text h1 { color:var(--gtx); font-size:clamp(32px,3.7vw,48px); }
   html:root .hx.dwarf-dashboard>.dwarf-mascot { grid-column:2; grid-row:1; }
-  html:root .hx.dwarf-dashboard .hx-t,html:root main.enter>.hx.dwarf-dashboard { animation:none; }
   html:root .dwarf-dashboard-columns { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:18px; align-items:start; }
   html:root .dwarf-dashboard-columns>* { min-width:0; }
   /* Non cambiare l'ordine degli avvisi clinici e backup né il testo originale. */
@@ -1447,6 +1446,19 @@ html[data-eff=dark] .card,html[data-eff=dark] .ctile,html[data-eff=dark] .crow{b
     html:root #app:not(.comp) header.top nav button { padding:9px 8px; }
     html:root #app:not(.comp) header.top .topin { gap:8px; }
   }
+}
+
+/* ---- revisione 20/10 (3) ---- */
+@media screen {
+  /* Dwarf in testata più opaco, meno acceso */
+  .dwarf-mark { filter:saturate(.5) contrast(.92) brightness(1.02); opacity:.9; }
+  html[data-eff="dark"] .dwarf-mark { filter:saturate(.5) brightness(.9); opacity:.85; }
+  /* barra in alto più presente: fondo carta, bordo e un'ombra leggera che la staccano dalla pagina */
+  html:root header.top { background:var(--card); border-bottom:1px solid var(--line); box-shadow:0 6px 18px -10px rgba(65,70,37,.28); }
+  html[data-eff="dark"] header.top { box-shadow:0 6px 18px -10px rgba(0,0,0,.6); }
+  /* marchio sulle schermate d'accesso: su un riquadro chiaro, leggibile sopra le forme di sfondo */
+  html:root .gate .gate-brand { padding:8px 14px 8px 10px; border-radius:18px; background:rgba(var(--glass),.88); border:1px solid var(--line);
+    box-shadow:0 8px 22px -14px rgba(65,70,37,.45); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
 }
 
 </style></head><body>
