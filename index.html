@@ -1049,6 +1049,71 @@ html[data-eff=dark] .lc-d.mx{color:#fff;text-shadow:0 0 3px #000,0 0 3px #000,0 
 /* v34: con otto voci la barra resta intera: voci più strette, solo icone sotto i 1260 px */
 @media(min-width:1261px){nav button{padding:8px 7px;gap:4px;font-size:14px}.topin{gap:8px}}
 
+/* ---------- v34b: Note personali, nuovo aspetto ---------- */
+.npbar{align-items:flex-start;gap:16px;flex-wrap:wrap}
+.npbar h2{margin:0}
+.npbar>div{max-width:620px}
+.nptool{display:flex;flex-direction:column;gap:10px;margin:6px 0 4px}
+.npq{width:100%;max-width:460px;padding:11px 14px 11px 40px;border:1px solid var(--line);border-radius:999px;background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8470' stroke-width='1.8' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M16 16l4 4'/%3E%3C/svg%3E") 13px 50%/18px no-repeat;color:var(--ink);font:inherit}
+.npchips{display:flex;flex-wrap:wrap;gap:8px}
+.npchip{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
+.npchip small{color:var(--mut);font-weight:500}
+.npchip i{width:9px;height:9px;border-radius:50%;background:var(--g,#5B6B3A)}
+.npchip.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.npchip.on small{color:inherit;opacity:.75}
+.npchip.add{border-style:dashed;color:var(--mut)}
+.npsec{margin:22px 0 10px;display:flex;align-items:baseline;gap:8px}
+.npsec small{color:var(--mut);font-weight:500;font-size:.8em}
+.npgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.npc{display:flex;flex-direction:column;gap:6px;padding:16px 18px;border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:0 1px 2px rgba(60,50,30,.05)}
+.npc-h{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.npc-h b{font-size:1.02em;line-height:1.3}
+.npc-t{white-space:pre-wrap;overflow-wrap:anywhere;max-height:9.5em;overflow:hidden;color:var(--ink);opacity:.88;font-size:.95em;-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
+.npc-a{display:flex;gap:8px;margin-top:auto;padding-top:6px}
+.npg{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600;color:#fff;background:var(--g,#5B6B3A);white-space:nowrap}
+.nplist{padding:4px 18px}
+.npr{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.npr:first-child{border-top:0}
+.npr-i{flex:none;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--green,#4a5230);color:#F1E4CF}
+.npr-i svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.npr-m{flex:1;min-width:180px}
+.npempty{color:var(--mut);padding:18px;text-align:center}
+.npgr{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--line)}
+.npgadd{display:flex;gap:10px;align-items:flex-end;margin-top:12px}
+.npgadd .fld{flex:1;margin:0}
+@media(max-width:700px){.npgrid{grid-template-columns:1fr}.npbar .row{width:100%}}
+.npbar .btn{display:inline-flex;align-items:center;gap:8px}
+.npbar .btn svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.npgrid{align-items:start}
+
+/* v35 · Fiscale */
+.fbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.fbar h2{margin:0}
+.fyear{gap:8px;align-items:center}.fyear b{min-width:44px;text-align:center}
+.ftabs{display:flex;gap:6px;overflow-x:auto;padding:2px 0 12px;margin-bottom:6px;scrollbar-width:none}.ftabs::-webkit-scrollbar{display:none}
+.ftabs .npchip{white-space:nowrap;flex:0 0 auto}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;align-items:start}
+.fkpi h3{margin:0 0 10px}
+.frow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.frow:last-child{border-bottom:0}.frow b{text-align:right;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.fitem{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}.fitem:last-child{border-bottom:0}
+.fitem>b{flex:0 0 38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:16px;background:var(--ok2);color:var(--ok)}
+.fitem.warn>b{background:var(--warn2);color:var(--warn)}
+.fitem>span{flex:1;min-width:0;font-size:14px}
+.ftab{padding:0;overflow-x:auto;margin-bottom:14px}
+.ftab table{width:100%;border-collapse:collapse;font-size:14px}
+.ftab th{text-align:left;font-size:12px;color:var(--mut);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+.ftab td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.ftab tr:last-child td{border-bottom:0}
+.ftab .r{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.ftab tr.fe td{background:var(--bad2)}
+.ftab tr.ftot td{font-weight:700;background:var(--paper)}
+.fpend{margin-bottom:14px}
+.fph{color:var(--terra-dark);font-style:italic}
+.fbar .row,.bar .row{gap:8px;flex-wrap:wrap}
+.banner ul{margin:6px 0 6px 18px;padding:0}
+@media(max-width:700px){.fgrid{grid-template-columns:1fr}.ftab th,.ftab td{padding:9px 8px}}
+
 /* tema scuro */
 html[data-eff=dark]{--glass:32,36,26;--glass2:19,21,14;--green:#3B4122;--green-deep:#2A2E17;--green-soft:#7F8A56;--gtx:#CBD39E;--cream:#13150E;--cream-2:#1C1F14;--paper:#1A1D13;--card:#20241A;--hero:#1E2216;--terra:#D27C58;--terra-dark:#E5A07F;--terra-light:#C0724F;--terra-bg:#3A261C;--ink:#EEE7D7;--body:#D3CCBA;--mut:#B5AB96;--line:#363B2B;--sand:#4C5239;--pri2:#2C3220;--ok:#BDD596;--ok2:#27311B;--warn:#EBC57E;--warn2:#3A2F15;--bad:#F3A898;--bad2:#40211B;color-scheme:dark}
 html[data-eff=dark] body{background:var(--cream);color:var(--ink)}
@@ -1336,8 +1401,8 @@ function render(){
   if(S.screen==='error'){r.innerHTML=vError();return}
   if(S.screen==='setup'){r.innerHTML=vSetup();return}
   if(S.screen==='lock'){r.innerHTML=vLock();return}
-  const IC={dash:'M4 13h6V4H4zM14 20h6V11h-6zM4 20h6v-3H4zM14 8h6V4h-6z',pats:'M9 11a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM2.5 20c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6M16 4.3a3.5 3.5 0 010 6.4M18.2 14.3c2 .8 3.3 2.7 3.3 5.7',agenda:'M5 5h14v15H5zM5 10h14M9 3v4M15 3v4',np:'M7 3h10v18H7zM10 8h4M10 12h4M10 16h2',imp:'M12 16V5M7.5 9.5L12 5l4.5 4.5M5 15v4h14v-4',mod:'M4 6l8 6 8-6M4 6v12h16V6M4 6h16',sec:'M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z',set:'M4 7h8.8M17.2 7H20M4 17h2.8M11.2 17H20M15 4.8a2.2 2.2 0 110 4.4 2.2 2.2 0 010-4.4zM9 14.8a2.2 2.2 0 110 4.4 2.2 2.2 0 010-4.4z'};
-  const nav=[['dash','Dashboard','Home'],['pats','Pazienti'],['agenda','Agenda'],['np','Note'],['imp','Importa'],['mod','Modelli'],['sec','Sicurezza'],['set','Impostazioni','Opzioni']];
+  const IC={dash:'M4 13h6V4H4zM14 20h6V11h-6zM4 20h6v-3H4zM14 8h6V4h-6z',pats:'M9 11a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM2.5 20c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6M16 4.3a3.5 3.5 0 010 6.4M18.2 14.3c2 .8 3.3 2.7 3.3 5.7',agenda:'M5 5h14v15H5zM5 10h14M9 3v4M15 3v4',np:'M7 3h10v18H7zM10 8h4M10 12h4M10 16h2',fis:'M12 3v18M16.5 7.5c-1-1-2.5-1.5-4.5-1.5-2.5 0-4 1.2-4 3s1.5 2.6 4 3 4 1.2 4 3-1.5 3-4 3c-2 0-3.6-.6-4.8-1.8',imp:'M12 16V5M7.5 9.5L12 5l4.5 4.5M5 15v4h14v-4',mod:'M4 6l8 6 8-6M4 6v12h16V6M4 6h16',sec:'M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z',set:'M4 7h8.8M17.2 7H20M4 17h2.8M11.2 17H20M15 4.8a2.2 2.2 0 110 4.4 2.2 2.2 0 010-4.4zM9 14.8a2.2 2.2 0 110 4.4 2.2 2.2 0 010-4.4z'};
+  const nav=[['dash','Dashboard','Home'],['pats','Pazienti'],['agenda','Agenda'],['np','Note'],['fis','Fiscale'],['imp','Importa'],['mod','Modelli'],['sec','Sicurezza'],['set','Impostazioni','Opzioni']];
   const cur=S.view==='pat'?'pats':S.view,key=S.view+'|'+(S.pid||''),enter=key!==S._k;S._k=key;
   r.innerHTML='<div id="app"><header class="top"><div class="topin"><a class="brand" href="#" data-act="go" data-v="dash" aria-label="Vai alla dashboard">'+LOGO+'<span class="brand-t"><span class="brand-name">Archivio clinico</span><span class="brand-role">Simone Cascone · Psicologo</span></span></a><nav aria-label="Navigazione principale">'+
     nav.map(n=>'<button class="'+(cur===n[0]?'on':'')+'" data-act="go" data-v="'+n[0]+'"'+(cur===n[0]?' aria-current="page"':'')+'><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+IC[n[0]]+'"/></svg><span class="nvl">'+n[1]+'</span><span class="nvs" aria-hidden="true">'+(n[2]||n[1])+'</span></button>').join('')+
@@ -2679,6 +2744,12 @@ const PDFW=(()=>{
         y=Math.max(...cy.slice(0,ci+1))+4}
       else if(b.t==='sign'){
         const cells=b.cells;for(let i=0;i<cells.length;i+=2){need(48);y+=34;[0,1].forEach(k=>{if(cells[i+k]){const x=M+k*(CW/2+8),w=CW/2-8;LN(x,y,x+w,y,.7,C.ink);T(x,y+10,cells[i+k],{size:7.8,color:C.mut})}});y+=14}}
+      else if(b.t==='tab'){
+        const ws=b.w,al=b.a||[],sz=b.size||9,lh=12;
+        const row=(r,bold)=>{const cells=r.map((c,i)=>wrap(c,CW*ws[i]-8,sz,bold));const h=Math.max(...cells.map(c=>c.length))*lh+7;need(h);let x=M;
+          cells.forEach((ls,i)=>{ls.forEach((l,k)=>{if(!l)return;const w=tw(l,sz,bold),xx=al[i]==='r'?x+CW*ws[i]-6-w:x;T(xx,y+11+k*lh,l,{size:sz,bold:bold,color:bold?C.green:C.ink})});x+=CW*ws[i]});
+          y+=h;LN(M,y,PW-M,y,bold?.7:.4,bold?C.sand:C.line)};
+        if(b.head)row(b.head,true);b.r.forEach((r,i)=>row(r,!!b.boldLast&&i===b.r.length-1));y+=2}
       else if(b.t==='gap')y+=b.n||8;
     });
     // piè di pagina
@@ -3732,7 +3803,10 @@ const _mig11=migrate;
 migrate=function(d){
   const r=_mig11.apply(this,arguments);
   if(!Array.isArray(r.out))r.out=[];
-  if(!Array.isArray(r.npIn))r.npIn=[];
+  if(!Array.isArray(r.notes))r.notes=[];
+  if(!Array.isArray(r.npCats))r.npCats=[];
+  if(Array.isArray(r.npIn)&&r.npIn.length){r.npIn.forEach(x=>{if(x&&typeof x==='object')r.notes.push({id:x.id||uid(),rif:x.rif||'',data:x.data||today(),titolo:x.titolo||'',testo:x.t||'',cat:'',h:x.h||''})})}
+  delete r.npIn;
   if(!r.plist||typeof r.plist!=='object')r.plist={at:'',pz:[],ag:[]};
   return r};
 /* il telefono parte in modalità raccolta se l'archivio è nuovo e lo schermo è stretto */
@@ -4199,9 +4273,10 @@ function sanitizeDb(d){
     ['kw'].forEach(k=>{if(Array.isArray(x[k]))x[k]=x[k].map(v=>typeof v==='string'?cleanId(v):v)});
     if(typeof x.cod==='string'&&x.cod!==''&&!/^PZ-\d{1,6}$/.test(x.cod)){x.cod='';fixed++}
   };
-  ['patients','episodes','sessions','docs','scales','consents','events','dx','appts','tests','instr','tpls','views','formaz','inbox','customScales','vocab','out','npIn'].forEach(c=>{if(Array.isArray(d[c]))d[c].forEach(fix)});
+  ['patients','episodes','sessions','docs','scales','consents','events','dx','appts','tests','instr','tpls','views','formaz','inbox','customScales','vocab','out','notes','npCats'].forEach(c=>{if(Array.isArray(d[c]))d[c].forEach(fix)});
   if(Array.isArray(d.out))d.out.forEach(it=>{if(it&&it.v)fix(it.v);if(it&&it.photo)fix(it.photo)});
   if(d.prot&&Array.isArray(d.prot.items))d.prot.items.forEach(fix);
+  [].concat(d.notes||[],(d.docs||[]).filter(x=>x&&x.np)).forEach(x=>{if(x&&typeof x.cat==='string'){const c=cleanId(x.cat);if(c!==x.cat){x.cat=c;fixed++}}});
   return fixed}
 const _mig32=migrate;
 migrate=function(d){const r=_mig32.apply(this,arguments);try{const n=sanitizeDb(r);if(n&&r.audit)r.audit.unshift({t:new Date().toISOString(),a:'Dati corretti all’apertura',d:n+' campi non validi',pid:null})}catch(e){}return r};
@@ -4403,7 +4478,7 @@ async function recStart(){
 A.recSave=async()=>{
   if(!REC.blob||!REC.go)return;recErr('');
   const sv=$('#rec-sv');if(sv)sv.disabled=true;
-  const r={blob:REC.blob,mime:REC.mime,ext:recExt(REC.mime),sec:REC.sec,titolo:(($('#rec-ti')||{}).value||'').trim(),pz:(($('#rec-pz')||{}).value||'').trim()};
+  const r={blob:REC.blob,mime:REC.mime,ext:recExt(REC.mime),sec:REC.sec,titolo:(($('#rec-ti')||{}).value||'').trim(),pz:(($('#rec-pz')||{}).value||'').trim(),cat:(($('#rec-cat')||{}).value||'')};
   try{await REC.go(r);recFree(true);closeModal()}
   catch(e){recErr(e.message||String(e));if(sv)sv.disabled=false}};
 function recModal(o){
@@ -4466,11 +4541,11 @@ impPlan=function(it,all){
   const p=it.cod?act().find(x=>x.cod===it.cod):null,date=it.dates[0]||today(),titolo=[...it.nameT,...it.descT].join(' ').trim().slice(0,80),txt=String(it.text||'').trim();
   if(it.cod&&!p)P.notes.push('Il paziente '+it.cod+' non è in questo archivio: verrà salvata senza collegamento.');
   if(isN&&!txt)return fail('Il file è vuoto.');
-  if(isN&&D().npIn.some(x=>x.h&&x.h===it.hash)){P.skip=true;P.notes.push('Già in attesa nelle Note personali: non è selezionata.')}
+  if(isN&&D().notes.some(x=>x.h&&x.h===it.hash)){P.skip=true;P.notes.push('Questa nota è già nelle Note personali: non è selezionata.')}
   if(!isN&&D().docs.some(d=>d.np&&d.hash===it.hash)){P.skip=true;P.notes.push('Questa registrazione è già nelle Note personali: non è selezionata.')}
   try{const s=pkSeenAt(it.f);if(s){P.skip=true;P.notes.push('Già importata dal telefono il '+fd(s)+': non è selezionata.')}}catch(e){}
   P.rec={rif:p?p.id:'',date,titolo,txt};P.who=p?nm(p):'';
-  P.sum=(isN?'Nota personale':'Memo vocale')+(titolo?' «'+titolo+'»':'')+' del '+fd(date)+(p?' · '+nm(p):'')+(isN?' → Note personali (si apre con la seconda password)':' → Note personali, registrazioni');
+  P.sum=(isN?'Nota personale':'Memo vocale')+(titolo?' «'+titolo+'»':'')+' del '+fd(date)+(p?' · '+nm(p):'')+(isN?' → Note personali, note scritte':' → Note personali, registrazioni');
   if(P.notes.length)P.st='warn';
   return P};
 const _apply34=impApply;
@@ -4478,13 +4553,18 @@ impApply=async function(it,made){
   if(it.type!=='notap'&&it.type!=='memo')return _apply34.apply(this,arguments);
   const R=it.pl.rec;
   if(it.type==='notap'){
-    D().npIn.push({id:uid(),rif:R.rif,data:R.date,titolo:R.titolo,t:R.txt,h:it.hash});
-    log('Nota personale ricevuta dal telefono','',R.rif);return 'Messa in attesa nelle Note personali: si aggiunge quando le sblocchi con la seconda password'}
+    D().notes.push({id:uid(),rif:R.rif,data:R.date,titolo:R.titolo,testo:R.txt,cat:'',h:it.hash});
+    log('Nota personale ricevuta dal telefono','',R.rif);return 'Nota aggiunta alle Note personali'}
   const buf=await it.f.arrayBuffer();
   await npAddAudio({bytes:new Uint8Array(buf),mime:it.f.type||audMime(it.ext),ext:it.ext,titolo:R.titolo,rif:R.rif,date:R.date,sec:0,hash:it.hash,quiet:true});
   log('Memo vocale ricevuto dal telefono','',R.rif);return 'Registrazione aggiunta alle Note personali'};
 
-/* ---------- Mac: vista «Note personali» ---------- */
+/* ---------- Mac: vista «Note personali» (note scritte e registrazioni, con gruppi) ---------- */
+const NPCOL=['#5B6B3A','#B5553A','#3F6E8C','#8A6BA6','#B58A2E','#5E8C7B'];
+const NPSUG=['Supervisione','Riflessioni','Idee','Formazione'];
+const npCats=()=>D().npCats||(D().npCats=[]);
+const npCat=id=>npCats().find(c=>c.id===id);
+const npColor=c=>NPCOL.includes(c&&c.col)?c.col:NPCOL[0];
 const npAud=()=>D().docs.filter(d=>d.np).sort((a,b)=>(b.dataReg||'').localeCompare(a.dataReg||'')||(b.dataCarico||'').localeCompare(a.dataCarico||''));
 const npWho=rif=>{const p=rif?D().patients.find(x=>x.id===rif):null;return p?nm(p):''};
 async function npAddAudio(o){
@@ -4493,50 +4573,66 @@ async function npAddAudio(o){
   const id=uid(),ext=String(o.ext||'m4a').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,5)||'m4a',d=o.date||today();
   const nome=(fz(o.titolo||'')||'Registrazione')+' – '+d+'.'+ext;
   await idbPut('docs',id,await encB(S.key,bytes));
-  D().docs.push({id,pid:'',rif:o.rif||'',nome,tipo:'registrazione',np:true,audio:true,titolo:o.titolo||'',dataDoc:d,dataCarico:today(),dataReg:d,size:bytes.length,mime:String(o.mime||audMime(ext)).split(';')[0],hash:o.hash||await sha256(bytes),testo:'',sec:o.sec||0});
+  D().docs.push({id,pid:'',rif:o.rif||'',cat:o.cat||'',nome,tipo:'registrazione',np:true,audio:true,titolo:o.titolo||'',dataDoc:d,dataCarico:today(),dataReg:d,size:bytes.length,mime:String(o.mime||audMime(ext)).split(';')[0],hash:o.hash||await sha256(bytes),testo:'',sec:o.sec||0});
   if(!o.quiet){log('Registrazione personale aggiunta','');await save();render()}}
-const npPz=()=>'<label class="fld"><span>Paziente (facoltativo)</span><select id="rec-pz"><option value="">— nessuno —</option>'+act().sort((a,b)=>nm(a).localeCompare(nm(b))).map(p=>'<option value="'+esc(p.id)+'">'+esc(nm(p))+'</option>').join('')+'</select></label>';
+const npPatOpts=()=>act().slice().sort((a,b)=>nm(a).localeCompare(nm(b)));
+const npCatSel=(id,sel)=>'<label class="fld"><span>Gruppo (facoltativo)</span><select id="'+id+'"><option value="">— nessuno —</option>'+npCats().map(c=>'<option value="'+esc(c.id)+'"'+(c.id===sel?' selected':'')+'>'+esc(c.nome)+'</option>').join('')+'</select></label>';
+const npPz=()=>npCatSel('rec-cat','')+'<label class="fld"><span>Paziente (facoltativo)</span><select id="rec-pz"><option value="">— nessuno —</option>'+npPatOpts().map(p=>'<option value="'+esc(p.id)+'">'+esc(nm(p))+'</option>').join('')+'</select></label>';
+const npBadge=id=>{const c=npCat(id);return c?'<span class="npg" style="--g:'+npColor(c)+'">'+esc(c.nome)+'</span>':''};
+const npMatch=(cat,txt)=>{const f=S.npc||'',q=(S.npq||'').trim().toLowerCase();
+  if(f==='-'&&cat)return false;if(f&&f!=='-'&&cat!==f)return false;
+  return !q||txt.toLowerCase().includes(q)};
+function npNoteCard(n){
+  const w=npWho(n.rif),head=n.titolo||oneL(n.testo||'').slice(0,60)||'Nota';
+  return '<article class="npc"><div class="npc-h"><b>'+esc(head)+'</b>'+npBadge(n.cat)+'</div><div class="npc-m small mut">'+esc(fd(n.data))+(w?' · '+esc(w):'')+'</div>'+
+   (n.titolo?'<div class="npc-t">'+esc(n.testo||'')+'</div>':(oneL(n.testo||'').length>60?'<div class="npc-t">'+esc(n.testo||'')+'</div>':''))+
+   '<div class="npc-a"><button class="btn sm" data-act="npEdit" data-id="'+n.id+'">Modifica</button><button class="btn sm" data-act="npDelNote" data-id="'+n.id+'">Elimina</button></div></article>'}
 function npAudRow(d){
   const w=npWho(d.rif);
-  return '<div class="npr"><div class="npr-m"><b>'+esc(d.titolo||'Registrazione')+'</b><div class="small mut">'+esc(fd(d.dataReg||d.dataDoc))+(d.sec?' · '+mmss(d.sec):'')+' · '+Math.max(1,Math.round(d.size/1024))+' KB'+(w?' · '+esc(w):'')+'</div></div>'+
-   '<div class="row"><button class="btn sm pri" data-act="playAudio" data-id="'+d.id+'">Ascolta</button><button class="btn sm" data-act="npDl" data-id="'+d.id+'">Scarica</button><button class="btn sm" data-act="npDel" data-id="'+d.id+'">Elimina</button></div></div>'}
+  return '<div class="npr"><span class="npr-i">'+svgI(micIc)+'</span><div class="npr-m"><b>'+esc(d.titolo||'Registrazione')+'</b> '+npBadge(d.cat)+'<div class="small mut">'+esc(fd(d.dataReg||d.dataDoc))+(d.sec?' · '+mmss(d.sec):'')+' · '+Math.max(1,Math.round(d.size/1024))+' KB'+(w?' · '+esc(w):'')+'</div></div>'+
+   '<div class="row"><button class="btn sm pri" data-act="playAudio" data-id="'+d.id+'">Ascolta</button><button class="btn sm" data-act="npEditAud" data-id="'+d.id+'">Modifica</button><button class="btn sm" data-act="npDl" data-id="'+d.id+'">Scarica</button><button class="btn sm" data-act="npDel" data-id="'+d.id+'">Elimina</button></div></div>'}
+function npChips(){
+  const N=D().notes,A_=npAud(),all=N.length+A_.length,cnt=id=>N.filter(n=>(n.cat||'')===id).length+A_.filter(d=>(d.cat||'')===id).length,f=S.npc||'';
+  const chip=(v,l,n,col)=>'<button class="npchip'+(f===v?' on':'')+'" data-act="npCat" data-c="'+esc(v)+'"'+(col?' style="--g:'+col+'"':'')+'>'+(col?'<i></i>':'')+esc(l)+' <small>'+n+'</small></button>';
+  return chip('','Tutte',all)+npCats().map(c=>chip(c.id,c.nome,cnt(c.id),npColor(c))).join('')+(npCats().length?chip('-','Senza gruppo',N.filter(n=>!n.cat).length+A_.filter(d=>!d.cat).length):'')+'<button class="npchip add" data-act="npGroups">'+(npCats().length?'Gestisci gruppi':'+ Crea gruppi')+'</button>'}
+function npBody(){
+  const N=D().notes.filter(n=>npMatch(n.cat||'',[n.titolo,n.testo,npWho(n.rif)].join(' '))).sort((a,b)=>(b.data||'').localeCompare(a.data||'')),
+    A_=npAud().filter(d=>npMatch(d.cat||'',[d.titolo,npWho(d.rif)].join(' ')));
+  return '<h3 class="npsec">Note scritte <small>'+N.length+'</small></h3>'+(N.length?'<div class="npgrid">'+N.map(npNoteCard).join('')+'</div>':'<div class="card npempty">'+(D().notes.length?'Nessuna nota corrisponde alla ricerca.':'Nessuna nota scritta. Con <b>+ Nota</b> ne crei una; dal telefono arrivano qui le «Note personali» che esporti.')+'</div>')+
+   '<h3 class="npsec">Registrazioni vocali <small>'+A_.length+'</small></h3>'+(A_.length?'<div class="card nplist">'+A_.map(npAudRow).join('')+'</div>':'<div class="card npempty">'+(npAud().length?'Nessuna registrazione corrisponde alla ricerca.':'Nessuna registrazione. Con <b>Registra</b> parli nel microfono; qui arrivano anche i memo vocali del telefono.')+'</div>')}
 function vNP(){
-  const P=D().prot,has=!!P.salt,pend=D().npIn.length,AU=npAud();
-  let h='<div class="bar"><h2>Note personali</h2></div><p class="rule-note small">Appunti e registrazioni tuoi, <b>separati dalla cartella clinica</b>: supervisione, riflessioni, idee. Restano fuori dal fascicolo, dalla ricerca, dalle statistiche e dalle esportazioni. Non vi vanno informazioni necessarie alla cura: quelle stanno nella cartella del paziente.</p>';
-  h+='<div class="card"><div class="bar"><h3 style="margin:0">Note scritte</h3>'+(S.key2?'<span class="row"><button class="btn sm pri" data-act="npNew">+ Nota</button><button class="btn sm" data-act="lockProt">Blocca</button></span>':'')+'</div>';
-  if(!S.key2){
-    h+='<p class="mut small">Cifrate con una <b>seconda password</b>, diversa da quella dell’archivio.'+(pend?' Dal telefono ne sono arrivate <b>'+pend+'</b>: compariranno qui appena le sblocchi.':'')+'</p><button class="btn" data-act="unlockProt">'+(has?'Sblocca':'Imposta la seconda password')+'</button>'}
-  else{
-    const L=P.items.slice().sort((a,b)=>(b.data||'').localeCompare(a.data||''));
-    h+=(L.length?L.map(i=>{const w=npWho(i.pid);return '<div class="npn"><div class="npn-h"><b>'+esc(fd(i.data))+'</b>'+(w?' <span class="badge">'+esc(w)+'</span>':'')+' <button class="btn sm" data-act="npEdit" data-id="'+i.id+'">Modifica</button> <button class="btn sm" data-act="npDelNote" data-id="'+i.id+'">Elimina</button></div><div class="note">'+esc(S.plain[i.id]||'')+'</div></div>'}).join(''):'<p class="mut">Nessuna nota scritta.</p>')+'<p class="mut small">Si bloccano da sole dopo 3 minuti.</p>'}
-  h+='</div>';
-  h+='<div class="card"><div class="bar"><h3 style="margin:0">Registrazioni vocali</h3><span class="row"><button class="btn sm pri" data-act="npRec">Registra</button><button class="btn sm" data-act="npUp">Carica un file</button></span></div>'+
-   (AU.length?AU.map(npAudRow).join(''):'<p class="mut">Nessuna registrazione. Qui arrivano anche i memo vocali registrati dal telefono.</p>')+
-   '<p class="mut small">Le registrazioni restano cifrate nell’archivio, come i documenti, e rientrano nelle copie di sicurezza. Se le scarichi, il file esce dalla cifratura.</p></div>';
-  return h}
+  return '<div class="bar npbar"><div><h2>Note personali</h2><p class="small mut" style="margin:2px 0 0">Appunti e registrazioni tuoi, separati dalla cartella clinica: non compaiono nel fascicolo, nella ricerca, nelle statistiche né nelle esportazioni. Cifrati insieme all’archivio.</p></div>'+
+   '<span class="row"><button class="btn pri" data-act="npNew">+ Nota</button><button class="btn" data-act="npRec">'+svgI(micIc)+'Registra</button><button class="btn" data-act="npUp">Carica audio</button></span></div>'+
+   '<div class="nptool"><input type="search" id="npq" class="npq" placeholder="Cerca nelle note e nelle registrazioni" value="'+esc(S.npq||'')+'" aria-label="Cerca" autocomplete="off"><div class="npchips" id="npchips">'+npChips()+'</div></div><div id="npbody">'+npBody()+'</div>'}
 const _vMain34=vMain;
 vMain=function(){return S.view==='np'?vNP():_vMain34.apply(this,arguments)};
+function npPaint(){const b=$('#npbody'),c=$('#npchips');if(b)b.innerHTML=npBody();if(c)c.innerHTML=npChips()}
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='npq'){S.npq=e.target.value;npPaint()}});
+A.npCat=d=>{S.npc=d.c||'';npPaint()};
 function npForm(it){
-  const pats=act().sort((a,b)=>nm(a).localeCompare(nm(b))),o=[['','— nessuno —']].concat(pats.map(p=>[p.id,nm(p)]));
-  formModal(it?'Modifica nota personale':'Nuova nota personale',[{k:'data',l:'Data',t:'date',req:1},{k:'pid',l:'Paziente (facoltativo)',t:'select',o},{k:'t',l:'Nota',t:'textarea',r:9,req:1}],it?{data:it.data,pid:it.pid||'',t:S.plain[it.id]}:{data:today(),pid:''},async v=>{
-    if(!S.key2)throw new Error('Le note sono bloccate: sbloccale di nuovo.');
-    const e=await encJ(S.key2,{t:v.t});
-    if(it){Object.assign(it,pk(e),{data:v.data,pid:v.pid||''});S.plain[it.id]=v.t}
-    else{const n=Object.assign({id:uid(),pid:v.pid||'',data:v.data},pk(e));D().prot.items.push(n);S.plain[n.id]=v.t}
-    log('Nota personale '+(it?'modificata':'creata'),'',v.pid||'');await save();render()})}
+  const o=[['','— nessuno —']].concat(npPatOpts().map(p=>[p.id,nm(p)])),g=[['','— nessuno —']].concat(npCats().map(c=>[c.id,c.nome]));
+  formModal(it?'Modifica nota':'Nuova nota',[{k:'titolo',l:'Titolo (facoltativo)'},{k:'data',l:'Data',t:'date',req:1},{k:'cat',l:'Gruppo (facoltativo)',t:'select',o:g},{k:'rif',l:'Paziente (facoltativo)',t:'select',o},{k:'testo',l:'Nota',t:'textarea',r:9,req:1}],
+    it?{titolo:it.titolo||'',data:it.data,cat:it.cat||'',rif:it.rif||'',testo:it.testo}:{data:today(),cat:S.npc&&S.npc!=='-'?S.npc:'',rif:'',titolo:''},async v=>{
+    const rec={titolo:v.titolo||'',data:v.data,cat:v.cat||'',rif:v.rif||'',testo:v.testo};
+    if(it)Object.assign(it,rec);else D().notes.push(Object.assign({id:uid()},rec));
+    log('Nota personale '+(it?'modificata':'creata'),'');await save();render()})}
 A.npNew=()=>npForm(null);
-A.npEdit=d=>{const it=D().prot.items.find(x=>x.id===d.id);if(it&&S.key2)npForm(it)};
+A.npEdit=d=>{const it=D().notes.find(x=>x.id===d.id);if(it)npForm(it)};
 A.npDelNote=async d=>{
-  const it=D().prot.items.find(x=>x.id===d.id);if(!it||!S.key2)return;
-  if(!await ask('<p>Eliminare questa nota personale? <b>Non si può annullare.</b></p>',{ok:'Elimina'}))return;
-  D().prot.items=D().prot.items.filter(x=>x.id!==it.id);delete S.plain[it.id];log('Nota personale eliminata','',it.pid||'');await save();render()};
-A.npRec=()=>recModal({title:'Nuova registrazione',pzHTML:npPz(),onSave:r=>npAddAudio({blob:r.blob,mime:r.mime,ext:r.ext,titolo:r.titolo,rif:r.pz,sec:r.sec})});
-A.npUp=()=>formModal('Carica un file audio',[{k:'file',l:'File audio',t:'file',accept:'audio/*,.m4a,.mp3,.wav,.ogg,.webm,.aac',req:1},{k:'titolo',l:'Titolo (facoltativo)'},{k:'rif',l:'Paziente (facoltativo)',t:'select',o:[['','— nessuno —']].concat(act().map(p=>[p.id,nm(p)]))}],{},async o=>{
+  const it=D().notes.find(x=>x.id===d.id);if(!it)return;
+  if(!await ask('<p>Eliminare questa nota? <b>Non si può annullare.</b></p>',{ok:'Elimina'}))return;
+  D().notes=D().notes.filter(x=>x.id!==it.id);log('Nota personale eliminata','');await save();render()};
+A.npRec=()=>recModal({title:'Nuova registrazione',pzHTML:npPz(),onSave:r=>npAddAudio({blob:r.blob,mime:r.mime,ext:r.ext,titolo:r.titolo,rif:r.pz,cat:r.cat,sec:r.sec})});
+A.npUp=()=>formModal('Carica un file audio',[{k:'file',l:'File audio',t:'file',accept:'audio/*,.m4a,.mp3,.wav,.ogg,.webm,.aac',req:1},{k:'titolo',l:'Titolo (facoltativo)'},{k:'cat',l:'Gruppo (facoltativo)',t:'select',o:[['','— nessuno —']].concat(npCats().map(c=>[c.id,c.nome]))},{k:'rif',l:'Paziente (facoltativo)',t:'select',o:[['','— nessuno —']].concat(npPatOpts().map(p=>[p.id,nm(p)]))}],{cat:S.npc&&S.npc!=='-'?S.npc:''},async o=>{
   const f=o.file;if(!f)throw new Error('Scegli un file audio.');
   const ext=((f.name.match(/\.([^.]+)$/)||[])[1]||'').toLowerCase();
   if(!AUD_EXT.includes(ext))throw new Error('Formato non riconosciuto: usa un file audio (.m4a, .mp3, .wav…).');
   if(f.size>MAXDOC)throw new Error('Il file è troppo grande (massimo 10 MB).');
-  await npAddAudio({bytes:new Uint8Array(await f.arrayBuffer()),mime:f.type||audMime(ext),ext,titolo:o.titolo||f.name.replace(/\.[^.]+$/,''),rif:o.rif})});
+  await npAddAudio({bytes:new Uint8Array(await f.arrayBuffer()),mime:f.type||audMime(ext),ext,titolo:o.titolo||f.name.replace(/\.[^.]+$/,''),rif:o.rif,cat:o.cat})});
+A.npEditAud=d=>{
+  const m=D().docs.find(x=>x.id===d.id&&x.np);if(!m)return;
+  formModal('Modifica registrazione',[{k:'titolo',l:'Titolo'},{k:'cat',l:'Gruppo (facoltativo)',t:'select',o:[['','— nessuno —']].concat(npCats().map(c=>[c.id,c.nome]))},{k:'rif',l:'Paziente (facoltativo)',t:'select',o:[['','— nessuno —']].concat(npPatOpts().map(p=>[p.id,nm(p)]))}],{titolo:m.titolo||'',cat:m.cat||'',rif:m.rif||''},async o=>{
+    m.titolo=o.titolo||'';m.cat=o.cat||'';m.rif=o.rif||'';log('Registrazione personale modificata','');await save();render()})};
 A.npDl=async d=>{
   if(!await ask('<p>Il file scaricato <b>esce dall’archivio cifrato</b> e resta sul disco finché non lo cancelli. Procedere?</p>',{ok:'Scarica',danger:false}))return;
   return A.getDoc(d)};
@@ -4545,19 +4641,619 @@ A.npDel=async d=>{
   if(!await ask('<p>Eliminare definitivamente questa registrazione? <b>Non si può annullare.</b></p>',{ok:'Elimina'}))return;
   try{await idbDel('docs',m.id)}catch(e){}
   D().docs=D().docs.filter(x=>x.id!==m.id);log('Registrazione personale eliminata','');await save();render()};
-/* le note arrivate dal telefono entrano tra quelle scritte appena la seconda password è sbloccata */
-async function npMigrate(){
-  if(!S.key2||!S.plain||!D().npIn.length)return;
-  const P=D().prot,n=D().npIn.length;
-  for(const x of D().npIn){
-    const txt=(x.titolo?x.titolo+'\n\n':'')+(x.t||''),e=await encJ(S.key2,{t:txt}),it=Object.assign({id:uid(),pid:x.rif||'',data:x.data||today()},pk(e));
-    P.items.push(it);S.plain[it.id]=txt}
-  D().npIn=[];log('Note personali dal telefono aggiunte',String(n));await save();render()}
-const _render34=render;
-render=function(){
-  const r=_render34.apply(this,arguments);
-  try{if(S.key2&&D().npIn&&D().npIn.length&&!S._npm){S._npm=1;npMigrate().catch(()=>{}).then(()=>{S._npm=0})}}catch(e){}
+/* gruppi */
+function npGroupsHTML(){
+  const N=D().notes,A_=npAud(),cnt=id=>N.filter(n=>n.cat===id).length+A_.filter(d=>d.cat===id).length;
+  return '<h3>Gruppi</h3><p class="small mut">Servono a ordinare note e registrazioni (per esempio per tema o per progetto). Eliminare un gruppo non cancella nulla: gli elementi restano «senza gruppo».</p>'+
+   (npCats().length?npCats().map(c=>'<div class="npgr"><span class="npg" style="--g:'+npColor(c)+'">'+esc(c.nome)+'</span><span class="small mut">'+cnt(c.id)+(cnt(c.id)===1?' elemento':' elementi')+'</span><span class="row"><button class="btn sm" data-act="npGRen" data-id="'+c.id+'">Rinomina</button><button class="btn sm" data-act="npGDel" data-id="'+c.id+'">Elimina</button></span></div>').join(''):'<p class="mut">Nessun gruppo.</p>')+
+   '<form data-form="npgadd" class="npgadd"><label class="fld"><span>Nuovo gruppo</span><input name="nome" maxlength="30" autocomplete="off" placeholder="Per esempio: Supervisione"></label><button class="btn pri">Aggiungi</button></form>'+
+   (npCats().length?'':'<p class="small mut">Suggeriti: '+NPSUG.map(n=>'<button type="button" class="npchip" data-act="npGSug" data-n="'+esc(n)+'">'+esc(n)+'</button>').join(' ')+'</p>')+
+   '<div class="err" id="npgerr"></div><div class="row end"><button type="button" class="btn pri" data-act="close">Fatto</button></div>'}
+function npGAdd(nome){
+  nome=String(nome||'').replace(/\s+/g,' ').trim().slice(0,30);if(!nome)return 'Scrivi il nome del gruppo.';
+  if(npCats().some(c=>c.nome.toLowerCase()===nome.toLowerCase()))return 'Esiste già un gruppo con questo nome.';
+  if(npCats().length>=30)return 'Troppi gruppi: elimina quelli che non usi.';
+  const used=npCats().map(c=>c.col);npCats().push({id:uid(),nome,col:NPCOL.find(c=>!used.includes(c))||NPCOL[npCats().length%NPCOL.length]});return ''}
+A.npGroups=()=>modal(npGroupsHTML());
+forms.npgadd=async f=>{const e=npGAdd(f.elements.nome.value);if(e){const x=$('#npgerr');if(x)x.textContent=e;return}log('Gruppo di note creato','');await save();A.npGroups();npPaint()};
+A.npGSug=async d=>{const e=npGAdd(d.n);if(e)return;await save();A.npGroups();npPaint()};
+A.npGRen=d=>{const c=npCat(d.id);if(!c)return;formModal('Rinomina gruppo',[{k:'nome',l:'Nome',req:1}],{nome:c.nome},async o=>{
+  const n=String(o.nome).replace(/\s+/g,' ').trim().slice(0,30);if(!n)throw new Error('Scrivi il nome.');
+  if(npCats().some(x=>x.id!==c.id&&x.nome.toLowerCase()===n.toLowerCase()))throw new Error('Esiste già un gruppo con questo nome.');
+  c.nome=n;await save();render();setTimeout(A.npGroups,0)})};
+A.npGDel=async d=>{const c=npCat(d.id);if(!c)return;
+  if(!await ask('<p>Eliminare il gruppo <b>'+esc(c.nome)+'</b>? Note e registrazioni restano, senza gruppo.</p>',{ok:'Elimina'})){A.npGroups();return}
+  D().npCats=npCats().filter(x=>x.id!==c.id);D().notes.forEach(n=>{if(n.cat===c.id)n.cat=''});D().docs.forEach(m=>{if(m.np&&m.cat===c.id)m.cat=''});if(S.npc===c.id)S.npc='';
+  log('Gruppo di note eliminato','');await save();render();A.npGroups()};
+
+
+/* ====================================================================
+   v35 · Fiscale (studio in regime forfettario o ordinario)
+   Prepara documenti e file da caricare a mano: nessun collegamento a servizi esterni.
+   Importi sempre in centesimi (interi). I documenti fiscali non contengono mai dati clinici.
+   Tutte le diciture e le soglie sono bozze modificabili, DA FAR VALIDARE CON IL COMMERCIALISTA.
+   ==================================================================== */
+
+/* ---------- strumenti ---------- */
+const FPH=v=>/\{\{[^}]*\}\}/.test(String(v==null?'':v));                  /* segnaposto non compilato */
+const fEur=c=>(c<0?'-':'')+(Math.abs(c)/100).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+const fNum=c=>(c/100).toFixed(2);                                          /* 12.30, per CSV e XML */
+const fNumC=c=>(c/100).toFixed(2).replace('.',',');                        /* 12,30, per CSV italiano */
+function fMoney(s){                                                         /* «50», «50,5», «1.250,00» → centesimi, oppure null */
+  s=String(s==null?'':s).trim().replace(/€/g,'').replace(/\s/g,'');if(!s)return null;
+  if(/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(s))s=s.replace(/\./g,'');
+  s=s.replace(',','.');if(!/^-?\d+(\.\d{1,2})?$/.test(s))return null;
+  return Math.round(parseFloat(s)*100)}
+const fYear=()=>Number(today().slice(0,4));
+const xmlE=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+const csvC=v=>{v=String(v==null?'':v);return /[";\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+const csvOut=rows=>'﻿'+rows.map(r=>r.map(csvC).join(';')).join('\r\n')+'\r\n';
+
+/* codice fiscale (persona fisica, 16 caratteri, anche con omocodia) e partita IVA: controlli solo sulla forma e sul carattere di controllo */
+const CF_ODD={0:1,1:0,2:5,3:7,4:9,5:13,6:15,7:17,8:19,9:21,A:1,B:0,C:5,D:7,E:9,F:13,G:15,H:17,I:19,J:21,K:2,L:4,M:18,N:20,O:11,P:3,Q:6,R:8,S:12,T:14,U:16,V:10,W:22,X:25,Y:24,Z:23};
+function cfOk(s){
+  s=String(s||'').toUpperCase().replace(/\s/g,'');
+  if(!/^[A-Z]{6}[0-9LMNPQRSTUV]{2}[A-EHLMPR-T][0-9LMNPQRSTUV]{2}[A-Z][0-9LMNPQRSTUV]{3}[A-Z]$/.test(s))return false;
+  let t=0;for(let i=0;i<15;i++){const c=s[i],even=i%2===1,v=/[0-9]/.test(c)?+c:c.charCodeAt(0)-65;t+=even?v:CF_ODD[c]}
+  return String.fromCharCode(65+t%26)===s[15]}
+function pivaOk(s){
+  s=String(s||'').replace(/\s/g,'');if(!/^\d{11}$/.test(s))return false;
+  let t=0;for(let i=0;i<10;i++){let d=+s[i];if(i%2===1){d*=2;if(d>9)d-=9}t+=d}
+  return (10-t%10)%10===+s[10]}
+const cfOrPivaOk=s=>cfOk(s)||pivaOk(s);
+
+/* ---------- dati ---------- */
+const F_METODI=[['contanti','Contanti'],['bonifico','Bonifico'],['carta','Carta / POS'],['assegno','Assegno'],['bonus','Bonus psicologo'],['altro','Altro']];
+const F_MP={contanti:'MP01',assegno:'MP02',bonifico:'MP05',carta:'MP08',bonus:'MP05',altro:'MP05'};
+const F_TIPI=[['pf','Persona fisica'],['ente','Ente o azienda'],['estero','Estero']];
+const F_BONUS_MAX=5000;
+function fSetDef(){return {
+  nome:'{{Nome}}',cognome:'{{Cognome}}',cf:'{{Codice fiscale}}',piva:'{{Partita IVA}}',
+  indirizzo:'{{Indirizzo}}',cap:'{{CAP}}',comune:'{{Comune}}',prov:'{{PR}}',
+  albo:'Ordine degli Psicologi',regioneAlbo:'{{Regione}}',provAlbo:'{{PR}}',nalbo:'{{N. iscrizione}}',dalbo:'',
+  iban:'{{IBAN}}',pec:'',email:'',tel:'',
+  regime:'forfettario',enpap:true,enpapAliq:2,bolloSoglia:7747,bolloImp:200,bolloAdd:true,numFmt:'{n}/{anno}',start:{},logo:true,
+  dicForf:'Operazione effettuata ai sensi dell’art. 1, commi 54-89, L. 190/2014 (regime forfettario). Compenso non assoggettato a ritenuta d’acconto ai sensi dell’art. 1, comma 67, L. 190/2014. Operazione non soggetta a IVA.',
+  dicEsente:'Prestazione sanitaria esente da IVA ai sensi dell’art. 10, n. 18, D.P.R. 633/1972.',
+  dicEnpap:'Contributo integrativo ENPAP {aliq}% (art. 1, comma 212, L. 662/1996 e regolamento ENPAP).',
+  dicBollo:'Imposta di bollo da 2,00 € assolta sull’originale ai sensi del D.P.R. 642/1972.',
+  tsGG:31,tsMM:1,tsPer:'annuale'}}
+function fSet(){const d=D();if(!d.fSet||typeof d.fSet!=='object')d.fSet={};const def=fSetDef();Object.keys(def).forEach(k=>{if(d.fSet[k]===undefined)d.fSet[k]=def[k]});return d.fSet}
+const _mig35=migrate;
+migrate=function(d){
+  const r=_mig35.apply(this,arguments);
+  ['fPag','fDoc','fList','fInv'].forEach(k=>{if(!Array.isArray(r[k]))r[k]=[]});
+  if(!r.fSet||typeof r.fSet!=='object')r.fSet={};
+  const def=fSetDef();Object.keys(def).forEach(k=>{if(r.fSet[k]===undefined)r.fSet[k]=def[k]});
   return r};
+const fPatF=p=>Object.assign({cf:'',tipo:'pf',opp:false,denom:'',piva:'',indirizzo:'',cap:'',comune:'',prov:'',nazione:'IT',coddest:'',pec:''},(p&&p.fisc)||{});
+const fStudioName=()=>{const s=fSet();return (s.nome+' '+s.cognome).trim()};
+const fStudioIncompleto=()=>{const s=fSet();return ['nome','cognome','cf','piva','indirizzo','cap','comune','prov'].filter(k=>FPH(s[k])||!String(s[k]||'').trim())};
+const fPatName=(pid,snap)=>{const p=D().patients.find(x=>x.id===pid);return p?nm(p):(snap&&snap.nome)||'(paziente eliminato)'};
+
+/* ---------- calcoli (tutto in centesimi) ---------- */
+/* dal totale incassato ricava compenso, contributo integrativo e bollo */
+function fBreak(tot,o){
+  const s=fSet(),aliq=o.integr?Number(s.enpapAliq)||0:0,mode=o.bollo||'auto';
+  let bollo=0,base=tot;
+  if(mode!=='no'){
+    if(o.bolloAdd){if(mode==='si'||tot-s.bolloImp>s.bolloSoglia){bollo=s.bolloImp;base=tot-bollo}}   /* il totale comprende già il bollo */
+    else if(mode==='si'||tot>s.bolloSoglia)bollo=s.bolloImp}
+  const compenso=aliq?Math.round(base*100/(100+aliq)):base,integr=base-compenso,add=!!o.bolloAdd&&bollo>0;
+  return {compenso,integr,bollo,bolloAdd:add,base,totale:add?base+bollo:base}}
+/* dal compenso (listino) al totale da incassare */
+function fFromCompenso(c,integr){
+  const s=fSet(),aliq=integr?Number(s.enpapAliq)||0:0,i=Math.round(c*aliq/100),base=c+i;
+  return base+(s.bolloAdd&&base>s.bolloSoglia?s.bolloImp:0)}
+
+/* ---------- pagamenti e documenti: accessi ---------- */
+const fPags=()=>D().fPag,fDocs=()=>D().fDoc;
+const fDocNum=(set,n,anno)=>String(set.numFmt||'{n}/{anno}').replace('{n}',n).replace('{anno}',anno);
+function fNextNum(anno){
+  const s=fSet(),mx=fDocs().filter(x=>x.anno===anno).reduce((m,x)=>Math.max(m,x.num),0);
+  return Math.max(mx,(Number(s.start&&s.start[anno])||1)-1)+1}
+const fLastDate=anno=>fDocs().filter(x=>x.anno===anno).reduce((m,x)=>x.data>m?x.data:m,'');
+const fDocLabel=d=>(d.tipo==='storno'?'Storno ':d.tipo==='fattura'?'Fattura ':'Ricevuta ')+d.numTxt;
+const fPagOfDoc=d=>fPags().filter(x=>x.did===d.id);
+const fPagFree=pid=>fPags().filter(x=>!x.did&&(!pid||x.pid===pid)&&x.imp>0);
+const fIsPF=p=>fPatF(p).tipo==='pf';
+const fValidDocs=anno=>fDocs().filter(d=>d.tipo!=='storno'&&!d.stornato&&(!anno||d.anno===anno));
+
+/* ---------- validazione ---------- */
+function fPatCheck(p){
+  const f=fPatF(p),e=[];
+  if(f.tipo==='pf'){if(!f.opp){if(!f.cf)e.push('codice fiscale mancante');else if(!cfOk(f.cf))e.push('codice fiscale non valido')}}
+  else if(f.tipo==='ente'){if(!f.denom)e.push('denominazione mancante');if(!pivaOk(f.piva)&&!cfOk(f.cf))e.push('P. IVA o codice fiscale mancante o non valido');
+    if(!/^[A-Z0-9]{7}$/i.test(f.coddest||'')&&!f.pec)e.push('serve il codice destinatario (7 caratteri) oppure la PEC')}
+  return e}
+
+/* ====================== form: dati fiscali ====================== */
+const Y_N=[['1','Sì'],['0','No']];
+A.fSetStudio=()=>{const s=fSet();
+  formModal('Dati dello studio',[
+   {k:'nome',l:'Nome',req:1},{k:'cognome',l:'Cognome',req:1},{k:'cf',l:'Codice fiscale',req:1},{k:'piva',l:'Partita IVA',h:'Se non l’hai ancora aperta lascia il segnaposto: {{Partita IVA}}.'},
+   {k:'indirizzo',l:'Indirizzo dello studio',req:1},{k:'cap',l:'CAP'},{k:'comune',l:'Comune'},{k:'prov',l:'Provincia (sigla)'},
+   {k:'albo',l:'Albo professionale'},{k:'regioneAlbo',l:'Ordine regionale'},{k:'provAlbo',l:'Provincia dell’albo (sigla)'},{k:'nalbo',l:'N. iscrizione all’albo'},{k:'dalbo',l:'Data di iscrizione',t:'date'},
+   {k:'iban',l:'IBAN (per i bonifici)'},{k:'pec',l:'PEC'},{k:'email',l:'Email'},{k:'tel',l:'Telefono'},
+   {k:'logo',l:'Logo dell’app sui documenti',t:'select',o:Y_N}],
+   Object.assign({},s,{logo:s.logo!==false?'1':'0'}),async o=>{
+    ['nome','cognome','cf','piva','indirizzo','cap','comune','prov','albo','regioneAlbo','provAlbo','nalbo','dalbo','iban','pec','email','tel'].forEach(k=>{s[k]=String(o[k]||'').trim()});
+    s.cf=s.cf.toUpperCase();s.logo=o.logo!=='0';
+    if(!FPH(s.cf)&&!cfOrPivaOk(s.cf))throw new Error('Il codice fiscale non è valido.');
+    if(!FPH(s.piva)&&s.piva&&!pivaOk(s.piva))throw new Error('La partita IVA non è valida (11 cifre, con cifra di controllo).');
+    if(s.cap&&!FPH(s.cap)&&!/^\d{5}$/.test(s.cap))throw new Error('Il CAP deve avere 5 cifre.');
+    if(s.prov&&!FPH(s.prov)&&!/^[A-Za-z]{2}$/.test(s.prov))throw new Error('La provincia va scritta con 2 lettere (per esempio CT).');
+    if(s.iban&&!FPH(s.iban)&&!/^[A-Za-z]{2}\d{2}[A-Za-z0-9]{11,30}$/.test(s.iban.replace(/\s/g,'')))throw new Error('L’IBAN non sembra valido.');
+    s.prov=s.prov.toUpperCase();s.provAlbo=s.provAlbo.toUpperCase();
+    log('Dati fiscali dello studio modificati','');await save();render()})};
+A.fSetRegime=()=>{const s=fSet(),y=fYear();
+  formModal('Regime e contributi',[
+   {k:'regime',l:'Regime',t:'select',o:[['forfettario','Forfettario (L. 190/2014, commi 54-89)'],['ordinario','Ordinario (esente IVA, art. 10 n. 18 DPR 633/72)']],h:'Si può cambiare quando serve, anche documento per documento.'},
+   {k:'enpap',l:'Contributo integrativo ENPAP in fattura',t:'select',o:Y_N},{k:'enpapAliq',l:'Aliquota del contributo integrativo (%)',t:'number',min:0,max:10},
+   {k:'bolloSoglia',l:'Bollo sopra (€)',h:'Importi senza IVA: oltre questa soglia serve il bollo.'},{k:'bolloImp',l:'Importo del bollo (€)'},{k:'bolloAdd',l:'Il bollo si addebita al paziente',t:'select',o:Y_N},
+   {k:'numFmt',l:'Formato del numero',h:'Usa {n} per il progressivo e {anno} per l’anno. Esempio: {n}/{anno}'},{k:'start',l:'Primo numero del '+y+' (solo se hai già emesso documenti altrove)',t:'number',min:1,max:99999}],
+   {regime:s.regime,enpap:s.enpap?'1':'0',enpapAliq:s.enpapAliq,bolloSoglia:fNumC(s.bolloSoglia),bolloImp:fNumC(s.bolloImp),bolloAdd:s.bolloAdd?'1':'0',numFmt:s.numFmt,start:(s.start&&s.start[y])||1},async o=>{
+    const bs=fMoney(o.bolloSoglia),bi=fMoney(o.bolloImp);if(bs==null||bi==null||bs<0||bi<0)throw new Error('Importi non validi.');
+    if(!/\{n\}/.test(o.numFmt))throw new Error('Il formato del numero deve contenere {n}.');
+    s.regime=o.regime==='ordinario'?'ordinario':'forfettario';s.enpap=o.enpap==='1';s.enpapAliq=Math.max(0,Number(o.enpapAliq)||0);s.bolloSoglia=bs;s.bolloImp=bi;s.bolloAdd=o.bolloAdd==='1';s.numFmt=o.numFmt;
+    const st=Math.max(1,Math.floor(Number(o.start)||1));
+    if(fDocs().some(x=>x.anno===y)&&st>fNextNum(y))throw new Error('Esistono già documenti del '+y+': non si possono saltare numeri.');
+    if(!s.start)s.start={};if(!fDocs().some(x=>x.anno===y))s.start[y]=st;
+    log('Regime e contributi modificati',s.regime);await save();render()})};
+A.fSetDic=()=>{const s=fSet();
+  formModal('Diciture dei documenti',[{k:'dicForf',l:'Regime forfettario',t:'textarea',r:4},{k:'dicEsente',l:'Prestazione esente IVA (regime ordinario)',t:'textarea',r:3},{k:'dicEnpap',l:'Contributo integrativo ({aliq} = aliquota)',t:'textarea',r:2},{k:'dicBollo',l:'Imposta di bollo',t:'textarea',r:2}],s,async o=>{
+    ['dicForf','dicEsente','dicEnpap','dicBollo'].forEach(k=>{s[k]=String(o[k]||'').trim()});log('Diciture dei documenti modificate','');await save();render()},
+    '<p class="small mut">Sono <b>bozze</b>: da far validare con il commercialista. Non sono consulenza fiscale.</p>')};
+A.fSetTs=()=>{const s=fSet();
+  formModal('Sistema Tessera Sanitaria',[{k:'tsPer',l:'Periodicità dell’invio',t:'select',o:[['annuale','Annuale'],['semestrale','Semestrale'],['altra','Altra (da indicare nelle note)']]},{k:'tsGG',l:'Giorno di scadenza',t:'number',min:1,max:31},{k:'tsMM',l:'Mese di scadenza (dell’anno successivo)',t:'number',min:1,max:12}],s,async o=>{
+    s.tsPer=o.tsPer;s.tsGG=Math.min(31,Math.max(1,Math.floor(Number(o.tsGG)||31)));s.tsMM=Math.min(12,Math.max(1,Math.floor(Number(o.tsMM)||1)));log('Scadenze Tessera Sanitaria modificate','');await save();render()},
+    '<p class="small mut">Valori iniziali: annuale, entro il 31 gennaio dell’anno dopo. <b>Da confermare</b> (il decreto è in attesa). Se la scadenza cade in un giorno festivo o di fine settimana l’app propone il primo giorno feriale utile.</p>')};
+A.fSetReset=async()=>{
+  if(!await ask('<p>Rimettere i <b>dati dello studio</b> ai segnaposto <code>{{…}}</code> (per preparare il modello per un’altra persona)? Pagamenti e documenti già emessi non vengono toccati.</p>',{ok:'Azzera i dati',danger:false}))return;
+  const d=fSetDef(),s=fSet();['nome','cognome','cf','piva','indirizzo','cap','comune','prov','regioneAlbo','provAlbo','nalbo','dalbo','iban','pec','email','tel'].forEach(k=>{s[k]=d[k]});
+  log('Dati dello studio azzerati (modello)','');await save();render()};
+
+/* dati fiscali del paziente */
+A.fPat=d=>{
+  const p=D().patients.find(x=>x.id===d.id);if(!p)return;const f=fPatF(p);
+  formModal('Dati fiscali · '+nm(p),[
+   {k:'tipo',l:'Tipo',t:'select',o:F_TIPI},{k:'cf',l:'Codice fiscale'},{k:'opp',l:'Opposizione all’invio al Sistema TS',t:'select',o:Y_N,h:'Se il paziente si è opposto, il suo codice fiscale non va inserito nell’invio.'},
+   {k:'denom',l:'Denominazione (enti e aziende)'},{k:'piva',l:'Partita IVA (enti e aziende)'},
+   {k:'indirizzo',l:'Indirizzo'},{k:'cap',l:'CAP'},{k:'comune',l:'Comune'},{k:'prov',l:'Provincia (sigla)'},{k:'nazione',l:'Nazione (sigla, es. IT)'},
+   {k:'coddest',l:'Codice destinatario (7 caratteri, enti e aziende)'},{k:'pec',l:'PEC (se non c’è il codice destinatario)',t:'email'}],
+   Object.assign({},f,{opp:f.opp?'1':'0'}),async o=>{
+    const n={tipo:F_TIPI.some(x=>x[0]===o.tipo)?o.tipo:'pf',cf:String(o.cf||'').toUpperCase().replace(/\s/g,''),opp:o.opp==='1',denom:String(o.denom||'').trim(),piva:String(o.piva||'').replace(/\s/g,''),indirizzo:String(o.indirizzo||'').trim(),cap:String(o.cap||'').trim(),comune:String(o.comune||'').trim(),prov:String(o.prov||'').trim().toUpperCase(),nazione:String(o.nazione||'IT').trim().toUpperCase().slice(0,2)||'IT',coddest:String(o.coddest||'').toUpperCase().replace(/\s/g,''),pec:String(o.pec||'').trim()};
+    if(n.cf&&n.tipo!=='estero'&&!cfOk(n.cf)&&!(n.tipo==='ente'&&pivaOk(n.cf)))throw new Error('Il codice fiscale non è valido: controlla le lettere e le cifre.');
+    if(n.piva&&!pivaOk(n.piva))throw new Error('La partita IVA non è valida (11 cifre, con cifra di controllo).');
+    if(n.cap&&!/^\d{5}$/.test(n.cap))throw new Error('Il CAP deve avere 5 cifre.');
+    if(n.coddest&&!/^[A-Z0-9]{7}$/.test(n.coddest))throw new Error('Il codice destinatario ha 7 caratteri (lettere e cifre).');
+    if(n.opp)n.cf=n.cf;/* il codice resta in archivio, ma non si esporta */
+    p.fisc=n;log('Dati fiscali del paziente modificati','',p.id);await save();render()})};
+const _tPan35=tPan;
+tPan=function(p){
+  const f=fPatF(p),e=fPatCheck(p);
+  return _tPan35.apply(this,arguments)+'<div class="card"><div class="bar"><h3 style="margin:0">Dati fiscali</h3><button class="btn sm" data-act="fPat" data-id="'+p.id+'">'+(p.fisc?'Modifica':'Aggiungi')+'</button></div>'+
+   '<p class="small mut" style="margin:6px 0 0">'+esc((F_TIPI.find(x=>x[0]===f.tipo)||[])[1]||'')+(f.cf?' · '+esc(f.cf):' · codice fiscale non inserito')+(f.opp?' · <b>opposizione al Sistema TS</b>':'')+'</p>'+(e.length?'<p class="small" style="color:var(--terra);margin:4px 0 0">'+esc(e.join('; '))+'</p>':'')+'</div>'};
+
+/* listino */
+A.fListNew=()=>fListForm(null);
+A.fListEdit=d=>fListForm(fListFind(d.id));
+const fListFind=id=>D().fList.find(x=>x.id===id);
+function fListForm(it){
+  formModal(it?'Modifica prestazione':'Nuova prestazione',[{k:'nome',l:'Prestazione',req:1},{k:'imp',l:'Compenso (€)',req:1,h:'Il compenso senza contributo integrativo né bollo.'}],it?{nome:it.nome,imp:fNumC(it.imp)}:{nome:'Seduta di psicoterapia',imp:''},async o=>{
+    const c=fMoney(o.imp);if(c==null||c<=0)throw new Error('Importo non valido.');
+    if(/diagnos|test|colloquio clinico|disturb/i.test(o.nome))throw new Error('Nel listino usa nomi generici (per esempio «Prestazione psicologica»): i documenti fiscali non devono contenere contenuti clinici.');
+    if(it){it.nome=o.nome.trim();it.imp=c}else D().fList.push({id:uid(),nome:o.nome.trim(),imp:c});
+    log('Listino modificato','');await save();render()})}
+A.fListDel=async d=>{const it=fListFind(d.id);if(!it||!await ask('<p>Eliminare «'+esc(it.nome)+'» dal listino?</p>',{ok:'Elimina'}))return;D().fList=D().fList.filter(x=>x.id!==it.id);await save();render()};
+
+/* ====================== pagamenti ====================== */
+const fPatOpts=()=>[['','— scegli —']].concat(act().slice().sort((a,b)=>nm(a).localeCompare(nm(b))).map(p=>[p.id,nm(p)]));
+function fPagForm(it,pre){
+  const L=D().fList,pr=pre||{};
+  const f=[{k:'pid',l:'Paziente',t:'select',o:fPatOpts(),req:1},{k:'data',l:'Data del pagamento',t:'date',req:1}]
+   .concat(L.length?[{k:'prest',l:'Prestazione (dal listino)',t:'select',o:[['','— nessuna —']].concat(L.map(x=>[x.id,x.nome+' · '+fEur(x.imp)]))}]:[])
+   .concat([{k:'imp',l:'Importo incassato (€)',h:'Il totale pagato dal paziente, con contributo integrativo e bollo se previsti. Per un rimborso scrivi un importo negativo. Se scegli la prestazione e lasci vuoto, lo calcolo io.'},
+    {k:'metodo',l:'Metodo',t:'select',o:F_METODI},{k:'trac',l:'Pagamento tracciabile',t:'select',o:Y_N,h:'Bonifico, carta, assegno: sì. Contanti: no.'},
+    {k:'bonus',l:'Di cui bonus psicologo (€)',h:'Solo la quota pagata con il bonus (massimo 50 € a seduta).'},{k:'nota',l:'Nota (facoltativa, non clinica)'}]);
+  formModal(it?'Modifica pagamento':'Registra pagamento',f,it?{pid:it.pid,data:it.data,prest:it.prest||'',imp:fNumC(it.imp),metodo:it.metodo,trac:it.trac?'1':'0',bonus:it.bonus?fNumC(it.bonus):'',nota:it.nota||''}:Object.assign({data:today(),metodo:'bonifico',trac:'1'},pr),async o=>{
+    if(!o.pid||!D().patients.some(x=>x.id===o.pid))throw new Error('Scegli il paziente.');
+    let imp=fMoney(o.imp);const pz=o.prest?fListFind(o.prest):null;
+    if(imp==null&&pz)imp=fFromCompenso(pz.imp,fSet().enpap);
+    if(imp==null||imp===0)throw new Error('Scrivi l’importo incassato.');
+    const bonus=fMoney(o.bonus)||0;
+    if(bonus<0||bonus>Math.abs(imp))throw new Error('La quota bonus non può superare l’importo.');
+    if(bonus>F_BONUS_MAX)throw new Error('La quota bonus è oltre 50 € per seduta.');
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(o.data))throw new Error('Data non valida.');
+    const rec={pid:o.pid,data:o.data,prest:o.prest||'',imp,metodo:o.metodo,trac:o.trac==='1',bonus,nota:String(o.nota||'').trim().slice(0,120)};
+    if(it){if(it.did)throw new Error('Il pagamento è già in un documento: non si può modificare.');Object.assign(it,rec)}
+    else D().fPag.push(Object.assign({id:uid(),sid:pr.sid||'',did:''},rec));
+    log('Pagamento '+(it?'modificato':'registrato'),fEur(imp),o.pid);await save();render()})}
+A.fPagNew=()=>fPagForm(null,{});
+A.fPagEdit=d=>{const it=D().fPag.find(x=>x.id===d.id);if(it)fPagForm(it)};
+A.fPagSes=d=>{
+  const s=D().sessions.find(x=>x.id===d.id);if(!s)return;
+  const ex=fPags().find(x=>x.sid===s.id);
+  if(ex){toast('Per questa seduta c’è già un pagamento: '+fEur(ex.imp));return}
+  const L=D().fList[0];fPagForm(null,{pid:s.pid,data:s.data,sid:s.id,prest:L?L.id:'',imp:'',metodo:'bonifico',trac:'1'})};
+A.fPagDel=async d=>{
+  const it=D().fPag.find(x=>x.id===d.id);if(!it)return;
+  if(it.did){toast('Il pagamento è in un documento: per annullare serve lo storno del documento.');return}
+  if(!await ask('<p>Eliminare questo pagamento ('+esc(fEur(it.imp))+' del '+esc(fd(it.data))+')?</p>',{ok:'Elimina'}))return;
+  D().fPag=D().fPag.filter(x=>x.id!==it.id);log('Pagamento eliminato','',it.pid);await save();render()};
+const _tSes35=tSes;
+tSes=function(p){return _tSes35.apply(this,arguments).replace(/(<button class="btn sm" data-act="editRec" data-coll="sessions" data-id="([A-Za-z0-9_-]+)">Modifica<\/button>)/g,(m,b,id)=>{
+  const has=fPags().some(x=>x.sid===id);return (has?'<span class="badge ok" title="Pagamento registrato">Pagata</span>':'<button class="btn sm" data-act="fPagSes" data-id="'+id+'">Registra pagamento</button>')+b})};
+
+/* ====================== documenti ====================== */
+function fDocBuild(pid,pagIds,o){
+  const s=fSet(),p=D().patients.find(x=>x.id===pid),pags=pagIds.map(id=>fPags().find(x=>x.id===id)).filter(Boolean);
+  const tot=pags.reduce((t,x)=>t+x.imp,0),bonus=pags.reduce((t,x)=>t+(x.bonus||0),0);
+  const b=fBreak(tot,{integr:o.integr,bollo:o.bollo,bolloAdd:o.bolloAdd});
+  return {pags,tot,bonus,b,p}}
+A.fDocNew=d=>{
+  if(d&&d.pid)return fDocForm(d.pid);
+  formModal('Nuovo documento',[{k:'pid',l:'Paziente',t:'select',o:fPatOpts(),req:1}],{},async o=>{if(!o.pid)throw new Error('Scegli il paziente.');setTimeout(()=>fDocForm(o.pid),0)},'<p class="small mut">Si emette partendo dai pagamenti registrati e non ancora documentati.</p>')};
+function fDocForm(pid){
+  const p=D().patients.find(x=>x.id===pid),free=fPagFree(pid),s=fSet();
+  if(!p)return;
+  if(!free.length){modal('<h3>Nessun pagamento da documentare</h3><p>Per <b>'+esc(nm(p))+'</b> non ci sono pagamenti non ancora inseriti in un documento. Registra prima il pagamento.</p><div class="row end"><button class="btn" data-act="close">Chiudi</button><button class="btn pri" data-act="fPagNew">Registra pagamento</button></div>');return}
+  const f=fPatF(p);
+  formModal('Nuovo documento · '+nm(p),[
+   {k:'tipo',l:'Tipo',t:'select',o:[['ricevuta','Ricevuta'],['fattura','Fattura']]},{k:'data',l:'Data del documento',t:'date',req:1},
+   {k:'pag',l:'Pagamenti da includere',t:'multi',o:free.map(x=>[x.id,fd(x.data)+' · '+fEur(x.imp)+' · '+((F_METODI.find(m=>m[0]===x.metodo)||[])[1]||'')+(x.bonus?' · bonus '+fEur(x.bonus):'')])},
+   {k:'reg',l:'Regime',t:'select',o:[['forfettario','Forfettario'],['ordinario','Ordinario (esente art. 10 n. 18)']]},
+   {k:'integr',l:'Contributo integrativo ENPAP',t:'select',o:Y_N},
+   {k:'bollo',l:'Bollo',t:'select',o:[['auto','Automatico (oltre la soglia)'],['si','Sì, applica il bollo'],['no','No, nessun bollo']],h:'Avviso: il bollo è dovuto oltre '+fEur(s.bolloSoglia)+' per prestazioni senza IVA. Modificabile.'},
+   {k:'bolloAdd',l:'Il bollo si somma al totale (addebitato al paziente)',t:'select',o:Y_N}],
+   {tipo:'ricevuta',data:today(),pag:free.map(x=>x.id),reg:s.regime,integr:s.enpap?'1':'0',bollo:'auto',bolloAdd:s.bolloAdd?'1':'0'},async o=>{
+    const ids=Array.isArray(o.pag)?o.pag:[];if(!ids.length)throw new Error('Scegli almeno un pagamento.');
+    await fDocIssue(pid,ids,o)},
+    (fStudioIncompleto().length?'<div class="banner warn small">I dati dello studio sono ancora incompleti ('+esc(fStudioIncompleto().join(', '))+'): il documento riporterà i segnaposto. <a href="#" data-act="fSetStudio">Compila i dati</a></div>':'')+(f.cf||f.tipo!=='pf'?'':'<p class="small mut">Il paziente non ha il codice fiscale: puoi emettere il documento, ma non sarà esportabile per la Tessera Sanitaria finché non lo inserisci.</p>'))}
+async function fDocIssue(pid,ids,o){
+  const s=fSet(),p=D().patients.find(x=>x.id===pid),f=fPatF(p);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(o.data)||!parseDateT(o.data))throw new Error('Data non valida.');
+  if(o.data>today())throw new Error('La data del documento è nel futuro.');
+  const anno=Number(o.data.slice(0,4)),last=fLastDate(anno);
+  if(last&&o.data<last)throw new Error('Esiste già un documento del '+fd(last)+': la data non può essere precedente (la numerazione deve seguire le date).');
+  const pg=ids.map(id=>fPags().find(x=>x.id===id));
+  if(pg.some(x=>!x||x.did||x.pid!==pid))throw new Error('Un pagamento scelto non è più disponibile.');
+  if(pg.some(x=>x.bonus>F_BONUS_MAX))throw new Error('Un pagamento ha una quota bonus oltre 50 €.');
+  const bd=fDocBuild(pid,ids,{integr:o.integr==='1',bollo:o.bollo,bolloAdd:o.bolloAdd==='1'});
+  if(bd.tot<=0)throw new Error('Il totale deve essere positivo.');
+  const num=fNextNum(anno),id=uid();
+  const doc={id,tipo:o.tipo==='fattura'?'fattura':'ricevuta',anno,num,numTxt:fDocNum(s,num,anno),data:o.data,pid,reg:o.reg==='ordinario'?'ordinario':'forfettario',
+    compenso:bd.b.compenso,integr:bd.b.integr,integrOn:o.integr==='1',aliq:o.integr==='1'?Number(s.enpapAliq)||0:0,bollo:bd.b.bollo,bolloAdd:bd.b.bolloAdd,totale:bd.b.totale,quotaBonus:bd.bonus,quotaPaz:bd.b.totale-bd.bonus,
+    righe:pg.map(x=>({data:x.data,imp:x.imp})),metodi:Array.from(new Set(pg.map(x=>x.metodo))),pagIds:ids.slice(),stornoDi:'',stornato:false,motivo:'',
+    snap:{nome:nm(p),cf:f.cf,tipo:f.tipo,denom:f.denom,piva:f.piva,indirizzo:f.indirizzo,cap:f.cap,comune:f.comune,prov:f.prov,nazione:f.nazione,coddest:f.coddest,pec:f.pec,opp:f.opp},
+    studio:{nome:fStudioName(),cf:s.cf,piva:s.piva,indirizzo:s.indirizzo,cap:s.cap,comune:s.comune,prov:s.prov,albo:s.albo,regioneAlbo:s.regioneAlbo,provAlbo:s.provAlbo,nalbo:s.nalbo,dalbo:s.dalbo,iban:s.iban,nome1:s.nome,cognome1:s.cognome},
+    creato:new Date().toISOString()};
+  D().fDoc.push(doc);pg.forEach(x=>{x.did=id});
+  log('Documento fiscale emesso',doc.numTxt,pid);await save();render();toast('Emesso: '+fDocLabel(doc))}
+A.fDocStorno=d=>{
+  const doc=fDocs().find(x=>x.id===d.id);if(!doc||doc.tipo==='storno'||doc.stornato)return;
+  formModal('Storno · '+fDocLabel(doc),[{k:'motivo',l:'Motivo dello storno',t:'textarea',r:3,req:1},{k:'data',l:'Data dello storno',t:'date',req:1}],{data:today()},async o=>{
+    const motivo=String(o.motivo||'').trim();if(motivo.length<5)throw new Error('Scrivi il motivo dello storno.');
+    if(!parseDateT(o.data)||o.data>today())throw new Error('Data non valida.');
+    const anno=Number(o.data.slice(0,4)),last=fLastDate(anno);if(last&&o.data<last)throw new Error('La data non può precedere l’ultimo documento ('+fd(last)+').');
+    if(o.data<doc.data)throw new Error('Lo storno non può essere precedente al documento.');
+    const s=fSet(),num=fNextNum(anno),st={id:uid(),tipo:'storno',anno,num,numTxt:fDocNum(s,num,anno),data:o.data,pid:doc.pid,reg:doc.reg,compenso:-doc.compenso,integr:-doc.integr,integrOn:doc.integrOn,aliq:doc.aliq,bollo:-doc.bollo,bolloAdd:doc.bolloAdd,totale:-doc.totale,quotaBonus:-doc.quotaBonus,quotaPaz:-doc.quotaPaz,
+      righe:doc.righe.map(r=>({data:r.data,imp:-r.imp})),metodi:doc.metodi,pagIds:[],stornoDi:doc.id,stornato:false,motivo,snap:doc.snap,studio:doc.studio,creato:new Date().toISOString()};
+    D().fDoc.push(st);doc.stornato=true;doc.motivo=motivo;
+    /* i pagamenti tornano disponibili solo se si vuole riemettere: restano legati al documento stornato */
+    log('Documento stornato',fDocLabel(doc)+' → '+st.numTxt,doc.pid);await save();render()})};
+A.fDocPdf=async d=>{
+  const doc=fDocs().find(x=>x.id===d.id);if(!doc)return;
+  if(!await fExportGate('Il documento contiene nome, codice fiscale e importi del paziente.'))return;
+  const inc=fStudioIncompleto();
+  const blob=fDocPdfBytes(doc);dl('Documento_'+doc.num+'-'+doc.anno+'.pdf',new Blob([blob],{type:'application/pdf'}));
+  log('Documento fiscale esportato in PDF',doc.numTxt,doc.pid);saveSoon();if(inc.length)toast('Attenzione: nel PDF restano segnaposto dei dati dello studio.')};
+function fDicit(doc){
+  const s=fSet(),o=[];
+  o.push(doc.reg==='forfettario'?s.dicForf:s.dicEsente);
+  if(doc.integr)o.push(String(s.dicEnpap).replace('{aliq}',String(doc.aliq).replace('.',',')));
+  if(doc.bollo)o.push(s.dicBollo);
+  return o.filter(Boolean)}
+function fDocPdfBytes(doc){
+  const s=fSet(),st=doc.studio||{},c=doc.snap||{},neg=doc.tipo==='storno';
+  const ente=c.tipo==='ente';
+  const rowsP=[['Prestatore',st.nome||''],['Codice fiscale',st.cf||''],['Partita IVA',st.piva||''],['Sede',[st.indirizzo,[st.cap,st.comune].filter(Boolean).join(' '),st.prov].filter(Boolean).join(', ')],['Albo',[st.albo,st.regioneAlbo,st.nalbo?'n. '+st.nalbo:''].filter(Boolean).join(' · ')]];
+  const rowsC=[['Intestato a',ente&&c.denom?c.denom:c.nome||''],['Codice fiscale',c.cf&&!c.opp?c.cf:(c.opp?'':'—')]].concat(ente&&c.piva?[['Partita IVA',c.piva]]:[]).concat(c.indirizzo?[['Indirizzo',[c.indirizzo,[c.cap,c.comune].filter(Boolean).join(' '),c.prov].filter(Boolean).join(', ')]]:[]);
+  const rig=doc.righe.map(r=>['Prestazione psicologica del '+fd(r.data),fEur(r.imp)]);
+  const tot=[['Compenso',fEur(doc.compenso)]];
+  if(doc.integr)tot.push(['Contributo integrativo ENPAP '+String(doc.aliq).replace('.',',')+'%',fEur(doc.integr)]);
+  if(doc.bollo)tot.push(['Imposta di bollo'+(doc.bolloAdd?' (a carico del paziente)':' (assolta dal professionista)'),fEur(doc.bolloAdd?doc.bollo:0)]);
+  tot.push(['TOTALE',fEur(doc.totale)]);
+  const blocks=[{t:'h',x:'Prestatore'},{t:'rows',r:rowsP},{t:'h',x:'Destinatario'},{t:'rows',r:rowsC},{t:'h',x:'Prestazione'},
+    {t:'tab',w:[.72,.28],a:['l','r'],head:['Descrizione','Importo'],r:rig},{t:'gap',n:6},{t:'tab',w:[.72,.28],a:['l','r'],r:tot,boldLast:true},{t:'gap',n:4}];
+  if(neg)blocks.push({t:'h',x:'Storno'},{t:'p',x:'Storna il documento '+((fDocs().find(x=>x.id===doc.stornoDi)||{}).numTxt||'')+'. Motivo: '+doc.motivo});
+  blocks.push({t:'h',x:'Diciture'},{t:'p',x:fDicit(doc).join('\n'),size:8.8});
+  blocks.push({t:'h',x:'Pagamento'});
+  const pay=[['Metodo',doc.metodi.map(m=>(F_METODI.find(x=>x[0]===m)||[])[1]||m).join(', ')]];
+  if(doc.quotaBonus&&!neg)pay.push(['Quota bonus psicologo',fEur(doc.quotaBonus)],['Quota a carico del paziente',fEur(doc.quotaPaz)]);
+  if(doc.metodi.includes('bonifico')&&st.iban&&!neg)pay.push(['IBAN',st.iban]);
+  blocks.push({t:'rows',r:pay});
+  const spec={who:(st.nome||'Studio')+' · Psicologo',sub:neg?'Storno':doc.tipo==='fattura'?'Fattura':'Ricevuta',title:(neg?'Storno n. ':doc.tipo==='fattura'?'Fattura n. ':'Ricevuta n. ')+doc.numTxt,meta:'Data: '+fd(doc.data),blocks,
+    foot:'Documento fiscale. Non contiene dati clinici. Testi e diciture: bozza da far validare con il commercialista.',logo:s.logo!==false?logoPaths():[]};
+  return PDFW.build(spec)}
+
+/* ====================== sicurezza dei file in uscita ====================== */
+async function fExportGate(what){
+  const ok=await ask('<p><b>Questo file esce dall’archivio cifrato.</b> '+esc(what)+'</p><ul class="small"><li>Il nome del file non riporta dati identificativi, ma il contenuto sì.</li><li>Caricalo e poi <b>cancellalo</b> (anche dal Cestino) da Download e da ogni altra cartella.</li><li>L’esportazione viene registrata nel registro attività.</li></ul>',{ok:'Esporta',danger:false});
+  return !!ok}
+const fSave=(name,text,mime)=>dl(name,new Blob([text],{type:mime||'text/plain'}));
+
+/* ====================== Sistema Tessera Sanitaria ====================== */
+function fTsDeadline(anno){
+  const s=fSet();let d=new Date(anno+1,(Number(s.tsMM)||1)-1,Number(s.tsGG)||31,12);
+  if(d.getMonth()!==((Number(s.tsMM)||1)-1))d=new Date(anno+1,(Number(s.tsMM)||1),0,12);/* giorno oltre la fine del mese */
+  while(d.getDay()===0||d.getDay()===6)d.setDate(d.getDate()+1);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function fTsNext(){
+  const t=today(),y=fYear();
+  for(const a of [y-1,y,y+1]){const d=fTsDeadline(a);if(d>=t)return {anno:a,data:d}}
+  return {anno:y,data:fTsDeadline(y)}}
+function fTsPrev(anno){
+  const rows=[],errs=[],warns=[];
+  const docs=fDocs().filter(d=>d.anno===anno).sort((a,b)=>a.num-b.num);
+  docs.forEach(doc=>{
+    const p=D().patients.find(x=>x.id===doc.pid),f=p?fPatF(p):Object.assign(fPatF(null),doc.snap||{}),r={doc,e:[],w:[],incl:false,rimborso:false,sp:0,aa:0,cf:''};
+    const orig=doc.tipo==='storno'?fDocs().find(x=>x.id===doc.stornoDi):null;
+    if(doc.tipo==='storno'){
+      if(orig&&orig.anno===doc.anno){r.skip='Storno nello stesso anno del documento: si annulla con il documento originale.'}
+      else{r.rimborso=true;r.w.push('Storno di un documento di un altro anno: la gestione dei rimborsi nel tracciato ufficiale va verificata.')}}
+    else if(doc.stornato){const st=fDocs().find(x=>x.stornoDi===doc.id);if(st&&st.anno===doc.anno)r.skip='Stornato nello stesso anno: escluso.'}
+    if(!r.skip&&f.tipo!=='pf')r.skip=f.tipo==='ente'?'Ente o azienda: non rientra nell’invio (si usa la fattura elettronica).':'Estero: non rientra nell’invio.';
+    if(!r.skip){
+      const neg=doc.totale<0,base=doc.compenso+doc.integr;
+      if(!neg){
+        const pg=fPagOfDoc(doc);
+        if(!pg.length)r.e.push('nessun pagamento collegato al documento');
+        else{
+          const sum=pg.reduce((t,x)=>t+x.imp,0);
+          if(Math.abs(sum-doc.totale)>1)r.e.push('importo del documento ('+fEur(doc.totale)+') diverso dai pagamenti ('+fEur(sum)+')');
+          if(pg.some(x=>Number(x.data.slice(0,4))!==anno))r.w.push('pagamento in un anno diverso dal documento');
+          if(pg.some(x=>(x.bonus||0)>F_BONUS_MAX))r.e.push('quota bonus oltre 50 € per seduta');
+          if(pg.some(x=>!x.trac))r.w.push('pagamento non tracciabile');
+        }
+        if(doc.quotaBonus>base)r.e.push('quota bonus maggiore dell’importo della prestazione');
+      }
+      if(f.opp){r.cf='';r.w.push('opposizione: il codice fiscale non si inserisce')}
+      else{if(!f.cf)r.e.push('codice fiscale mancante');else if(!cfOk(f.cf))r.e.push('codice fiscale non valido');else r.cf=f.cf}
+      r.aa=doc.quotaBonus;r.sp=base-doc.quotaBonus;r.incl=true}
+    rows.push(r)});
+  rows.forEach(r=>{r.e.forEach(x=>errs.push(fDocLabel(r.doc)+': '+x))});
+  const pagFree=fPags().filter(x=>!x.did&&x.data.slice(0,4)===String(anno)&&x.imp>0);
+  if(pagFree.length)warns.push(pagFree.length+' pagamenti del '+anno+' non hanno ancora un documento: non entrano nell’invio.');
+  return {rows,errs,warns,okRows:rows.filter(r=>r.incl&&!r.e.length)}}
+function fTsCsv(prev,anno){
+  const out=[['Anno','Tipo documento','Numero','Data documento','Codice fiscale','Tipo spesa','Importo (EUR)','Pagamento tracciabile','Nota']];
+  prev.okRows.forEach(r=>{const d=r.doc,pg=fPagOfDoc(d),trac=pg.length?pg.every(x=>x.trac):true,sgn=r.rimborso?-1:1,t=r.rimborso?'storno/rimborso':(d.tipo==='fattura'?'fattura':'ricevuta');
+    const base=[anno,t,d.numTxt,d.data,r.cf];
+    if(r.sp)out.push(base.concat(['SP',fNumC(Math.abs(r.sp)*sgn*(d.totale<0?-1:1)),trac?'sì':'no',r.rimborso?'rimborso':'']));
+    if(r.aa)out.push(base.concat(['AA',fNumC(Math.abs(r.aa)*sgn*(d.totale<0?-1:1)),'sì','quota bonus psicologo']))});
+  return csvOut(out)}
+A.fTsCsv=async()=>{
+  const anno=S.fanno||fYear(),pv=fTsPrev(anno);
+  if(!pv.okRows.length){toast('Non c’è niente da esportare.');return}
+  if(!await fExportGate('Il prospetto contiene codici fiscali e importi dei pazienti.'))return;
+  fSave('prospetto-TS-'+anno+'.csv',fTsCsv(pv,anno),'text/csv;charset=utf-8');
+  log('Prospetto Tessera Sanitaria esportato',anno+' · '+pv.okRows.length+' documenti');saveSoon()};
+A.fInvNew=()=>{
+  const anno=S.fanno||fYear(),pv=fTsPrev(anno);
+  if(!pv.okRows.length){toast('Non ci sono documenti da segnare come inviati.');return}
+  formModal('Segna come inviato',[{k:'data',l:'Data dell’invio',t:'date',req:1},{k:'prot',l:'Protocollo della ricevuta (lo scrivi tu)'},{k:'nota',l:'Nota'}],{data:today()},async o=>{
+    D().fInv.push({id:uid(),anno,data:o.data,prot:String(o.prot||'').trim().slice(0,60),nota:String(o.nota||'').trim().slice(0,200),docIds:pv.okRows.map(r=>r.doc.id)});
+    log('Invio Tessera Sanitaria registrato',anno+' · '+pv.okRows.length+' documenti');await save();render()},
+    '<p class="small mut">Registra a mano che hai caricato il file sul portale. Documenti inclusi: <b>'+pv.okRows.length+'</b> ('+anno+'). L’app non si collega al portale.</p>')};
+A.fInvEdit=d=>{
+  const it=D().fInv.find(x=>x.id===d.id);if(!it)return;
+  formModal('Invio del '+fd(it.data),[{k:'data',l:'Data dell’invio',t:'date',req:1},{k:'prot',l:'Protocollo della ricevuta'},{k:'nota',l:'Nota'}],it,async o=>{it.data=o.data;it.prot=String(o.prot||'').trim().slice(0,60);it.nota=String(o.nota||'').trim().slice(0,200);await save();render()})};
+A.fInvDel=async d=>{const it=D().fInv.find(x=>x.id===d.id);if(!it||!await ask('<p>Togliere questa registrazione dal registro degli invii? I documenti risulteranno di nuovo «non inviati».</p>',{ok:'Togli'}))return;D().fInv=D().fInv.filter(x=>x.id!==it.id);await save();render()};
+const fSentIds=()=>{const s=new Set();D().fInv.forEach(i=>(i.docIds||[]).forEach(x=>s.add(x)));return s};
+A.fScadAg=async()=>{
+  const n=fTsNext(),t='Scadenza invio Tessera Sanitaria '+n.anno+' (da confermare)';
+  D().formaz=D().formaz.filter(x=>!(x.fisc&&x.data===n.data));
+  D().formaz.push({id:uid(),titolo:t,data:n.data,dataFine:'',ente:'',nota:'Promemoria fiscale: verifica la scadenza con il commercialista.',fisc:true});
+  log('Promemoria Tessera Sanitaria in agenda',n.data);await save();toast('Promemoria aggiunto in agenda il '+fd(n.data));render()};
+
+/* ====================== fattura elettronica (solo enti e aziende) ====================== */
+const XML_NS='http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2';
+function fXml(doc){
+  const s=fSet(),st=doc.studio||{},c=doc.snap||{},p=D().patients.find(x=>x.id===doc.pid),cur=p?Object.assign({},c,fPatF(p)):c,E=[];
+  if(cur.tipo==='pf')return {errors:['Per i pazienti persone fisiche la fattura elettronica è vietata (le prestazioni sanitarie si comunicano al Sistema Tessera Sanitaria). Il file XML non viene generato.'],blocked:true};
+  if(cur.tipo==='estero')E.push('Paziente estero: l’XML per soggetti esteri non è gestito.');
+  const need=(v,msg)=>{if(!String(v||'').trim()||FPH(v))E.push(msg)};
+  need(st.nome1,'Nome dello studio mancante');need(st.cognome1,'Cognome dello studio mancante');
+  const piva=String(st.piva||'').replace(/\s/g,'');if(!pivaOk(piva))E.push('Partita IVA dello studio mancante o non valida (l’XML la richiede)');
+  if(!cfOk(st.cf))E.push('Codice fiscale dello studio mancante o non valido');
+  need(st.indirizzo,'Indirizzo dello studio mancante');if(!/^\d{5}$/.test(st.cap||''))E.push('CAP dello studio non valido');need(st.comune,'Comune dello studio mancante');if(!/^[A-Za-z]{2}$/.test(st.prov||''))E.push('Provincia dello studio non valida');
+  const denom=String(cur.denom||'').trim();if(!denom)E.push('Denominazione dell’ente mancante');
+  if(!pivaOk(cur.piva)&&!cfOk(cur.cf))E.push('P. IVA o codice fiscale dell’ente mancante o non valido');
+  const cod=String(cur.coddest||'').toUpperCase(),pec=String(cur.pec||'').trim();
+  if(!/^[A-Z0-9]{7}$/.test(cod)&&!pec)E.push('Codice destinatario (7 caratteri) o PEC dell’ente mancante');
+  if(!cur.indirizzo)E.push('Indirizzo dell’ente mancante');if(!/^\d{5}$/.test(cur.cap||'')&&(cur.nazione||'IT')==='IT')E.push('CAP dell’ente non valido');if(!cur.comune)E.push('Comune dell’ente mancante');
+  if(String(doc.numTxt).length>20)E.push('Numero del documento oltre 20 caratteri');
+  if(doc.tipo==='storno'&&!fDocs().find(x=>x.id===doc.stornoDi))E.push('Documento originale dello storno non trovato');
+  if(E.length)return {errors:E};
+  const forf=doc.reg==='forfettario',nat=forf?'N2.2':'N4',rf=forf?'RF19':'RF01',neg=doc.tipo==='storno',sg=neg?-1:1;
+  const A_=n=>fNum(Math.abs(n)),L=(t,v)=>'<'+t+'>'+xmlE(v)+'</'+t+'>';
+  const orig=neg?fDocs().find(x=>x.id===doc.stornoDi):null;
+  const progr=String(doc.anno%100)+String(doc.num).padStart(4,'0'),name='IT'+piva+'_'+progr+'.xml';
+  let x='<?xml version="1.0" encoding="UTF-8"?>\n<p:FatturaElettronica versione="FPR12" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:p="'+XML_NS+'" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">\n';
+  x+='<FatturaElettronicaHeader>\n<DatiTrasmissione><IdTrasmittente>'+L('IdPaese','IT')+L('IdCodice',piva)+'</IdTrasmittente>'+L('ProgressivoInvio',progr)+L('FormatoTrasmissione','FPR12')+L('CodiceDestinatario',/^[A-Z0-9]{7}$/.test(cod)?cod:'0000000')+(!/^[A-Z0-9]{7}$/.test(cod)||cod==='0000000'?L('PECDestinatario',pec):'')+'</DatiTrasmissione>\n';
+  x+='<CedentePrestatore><DatiAnagrafici><IdFiscaleIVA>'+L('IdPaese','IT')+L('IdCodice',piva)+'</IdFiscaleIVA>'+L('CodiceFiscale',st.cf)+'<Anagrafica>'+L('Nome',st.nome1)+L('Cognome',st.cognome1)+'</Anagrafica>'+
+    (st.albo?L('AlboProfessionale',String(st.albo).slice(0,60)):'')+(/^[A-Za-z]{2}$/.test(st.provAlbo||'')?L('ProvinciaAlbo',st.provAlbo.toUpperCase()):'')+(st.nalbo&&!FPH(st.nalbo)?L('NumeroIscrizioneAlbo',String(st.nalbo).slice(0,60)):'')+(st.dalbo?L('DataIscrizioneAlbo',st.dalbo):'')+L('RegimeFiscale',rf)+'</DatiAnagrafici>'+
+    '<Sede>'+L('Indirizzo',String(st.indirizzo).slice(0,60))+L('CAP',st.cap)+L('Comune',String(st.comune).slice(0,60))+L('Provincia',st.prov.toUpperCase())+L('Nazione','IT')+'</Sede></CedentePrestatore>\n';
+  const cn=cur.nazione||'IT',cp=String(cur.piva||'').replace(/\s/g,'');
+  x+='<CessionarioCommittente><DatiAnagrafici>'+(pivaOk(cp)?'<IdFiscaleIVA>'+L('IdPaese',cn)+L('IdCodice',cp)+'</IdFiscaleIVA>':'')+(cfOk(cur.cf)||pivaOk(cur.cf)?L('CodiceFiscale',cur.cf):'')+'<Anagrafica>'+L('Denominazione',denom.slice(0,80))+'</Anagrafica></DatiAnagrafici>'+
+    '<Sede>'+L('Indirizzo',String(cur.indirizzo).slice(0,60))+L('CAP',cn==='IT'?cur.cap:'00000')+L('Comune',String(cur.comune).slice(0,60))+(/^[A-Za-z]{2}$/.test(cur.prov||'')?L('Provincia',cur.prov.toUpperCase()):'')+L('Nazione',cn)+'</Sede></CessionarioCommittente>\n</FatturaElettronicaHeader>\n';
+  x+='<FatturaElettronicaBody>\n<DatiGenerali><DatiGeneraliDocumento>'+L('TipoDocumento',neg?'TD04':'TD01')+L('Divisa','EUR')+L('Data',doc.data)+L('Numero',doc.numTxt);
+  if(doc.bollo)x+='<DatiBollo>'+L('BolloVirtuale','SI')+L('ImportoBollo',A_(doc.bollo))+'</DatiBollo>';
+  if(doc.integr)x+='<DatiCassaPrevidenziale>'+L('TipoCassa','TC21')+L('AlCassa',Number(doc.aliq).toFixed(2))+L('ImportoContributoCassa',A_(doc.integr))+L('ImponibileCassa',A_(doc.compenso))+L('AliquotaIVA','0.00')+L('Natura',nat)+'</DatiCassaPrevidenziale>';
+  x+=L('ImportoTotaleDocumento',A_(doc.totale));
+  x+=L('Causale',neg?('Storno del documento '+(orig?orig.numTxt:'')+': '+doc.motivo).slice(0,200):'Prestazione psicologica');
+  x+='</DatiGeneraliDocumento>'+(neg&&orig?'<DatiFattureCollegate>'+L('IdDocumento',orig.numTxt)+L('Data',orig.data)+'</DatiFattureCollegate>':'')+'</DatiGenerali>\n';
+  x+='<DatiBeniServizi>';let ln=0;
+  doc.righe.forEach(r=>{ln++;x+='<DettaglioLinee>'+L('NumeroLinea',ln)+L('Descrizione','Prestazione psicologica del '+fd(r.data))+L('Quantita','1.00')+L('PrezzoUnitario',A_(r.imp))+L('PrezzoTotale',A_(r.imp))+L('AliquotaIVA','0.00')+L('Natura',nat)+'</DettaglioLinee>'});
+  /* le righe sono i pagamenti (totale incassato): le riporto al netto di contributo e bollo */
+  const sumR=doc.righe.reduce((t,r)=>t+r.imp,0);
+  if(Math.abs(sumR)!==doc.compenso+doc.integr+(doc.bolloAdd?doc.bollo:0)){}
+  x=x.replace(/<DettaglioLinee>[\s\S]*<\/DettaglioLinee>/,'');ln=1;
+  x+='<DettaglioLinee>'+L('NumeroLinea',1)+L('Descrizione','Prestazione psicologica')+L('Quantita','1.00')+L('PrezzoUnitario',A_(doc.compenso))+L('PrezzoTotale',A_(doc.compenso))+L('AliquotaIVA','0.00')+L('Natura',nat)+'</DettaglioLinee>';
+  if(doc.bolloAdd){ln=2;x+='<DettaglioLinee>'+L('NumeroLinea',2)+L('Descrizione','Rimborso imposta di bollo')+L('Quantita','1.00')+L('PrezzoUnitario',A_(doc.bollo))+L('PrezzoTotale',A_(doc.bollo))+L('AliquotaIVA','0.00')+L('Natura','N1')+'</DettaglioLinee>'}
+  x+='<DatiRiepilogo>'+L('AliquotaIVA','0.00')+L('Natura',nat)+L('ImponibileImporto',A_(doc.compenso+doc.integr))+L('Imposta','0.00')+L('EsigibilitaIVA','I')+L('RiferimentoNormativo',forf?'Regime forfettario L. 190/2014 art. 1 c. 54-89':'Esente art. 10 n. 18 DPR 633/72')+'</DatiRiepilogo>';
+  if(doc.bolloAdd)x+='<DatiRiepilogo>'+L('AliquotaIVA','0.00')+L('Natura','N1')+L('ImponibileImporto',A_(doc.bollo))+L('Imposta','0.00')+L('RiferimentoNormativo','Escluso art. 15 DPR 633/72')+'</DatiRiepilogo>';
+  x+='</DatiBeniServizi>\n';
+  const mp=F_MP[(doc.metodi||[])[0]]||'MP05',iban=String(st.iban||'').replace(/\s/g,'');
+  x+='<DatiPagamento>'+L('CondizioniPagamento','TP02')+'<DettaglioPagamento>'+L('ModalitaPagamento',mp)+L('ImportoPagamento',A_(doc.totale))+(mp==='MP05'&&/^[A-Za-z]{2}\d{2}[A-Za-z0-9]{11,30}$/.test(iban)&&!FPH(iban)?L('IBAN',iban.toUpperCase()):'')+'</DettaglioPagamento></DatiPagamento>\n';
+  x+='</FatturaElettronicaBody>\n</p:FatturaElettronica>\n';
+  return {xml:x,name,errors:[]}}
+A.fDocXml=async d=>{
+  const doc=fDocs().find(x=>x.id===d.id);if(!doc)return;
+  const r=fXml(doc);
+  if(r.errors.length){modal('<h3>'+(r.blocked?'XML non consentito':'Mancano dei dati')+'</h3>'+(r.blocked?'<p>'+esc(r.errors[0])+'</p>':'<p>Prima di generare l’XML correggi:</p><ul>'+r.errors.map(e=>'<li>'+esc(e)+'</li>').join('')+'</ul>')+'<div class="row end"><button class="btn pri" data-act="close">Chiudi</button></div>');return}
+  if(!await fExportGate('Il file contiene i dati dello studio e dell’ente e gli importi. Il nome del file segue la regola obbligatoria del Sistema di Interscambio (contiene la partita IVA dello studio).'))return;
+  fSave(r.name,r.xml,'application/xml');log('Fattura elettronica XML esportata',doc.numTxt,doc.pid);saveSoon()};
+
+/* ====================== prospetti ====================== */
+const FMESI=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+function fPros(anno){
+  const m=FMESI.map(()=>({n:0,comp:0,integr:0,bollo:0,tot:0,bonus:0}));
+  fDocs().filter(d=>d.anno===anno).forEach(d=>{const i=Number(d.data.slice(5,7))-1,r=m[i];r.n+=d.tipo==='storno'?0:1;r.comp+=d.compenso;r.integr+=d.integr;r.bollo+=d.bolloAdd?d.bollo:0;r.tot+=d.totale;r.bonus+=d.quotaBonus});
+  const met={};fPags().filter(x=>x.data.slice(0,4)===String(anno)).forEach(x=>{const r=met[x.metodo]||(met[x.metodo]={n:0,imp:0,trac:0});r.n++;r.imp+=x.imp;if(x.trac)r.trac+=x.imp});
+  const T=m.reduce((t,r)=>{Object.keys(r).forEach(k=>t[k]=(t[k]||0)+r[k]);return t},{});
+  return {m,met,T}}
+A.fProsCsv=()=>{
+  const anno=S.fanno||fYear(),P=fPros(anno),o=[['Prospetto fiscale',anno],[],['Incassi e documenti per mese'],['Mese','Documenti','Compensi','Contributo integrativo','Bolli addebitati','Totale documenti','Quota bonus psicologo']];
+  P.m.forEach((r,i)=>o.push([FMESI[i],r.n,fNumC(r.comp),fNumC(r.integr),fNumC(r.bollo),fNumC(r.tot),fNumC(r.bonus)]));
+  o.push(['Totale',P.T.n,fNumC(P.T.comp),fNumC(P.T.integr),fNumC(P.T.bollo),fNumC(P.T.tot),fNumC(P.T.bonus)],[],['Incassi per metodo'],['Metodo','Pagamenti','Importo','Di cui tracciabili']);
+  F_METODI.forEach(([k,l])=>{const r=P.met[k];if(r)o.push([l,r.n,fNumC(r.imp),fNumC(r.trac)])});
+  fSave('prospetto-fiscale-'+anno+'.csv',csvOut(o),'text/csv;charset=utf-8');log('Prospetto fiscale esportato (CSV)',String(anno));saveSoon()};
+A.fProsPdf=()=>{
+  const anno=S.fanno||fYear(),P=fPros(anno),s=fSet();
+  const blocks=[{t:'h',x:'Documenti per mese'},{t:'tab',size:8,w:[.2,.1,.17,.17,.12,.12,.12],a:['l','r','r','r','r','r','r'],head:['Mese','Doc.','Compensi','Integrativo','Bolli','Totale','Bonus'],r:P.m.map((r,i)=>[FMESI[i],String(r.n),fEur(r.comp),fEur(r.integr),fEur(r.bollo),fEur(r.tot),fEur(r.bonus)]).concat([['Totale',String(P.T.n),fEur(P.T.comp),fEur(P.T.integr),fEur(P.T.bollo),fEur(P.T.tot),fEur(P.T.bonus)]]),boldLast:true},
+    {t:'h',x:'Incassi per metodo'},{t:'tab',w:[.4,.2,.2,.2],a:['l','r','r','r'],head:['Metodo','Pagamenti','Importo','Tracciabili'],r:F_METODI.filter(m=>P.met[m[0]]).map(([k,l])=>[l,String(P.met[k].n),fEur(P.met[k].imp),fEur(P.met[k].trac)])},
+    {t:'h',x:'Dati utili per ENPAP'},{t:'rows',r:[['Compensi dell’anno',fEur(P.T.comp)],['Contributo integrativo',fEur(P.T.integr)],['Documenti emessi',String(P.T.n)]]},
+    {t:'p',x:'Dati riepilogativi, da verificare con il commercialista. Contributi, minimi e scadenze sono quelli comunicati da ENPAP: non sono calcolati qui.',size:8.5}];
+  const u=PDFW.build({who:(fStudioName()||'Studio')+' · Psicologo',sub:'Prospetto fiscale',title:'Prospetto fiscale '+anno,meta:'Importi per data del documento; metodi per data del pagamento.',blocks,foot:'Prospetto riepilogativo, nessun dato dei pazienti.',logo:s.logo!==false?logoPaths():[]});
+  dl('prospetto-fiscale-'+anno+'.pdf',new Blob([u],{type:'application/pdf'}));log('Prospetto fiscale esportato (PDF)',String(anno));saveSoon()};
+
+/* ====================== la vista «Fiscale» ====================== */
+const FTABS=[['pan','Panoramica'],['pag','Pagamenti'],['doc','Documenti'],['ts','Tessera Sanitaria'],['xml','Fatturazione XML'],['pros','Prospetti'],['imp','Impostazioni fiscali']];
+const fBadge=(t,k)=>'<span class="badge'+(k?' '+k:'')+'">'+esc(t)+'</span>';
+function fTable(head,rows,empty){
+  return rows.length?'<div class="card ftab"><table><thead><tr>'+head.map(h=>'<th'+(/^>/.test(h)?' class="r"':'')+'>'+esc(h.replace(/^>/,''))+'</th>').join('')+'</tr></thead><tbody>'+rows.join('')+'</tbody></table></div>':'<div class="card npempty">'+empty+'</div>'}
+function fPan(){
+  const anno=S.fanno||fYear(),P=fPros(anno),free=fPagFree(),sent=fSentIds(),ts=fTsNext();
+  const act_=D().patients.filter(p=>fPags().some(x=>x.pid===p.id)||fDocs().some(x=>x.pid===p.id));
+  const noCf=act_.filter(p=>{const f=fPatF(p);return f.tipo==='pf'&&!f.opp&&!cfOk(f.cf)});
+  const notSent=fValidDocs(anno).filter(d=>!sent.has(d.id)&&fIsPF(D().patients.find(x=>x.id===d.pid)||{fisc:d.snap}));
+  const days=Math.round((new Date(ts.data+'T12:00:00')-new Date(today()+'T12:00:00'))/86400000);
+  const item=(n,t,btn)=>'<div class="fitem'+(n?' warn':' ok')+'"><b>'+n+'</b><span>'+t+'</span>'+(n&&btn?btn:'')+'</div>';
+  return '<div class="fgrid">'+
+   '<div class="card fkpi"><h3>Da sistemare</h3>'+
+    item(free.length,'pagamenti senza documento','<button class="btn sm" data-act="fTab" data-t="doc">Emetti</button>')+
+    item(noCf.length,'pazienti senza codice fiscale valido'+(noCf.length?': '+esc(noCf.slice(0,3).map(nm).join(', ')+(noCf.length>3?'…':'')):''),noCf.length?'<button class="btn sm" data-act="fPat" data-id="'+noCf[0].id+'">Inserisci</button>':'')+
+    item(notSent.length,'documenti '+anno+' non inclusi in un invio alla Tessera Sanitaria','<button class="btn sm" data-act="fTab" data-t="ts">Vai</button>')+
+    '<div class="fitem ok"><b>'+(days<0?'!':days)+'</b><span>'+(days<0?'scadenza passata':'giorni alla scadenza TS')+' · dati '+ts.anno+' entro il '+esc(fd(ts.data))+' <small>(da confermare)</small></span><button class="btn sm" data-act="fScadAg">Metti in agenda</button></div></div>'+
+   '<div class="card fkpi"><h3>Numeri del '+anno+'</h3>'+
+    [['Compensi',fEur(P.T.comp)],['Contributo integrativo',fEur(P.T.integr)],['Bolli addebitati',fEur(P.T.bollo)],['Totale documenti',fEur(P.T.tot)],['Di cui bonus psicologo',fEur(P.T.bonus)],['Documenti emessi',String(P.T.n)]].map(r=>'<div class="frow"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>').join('')+'</div></div>'}
+function fPagTab(){
+  const anno=S.fanno||fYear(),L=fPags().filter(x=>x.data.slice(0,4)===String(anno)).sort((a,b)=>b.data.localeCompare(a.data));
+  return '<div class="bar"><h3 style="margin:0">Pagamenti '+anno+'</h3><button class="btn pri" data-act="fPagNew">+ Registra pagamento</button></div>'+
+   fTable(['Data','Paziente','>Importo','Metodo','Tracc.','Documento',''],L.map(x=>{const d=fDocs().find(y=>y.id===x.did);return '<tr><td>'+esc(fd(x.data))+'</td><td>'+esc(fPatName(x.pid))+'</td><td class="r">'+esc(fEur(x.imp))+(x.bonus?'<div class="small mut">bonus '+esc(fEur(x.bonus))+'</div>':'')+'</td><td>'+esc((F_METODI.find(m=>m[0]===x.metodo)||[])[1]||'')+'</td><td>'+(x.trac?'sì':'no')+'</td><td>'+(d?esc(d.numTxt):(x.imp>0?'<button class="btn sm" data-act="fDocNew" data-pid="'+x.pid+'">Emetti</button>':'<span class="mut">rimborso</span>'))+'</td><td class="r">'+(x.did?'':'<button class="btn sm" data-act="fPagEdit" data-id="'+x.id+'">Modifica</button> <button class="btn sm" data-act="fPagDel" data-id="'+x.id+'">Elimina</button>')+'</td></tr>'}),'Nessun pagamento nel '+anno+'. Si registrano da qui o, per una seduta, dalla scheda del paziente.')}
+function fDocTab(){
+  const anno=S.fanno||fYear(),L=fDocs().filter(x=>x.anno===anno).sort((a,b)=>b.num-a.num),free=fPagFree();
+  const by={};free.forEach(x=>{(by[x.pid]=by[x.pid]||[]).push(x)});
+  return '<div class="bar"><h3 style="margin:0">Documenti '+anno+'</h3><button class="btn pri" data-act="fDocNew">+ Nuovo documento</button></div>'+
+   (Object.keys(by).length?'<div class="card fpend"><b>Da documentare</b>'+Object.keys(by).map(pid=>'<div class="frow"><span>'+esc(fPatName(pid))+' · '+by[pid].length+(by[pid].length===1?' pagamento':' pagamenti')+' · '+esc(fEur(by[pid].reduce((t,x)=>t+x.imp,0)))+'</span><button class="btn sm" data-act="fDocNew" data-pid="'+pid+'">Emetti</button></div>').join('')+'</div>':'')+
+   fTable(['N.','Data','Paziente','>Totale','Stato',''],L.map(d=>'<tr><td><b>'+esc(d.numTxt)+'</b><div class="small mut">'+(d.tipo==='storno'?'storno':d.tipo)+'</div></td><td>'+esc(fd(d.data))+'</td><td>'+esc(fPatName(d.pid,d.snap))+'</td><td class="r">'+esc(fEur(d.totale))+'</td><td>'+(d.tipo==='storno'?fBadge('Storno','off'):d.stornato?fBadge('Stornato','off'):fBadge('Emesso','ok'))+(d.motivo&&d.stornato?'<div class="small mut">'+esc(d.motivo)+'</div>':'')+'</td><td class="r"><button class="btn sm" data-act="fDocPdf" data-id="'+d.id+'">PDF</button>'+(d.tipo!=='storno'&&!d.stornato?' <button class="btn sm" data-act="fDocStorno" data-id="'+d.id+'">Storna</button>':'')+'</td></tr>'),'Nessun documento nel '+anno+'. I documenti non si cancellano: si annullano con uno storno motivato.')}
+function fTsTab(){
+  const anno=S.fanno||fYear(),pv=fTsPrev(anno),sent=fSentIds(),inv=D().fInv.filter(x=>x.anno===anno).sort((a,b)=>b.data.localeCompare(a.data)),ts=fTsNext();
+  const rows=pv.rows.map(r=>{const d=r.doc;return '<tr class="'+(r.e.length?'fe':'')+'"><td><b>'+esc(d.numTxt)+'</b></td><td>'+esc(fd(d.data))+'</td><td>'+esc(fPatName(d.pid,d.snap))+'</td><td>'+esc(r.cf||(r.incl?'—':''))+'</td><td class="r">'+(r.incl?esc(fEur(r.sp))+(r.aa?' + AA '+esc(fEur(r.aa)):''):'')+'</td><td>'+(r.skip?'<span class="mut small">'+esc(r.skip)+'</span>':r.e.length?'<span class="small" style="color:var(--terra)">'+esc(r.e.join('; '))+'</span>':fBadge(sent.has(d.id)?'Inviato':'Pronto','ok'))+(r.w.length?'<div class="small mut">'+esc(r.w.join('; '))+'</div>':'')+'</td></tr>'});
+  return '<div class="bar"><h3 style="margin:0">Sistema Tessera Sanitaria · '+anno+'</h3><span class="row"><button class="btn pri" data-act="fTsCsv"'+(pv.okRows.length?'':' disabled')+'>Esporta prospetto ('+pv.okRows.length+')</button><button class="btn" data-act="fInvNew"'+(pv.okRows.length?'':' disabled')+'>Segna come inviato</button></span></div>'+
+   '<div class="banner warn small"><b>Prospetto preparatorio.</b> Contiene i dati da caricare (codice fiscale, tipo spesa SP o AA, importi) ma <b>non è il file nel tracciato ufficiale</b> di Sistema TS: la specifica tecnica non è ancora stata caricata. Periodicità e scadenza sono impostazioni da confermare (ora: '+esc(fSet().tsPer)+', entro il '+esc(fd(ts.data))+').</div>'+
+   (pv.errs.length?'<div class="banner bad small"><b>Da correggere prima dell’esportazione ('+pv.errs.length+')</b><ul>'+pv.errs.slice(0,8).map(e=>'<li>'+esc(e)+'</li>').join('')+(pv.errs.length>8?'<li>…</li>':'')+'</ul>I documenti con errori restano fuori dal prospetto.</div>':'')+
+   pv.warns.map(w=>'<div class="banner info small">'+esc(w)+'</div>').join('')+
+   fTable(['N.','Data','Paziente','Codice fiscale','>Spesa','Controlli'],rows,'Nessun documento nel '+anno+'.')+
+   '<h3 class="npsec">Registro degli invii</h3>'+fTable(['Data invio','Documenti','Protocollo ricevuta','Nota',''],inv.map(i=>'<tr><td>'+esc(fd(i.data))+'</td><td>'+(i.docIds||[]).length+'</td><td>'+esc(i.prot||'—')+'</td><td>'+esc(i.nota||'')+'</td><td class="r"><button class="btn sm" data-act="fInvEdit" data-id="'+i.id+'">Modifica</button> <button class="btn sm" data-act="fInvDel" data-id="'+i.id+'">Togli</button></td></tr>'),'Nessun invio registrato per il '+anno+'. Dopo aver caricato il file sul portale, registra qui data e protocollo.')}
+function fXmlTab(){
+  const anno=S.fanno||fYear(),all=fDocs().filter(x=>x.anno===anno).sort((a,b)=>b.num-a.num);
+  const isEnte=d=>{const p=D().patients.find(x=>x.id===d.pid);return (p?fPatF(p):d.snap||{}).tipo==='ente'};
+  const L=all.filter(isEnte),pf=all.filter(d=>!isEnte(d)).length;
+  return '<div class="bar"><h3 style="margin:0">Fattura elettronica XML · '+anno+'</h3></div>'+
+   '<div class="banner info small">L’XML (tracciato FatturaPA, specifiche tecniche 1.9.1) è solo per <b>enti e aziende</b>. Per i pazienti <b>persone fisiche è bloccato</b>: le loro prestazioni sanitarie si comunicano al Sistema Tessera Sanitaria. '+(pf?pf+' documenti '+anno+' riguardano persone fisiche e non sono qui.':'')+(fSet().regime==='ordinario'?' <b>Regime ordinario:</b> per gli enti può servire la ritenuta d’acconto, che qui non è gestita: da verificare.':'')+'</div>'+
+   fTable(['N.','Data','Ente','>Totale',''],L.map(d=>'<tr><td><b>'+esc(d.numTxt)+'</b></td><td>'+esc(fd(d.data))+'</td><td>'+esc((d.snap&&d.snap.denom)||fPatName(d.pid,d.snap))+'</td><td class="r">'+esc(fEur(d.totale))+'</td><td class="r"><button class="btn sm pri" data-act="fDocXml" data-id="'+d.id+'">Genera XML</button></td></tr>'),'Nessun documento intestato a un ente nel '+anno+'. Per un ente imposta il tipo «Ente o azienda» nei dati fiscali del paziente.')}
+function fProsTab(){
+  const anno=S.fanno||fYear(),P=fPros(anno);
+  return '<div class="bar"><h3 style="margin:0">Prospetti per il commercialista · '+anno+'</h3><span class="row"><button class="btn pri" data-act="fProsCsv">CSV</button><button class="btn" data-act="fProsPdf">PDF</button></span></div>'+
+   fTable(['Mese','>Doc.','>Compensi','>Integrativo','>Bolli','>Totale','>Bonus'],P.m.map((r,i)=>'<tr><td>'+FMESI[i]+'</td><td class="r">'+r.n+'</td><td class="r">'+esc(fEur(r.comp))+'</td><td class="r">'+esc(fEur(r.integr))+'</td><td class="r">'+esc(fEur(r.bollo))+'</td><td class="r">'+esc(fEur(r.tot))+'</td><td class="r">'+esc(fEur(r.bonus))+'</td></tr>').concat('<tr class="ftot"><td>Totale</td><td class="r">'+P.T.n+'</td><td class="r">'+esc(fEur(P.T.comp))+'</td><td class="r">'+esc(fEur(P.T.integr))+'</td><td class="r">'+esc(fEur(P.T.bollo))+'</td><td class="r">'+esc(fEur(P.T.tot))+'</td><td class="r">'+esc(fEur(P.T.bonus))+'</td></tr>'),'')+
+   '<h3 class="npsec">Incassi per metodo</h3>'+fTable(['Metodo','>Pagamenti','>Importo','>Tracciabili'],F_METODI.filter(m=>P.met[m[0]]).map(([k,l])=>'<tr><td>'+l+'</td><td class="r">'+P.met[k].n+'</td><td class="r">'+esc(fEur(P.met[k].imp))+'</td><td class="r">'+esc(fEur(P.met[k].trac))+'</td></tr>'),'Nessun incasso.')+
+   '<div class="card"><h3>Dati utili per ENPAP</h3><div class="frow"><span>Compensi dell’anno</span><b>'+esc(fEur(P.T.comp))+'</b></div><div class="frow"><span>Contributo integrativo incassato</span><b>'+esc(fEur(P.T.integr))+'</b></div><p class="small mut" style="margin:8px 0 0">Contributi soggettivi, minimi e scadenze sono quelli comunicati da ENPAP: l’app non li calcola né li scrive.</p></div>'}
+function fImpTab(){
+  const s=fSet(),inc=fStudioIncompleto(),ts=fTsNext();
+  const kv=(a,b)=>'<div class="frow"><span>'+a+'</span><b class="'+(FPH(b)||!String(b||'').trim()?'fph':'')+'">'+esc(b||'—')+'</b></div>';
+  return '<div class="card"><div class="bar"><h3 style="margin:0">Studio</h3><button class="btn sm" data-act="fSetStudio">Modifica</button></div>'+
+    kv('Nome',fStudioName())+kv('Codice fiscale',s.cf)+kv('Partita IVA',s.piva)+kv('Sede',[s.indirizzo,s.cap,s.comune,s.prov].join(' '))+kv('Albo',s.albo+' · '+s.regioneAlbo+' · n. '+s.nalbo)+kv('IBAN',s.iban)+
+    (inc.length?'<p class="small mut" style="margin:8px 0 0">I valori tra <code>{{…}}</code> sono segnaposto: si possono lasciare finché non hai i dati definitivi (per esempio la partita IVA).</p>':'')+
+    '<div class="row" style="margin-top:10px"><button class="btn sm" data-act="fSetReset">Prepara come modello (azzera i dati)</button></div></div>'+
+   '<div class="card"><div class="bar"><h3 style="margin:0">Regime e contributi</h3><button class="btn sm" data-act="fSetRegime">Modifica</button></div>'+
+    kv('Regime',s.regime==='forfettario'?'Forfettario':'Ordinario (esente art. 10 n. 18)')+kv('Contributo integrativo ENPAP',s.enpap?s.enpapAliq+'%':'No')+kv('Bollo',fEur(s.bolloImp)+' oltre '+fEur(s.bolloSoglia)+(s.bolloAdd?', addebitato':', a mio carico'))+kv('Formato del numero',s.numFmt)+'</div>'+
+   '<div class="card"><div class="bar"><h3 style="margin:0">Listino</h3><button class="btn sm" data-act="fListNew">+ Prestazione</button></div>'+
+    (D().fList.length?D().fList.map(x=>'<div class="frow"><span>'+esc(x.nome)+'</span><span><b>'+esc(fEur(x.imp))+'</b> <button class="btn sm" data-act="fListEdit" data-id="'+x.id+'">Modifica</button> <button class="btn sm" data-act="fListDel" data-id="'+x.id+'">Elimina</button></span></div>').join(''):'<p class="mut small">Nessuna prestazione. Con il listino il pagamento si compila da solo.</p>')+'</div>'+
+   '<div class="card"><div class="bar"><h3 style="margin:0">Diciture</h3><button class="btn sm" data-act="fSetDic">Modifica</button></div><p class="small mut" style="margin:0">Testi per regime, contributo integrativo e bollo. Bozze da far validare con il commercialista.</p></div>'+
+   '<div class="card"><div class="bar"><h3 style="margin:0">Tessera Sanitaria</h3><button class="btn sm" data-act="fSetTs">Modifica</button></div><p class="small mut" style="margin:0">Invio '+esc(s.tsPer)+', prossima scadenza indicata: <b>'+esc(fd(ts.data))+'</b> (dati '+ts.anno+'). Da confermare.</p></div>'+
+   '<p class="small mut">L’app prepara documenti e file da caricare a mano; non si collega a nessun servizio. Testi, soglie e aliquote sono bozze modificabili: non sono consulenza fiscale.</p>'}
+function vFis(){
+  const anno=S.fanno||(S.fanno=fYear()),t=S.ftab||'pan',s=fSet(),inc=fStudioIncompleto();
+  const body=t==='pag'?fPagTab():t==='doc'?fDocTab():t==='ts'?fTsTab():t==='xml'?fXmlTab():t==='pros'?fProsTab():t==='imp'?fImpTab():fPan();
+  return '<div class="bar fbar"><div><h2>Fiscale</h2><p class="small mut" style="margin:2px 0 0">Regime '+(s.regime==='forfettario'?'forfettario':'ordinario')+' · documenti e file da caricare a mano · bozze da far validare con il commercialista</p></div>'+
+   '<span class="row fyear"><button class="btn sm" data-act="fAnno" data-n="-1" aria-label="Anno precedente">‹</button><b>'+anno+'</b><button class="btn sm" data-act="fAnno" data-n="1" aria-label="Anno successivo">›</button></span></div>'+
+   '<div class="ftabs" role="tablist">'+FTABS.map(x=>'<button class="npchip'+(t===x[0]?' on':'')+'" data-act="fTab" data-t="'+x[0]+'" role="tab" aria-selected="'+(t===x[0])+'">'+esc(x[1])+'</button>').join('')+'</div>'+
+   (inc.length&&t!=='imp'?'<div class="banner warn small">I dati dello studio non sono completi ('+esc(inc.join(', '))+'): i documenti riporteranno i segnaposto. <a href="#" data-act="fTab" data-t="imp">Impostazioni fiscali</a></div>':'')+body}
+A.fTab=d=>{S.ftab=FTABS.some(x=>x[0]===d.t)?d.t:'pan';if(S.view!=='fis')S.view='fis';render()};
+A.fAnno=d=>{S.fanno=(S.fanno||fYear())+Number(d.n);render()};
+const _vMain35=vMain;
+vMain=function(){return S.view==='fis'?vFis():_vMain35.apply(this,arguments)};
+
+/* ====================== telefono: «Pagamento» ====================== */
+CT.pagamento={l:'Pagamento',s:'Importo incassato da un paziente',ic:'M12 3v18M16.5 7.5c-1-1-2.5-1.5-4.5-1.5-2.5 0-4 1.2-4 3s1.5 2.6 4 3 4 1.2 4 3-1.5 3-4 3c-2 0-3.6-.6-4.8-1.8',pz:1,
+  f:()=>[PZF,DTF(),{k:'imp',l:'Importo incassato (€)',req:1},{k:'metodo',l:'Metodo',t:'select',o:F_METODI,d:'bonifico'},{k:'trac',l:'Tracciabile',t:'select',o:Y_N,d:'1'},{k:'bonus',l:'Di cui bonus psicologo (€, facoltativo)'}],
+  name:(v,z)=>'PAGAMENTO_'+z+'_'+v.data+'_'+String(fMoney(v.imp)==null?'0':fNum(fMoney(v.imp)))+'_'+fz(v.metodo||'altro'),
+  text:v=>lineKV([['Importo',v.imp],['Metodo',v.metodo],['Tracciabile',v.trac==='0'?'no':'sì'],['Bonus',v.bonus]]),
+  chk:v=>{const m=fMoney(v.imp);if(m==null||m===0)return 'Scrivi l’importo (per esempio 50 o 50,00).';const b=fMoney(v.bonus||'0');if(b==null||b<0||b>F_BONUS_MAX)return 'Il bonus psicologo è al massimo 50 € per seduta.';return ''},
+  sum:v=>fd(v.data)+' · '+(fMoney(v.imp)==null?v.imp:fEur(fMoney(v.imp)))};
+CT_ORDER.splice(CT_ORDER.indexOf('seduta')+1,0,'pagamento');
+IMP_T.push(['pagamento','Pagamento',['pagamento','pagamenti','incasso'],1]);
+const _plan35=impPlan;
+impPlan=function(it,all){
+  const P=_plan35.apply(this,arguments);
+  if(it.type!=='pagamento'||P.st==='err')return P;
+  const fail=m=>{P.st='err';P.sum=m;return P},kv=(()=>{const o={};String(it.text||'').split(/\r?\n/).forEach(l=>{const m=/^\s*([^:]{2,20}):\s*(.+?)\s*$/.exec(l);if(m)o[nz(m[1])]=m[2]});return o})();
+  const imp=fMoney((it.descT[0]||kv.importo||'').replace(/(\d)\.(\d{3})(?!\d)/,'$1$2')),date=it.dates[0];
+  if(!date)return fail('Manca la data del pagamento nel nome (AAAA-MM-GG).');
+  if(imp==null||imp===0)return fail('Importo non trovato: scrivilo nel nome (es. …_2026-11-05_50.00_bonifico) o come «Importo: 50,00» nel file.');
+  const mk=nz(it.descT[1]||kv.metodo||'bonifico'),metodo=(F_METODI.find(m=>nz(m[0])===mk||nz(m[1])===mk)||[])[0]||'altro';
+  const bonus=fMoney(kv.bonus||'0')||0;if(bonus<0||bonus>F_BONUS_MAX||bonus>Math.abs(imp))return fail('Quota bonus non valida.');
+  const trac=!/^(no|n|0)$/i.test(nz(kv.tracciabile||(metodo==='contanti'?'no':'si')));
+  const pid=it.pid||(it.cand.length===1?it.cand[0]:'');
+  if(pid&&!pid.startsWith('new:')&&fPags().some(x=>x.pid===pid&&x.data===date&&x.imp===imp&&x.metodo===metodo)){P.skip=true;P.notes.push('Pagamento identico già registrato: non è selezionato.')}
+  P.rec={data:date,imp,metodo,trac,bonus};P.sum='Pagamento di '+fEur(imp)+' del '+fd(date)+' ('+((F_METODI.find(m=>m[0]===metodo)||[])[1]||metodo)+') per '+P.who+' · compare in Fiscale › Pagamenti';
+  if(P.notes.length&&P.st==='ok')P.st='warn';return P};
+const _apply35=impApply;
+impApply=async function(it,made){
+  if(it.type!=='pagamento')return _apply35.apply(this,arguments);
+  let pid=it.pid||(it.cand.length===1?it.cand[0]:'');if(!pid&&it.pl.who&&/^\(nuovo\)/.test(it.pl.who)){const nw=S.imp.find(o=>o.type==='nuovo'&&nz(o.nameT.join(' '))===nz(it.nameT.join(' ')));if(nw)pid='new:'+nw.id}
+  if(pid&&pid.startsWith('new:'))pid=made[pid.slice(4)];
+  if(!pid)throw new Error('Paziente non trovato.');
+  const R=it.pl.rec;D().fPag.push({id:uid(),pid,sid:'',did:'',data:R.data,prest:'',imp:R.imp,metodo:R.metodo,trac:R.trac,bonus:R.bonus,nota:''});
+  log('Pagamento importato dal telefono',fEur(R.imp),pid);return 'Pagamento registrato in Fiscale'};
+
+/* sicurezza dei dati: gli ID dei nuovi elenchi vengono ripuliti come gli altri */
+(()=>{const _s=sanitizeDb;sanitizeDb=function(d){let n=_s.apply(this,arguments);
+  ['fPag','fDoc','fList','fInv'].forEach(c=>{if(Array.isArray(d[c]))d[c].forEach(x=>{if(!x||typeof x!=='object')return;['id','pid','did','sid','stornoDi','prest'].forEach(k=>{if(typeof x[k]==='string'){const v=cleanId(x[k]);if(v!==x[k]){x[k]=v;n++}}});if(typeof x.data==='string'&&x.data!==''&&!okYmd(x.data)){const m=/^(\d{4}-\d{2}-\d{2})/.exec(x.data);x.data=m?m[1]:'';n++}})});
+  return n}})();
 
 /* ---------- 10. AVVIO ---------- */
 async function selfTest(){
