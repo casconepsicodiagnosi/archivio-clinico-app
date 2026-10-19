@@ -4717,7 +4717,8 @@ function fSetDef(){return {
   dicEsente:'Prestazione sanitaria esente da IVA ai sensi dell’art. 10, n. 18, D.P.R. 633/1972.',
   dicEnpap:'Contributo integrativo ENPAP {aliq}% (art. 1, comma 212, L. 662/1996 e regolamento ENPAP).',
   dicBollo:'Imposta di bollo da 2,00 € assolta sull’originale ai sensi del D.P.R. 642/1972.',
-  tsGG:31,tsMM:1,tsPer:'annuale',tsCert:'',tsCertFp:'',tsCertBits:0}}
+  tsGG:31,tsMM:1,tsPer:'annuale',ts1GG:30,ts1MM:9,ts2GG:31,ts2MM:1,tsNatF:'N2',tsNatO:'N4',tsTipoDoc:'F',tsCert:'',tsCertFp:'',tsCertBits:0,
+  ritAliq:20,dicRit:'Compenso soggetto a ritenuta d’acconto del {aliq}% ai sensi dell’art. 25 del D.P.R. 600/1973.'}}
 function fSet(){const d=D();if(!d.fSet||typeof d.fSet!=='object')d.fSet={};const def=fSetDef();Object.keys(def).forEach(k=>{if(d.fSet[k]===undefined)d.fSet[k]=def[k]});return d.fSet}
 const _mig35=migrate;
 migrate=function(d){
@@ -4789,25 +4790,34 @@ A.fSetStudio=()=>{const s=fSet();
 A.fSetRegime=()=>{const s=fSet(),y=fYear();
   formModal('Regime e contributi',[
    {k:'regime',l:'Regime',t:'select',o:[['forfettario','Forfettario (L. 190/2014, commi 54-89)'],['ordinario','Ordinario (esente IVA, art. 10 n. 18 DPR 633/72)']],h:'Si può cambiare quando serve, anche documento per documento.'},
-   {k:'enpap',l:'Contributo integrativo ENPAP in fattura',t:'select',o:Y_N},{k:'enpapAliq',l:'Aliquota del contributo integrativo (%)',t:'number',min:0,max:10},
+   {k:'enpap',l:'Contributo integrativo ENPAP in fattura',t:'select',o:Y_N},{k:'enpapAliq',l:'Aliquota del contributo integrativo (%)',t:'number',min:0,max:10},{k:'ritAliq',l:'Aliquota della ritenuta d’acconto per gli enti in regime ordinario (%)',t:'number',min:0,max:40,h:'Si applica solo se la attivi sul singolo documento: non riguarda il forfettario né i privati.'},
    {k:'bolloSoglia',l:'Bollo sopra (€)',h:'Importi senza IVA: oltre questa soglia serve il bollo.'},{k:'bolloImp',l:'Importo del bollo (€)'},{k:'bolloAdd',l:'Il bollo si addebita al paziente',t:'select',o:Y_N},
    {k:'numFmt',l:'Formato del numero',h:'Usa {n} per il progressivo e {anno} per l’anno. Esempio: {n}/{anno}'},{k:'start',l:'Primo numero del '+y+' (solo se hai già emesso documenti altrove)',t:'number',min:1,max:99999}],
-   {regime:s.regime,enpap:s.enpap?'1':'0',enpapAliq:s.enpapAliq,bolloSoglia:fNumC(s.bolloSoglia),bolloImp:fNumC(s.bolloImp),bolloAdd:s.bolloAdd?'1':'0',numFmt:s.numFmt,start:(s.start&&s.start[y])||1},async o=>{
+   {regime:s.regime,enpap:s.enpap?'1':'0',enpapAliq:s.enpapAliq,ritAliq:s.ritAliq,bolloSoglia:fNumC(s.bolloSoglia),bolloImp:fNumC(s.bolloImp),bolloAdd:s.bolloAdd?'1':'0',numFmt:s.numFmt,start:(s.start&&s.start[y])||1},async o=>{
     const bs=fMoney(o.bolloSoglia),bi=fMoney(o.bolloImp);if(bs==null||bi==null||bs<0||bi<0)throw new Error('Importi non validi.');
     if(!/\{n\}/.test(o.numFmt))throw new Error('Il formato del numero deve contenere {n}.');
-    s.regime=o.regime==='ordinario'?'ordinario':'forfettario';s.enpap=o.enpap==='1';s.enpapAliq=Math.max(0,Number(o.enpapAliq)||0);s.bolloSoglia=bs;s.bolloImp=bi;s.bolloAdd=o.bolloAdd==='1';s.numFmt=o.numFmt;
+    s.regime=o.regime==='ordinario'?'ordinario':'forfettario';s.enpap=o.enpap==='1';s.enpapAliq=Math.max(0,Number(o.enpapAliq)||0);s.ritAliq=Math.min(40,Math.max(0,Number(o.ritAliq)||0));s.bolloSoglia=bs;s.bolloImp=bi;s.bolloAdd=o.bolloAdd==='1';s.numFmt=o.numFmt;
     const st=Math.max(1,Math.floor(Number(o.start)||1));
     if(fDocs().some(x=>x.anno===y)&&st>fNextNum(y))throw new Error('Esistono già documenti del '+y+': non si possono saltare numeri.');
     if(!s.start)s.start={};if(!fDocs().some(x=>x.anno===y))s.start[y]=st;
     log('Regime e contributi modificati',s.regime);await save();render()})};
 A.fSetDic=()=>{const s=fSet();
-  formModal('Diciture dei documenti',[{k:'dicForf',l:'Regime forfettario',t:'textarea',r:4},{k:'dicEsente',l:'Prestazione esente IVA (regime ordinario)',t:'textarea',r:3},{k:'dicEnpap',l:'Contributo integrativo ({aliq} = aliquota)',t:'textarea',r:2},{k:'dicBollo',l:'Imposta di bollo',t:'textarea',r:2}],s,async o=>{
-    ['dicForf','dicEsente','dicEnpap','dicBollo'].forEach(k=>{s[k]=String(o[k]||'').trim()});log('Diciture dei documenti modificate','');await save();render()},
+  formModal('Diciture dei documenti',[{k:'dicForf',l:'Regime forfettario',t:'textarea',r:4},{k:'dicEsente',l:'Prestazione esente IVA (regime ordinario)',t:'textarea',r:3},{k:'dicEnpap',l:'Contributo integrativo ({aliq} = aliquota)',t:'textarea',r:2},{k:'dicBollo',l:'Imposta di bollo',t:'textarea',r:2},{k:'dicRit',l:'Ritenuta d’acconto ({aliq} = aliquota), solo enti in regime ordinario',t:'textarea',r:2}],s,async o=>{
+    ['dicForf','dicEsente','dicEnpap','dicBollo','dicRit'].forEach(k=>{s[k]=String(o[k]||'').trim()});log('Diciture dei documenti modificate','');await save();render()},
     '<p class="small mut">Sono <b>bozze</b>: da far validare con il commercialista. Non sono consulenza fiscale.</p>')};
-A.fSetTs=()=>{const s=fSet();
-  formModal('Sistema Tessera Sanitaria',[{k:'tsPer',l:'Periodicità dell’invio',t:'select',o:[['annuale','Annuale'],['semestrale','Semestrale'],['altra','Altra (da indicare nelle note)']]},{k:'tsGG',l:'Giorno di scadenza',t:'number',min:1,max:31},{k:'tsMM',l:'Mese di scadenza (dell’anno successivo)',t:'number',min:1,max:12}],s,async o=>{
-    s.tsPer=o.tsPer;s.tsGG=Math.min(31,Math.max(1,Math.floor(Number(o.tsGG)||31)));s.tsMM=Math.min(12,Math.max(1,Math.floor(Number(o.tsMM)||1)));log('Scadenze Tessera Sanitaria modificate','');await save();render()},
-    '<p class="small mut">Valori iniziali: annuale, entro il 31 gennaio dell’anno dopo. <b>Da confermare</b> (il decreto è in attesa). Se la scadenza cade in un giorno festivo o di fine settimana l’app propone il primo giorno feriale utile.</p>')};
+A.fSetTs=()=>{const s=fSet(),nat=v=>/^N[1-6]$/.test(String(v||'').trim().toUpperCase());
+  formModal('Sistema Tessera Sanitaria',[{k:'tsPer',l:'Periodicità dell’invio',t:'select',o:[['annuale','Annuale'],['semestrale','Semestrale (due invii)'],['altra','Altra (si tratta come annuale)']]},
+   {k:'tsGG',l:'Annuale: giorno di scadenza',t:'number',min:1,max:31},{k:'tsMM',l:'Annuale: mese di scadenza (dell’anno successivo)',t:'number',min:1,max:12},
+   {k:'ts1GG',l:'Semestrale · pagamenti gennaio-giugno: giorno',t:'number',min:1,max:31},{k:'ts1MM',l:'Semestrale · pagamenti gennaio-giugno: mese (stesso anno)',t:'number',min:1,max:12},
+   {k:'ts2GG',l:'Semestrale · pagamenti luglio-dicembre: giorno',t:'number',min:1,max:31},{k:'ts2MM',l:'Semestrale · pagamenti luglio-dicembre: mese (anno successivo)',t:'number',min:1,max:12},
+   {k:'tsNatF',l:'Natura IVA nel file TS e nell’XML · forfettario',h:'Lo schema ricevuto ammette da N1 a N6. Predefinito N2 (non soggette). Da confermare.'},{k:'tsNatO',l:'Natura IVA nel file TS e nell’XML · regime ordinario',h:'Predefinito N4 (esenti). Da confermare.'},
+   {k:'tsTipoDoc',l:'Tipo documento nel file TS',t:'select',o:[['F','F · fattura'],['D','D · documento commerciale']],h:'Per le ricevute di uno psicologo va verificato quale dei due indicare.'}],s,async o=>{
+    const g=(v,d,mx)=>Math.min(mx,Math.max(1,Math.floor(Number(v)||d)));
+    if(!nat(o.tsNatF)||!nat(o.tsNatO))throw new Error('La natura IVA va scritta da N1 a N6.');
+    s.tsPer=o.tsPer;s.tsGG=g(o.tsGG,31,31);s.tsMM=g(o.tsMM,1,12);s.ts1GG=g(o.ts1GG,30,31);s.ts1MM=g(o.ts1MM,9,12);s.ts2GG=g(o.ts2GG,31,31);s.ts2MM=g(o.ts2MM,1,12);
+    s.tsNatF=String(o.tsNatF).trim().toUpperCase();s.tsNatO=String(o.tsNatO).trim().toUpperCase();s.tsTipoDoc=o.tsTipoDoc==='D'?'D':'F';
+    log('Impostazioni Tessera Sanitaria modificate','');await save();render()},
+    '<p class="small mut">Valori iniziali: annuale, entro il 31 gennaio dell’anno dopo. Con il <b>semestrale</b> i pagamenti da gennaio a giugno si inviano entro il 30 settembre e quelli da luglio a dicembre entro il 31 gennaio (così riporta una guida fiscale). <b>Da confermare con il commercialista</b>: sono tutte impostazioni modificabili. Se la scadenza cade di sabato, domenica o festivo l’app propone il primo giorno feriale utile.</p>')};
 A.fSetReset=async()=>{
   if(!await ask('<p>Rimettere i <b>dati dello studio</b> ai segnaposto <code>{{…}}</code> (per preparare il modello per un’altra persona)? Pagamenti e documenti già emessi non vengono toccati.</p>',{ok:'Azzera i dati',danger:false}))return;
   const d=fSetDef(),s=fSet();['nome','cognome','cf','piva','indirizzo','cap','comune','prov','regioneAlbo','provAlbo','nalbo','dalbo','iban','pec','email','tel'].forEach(k=>{s[k]=d[k]});
@@ -4905,8 +4915,9 @@ function fDocForm(pid){
    {k:'reg',l:'Regime',t:'select',o:[['forfettario','Forfettario'],['ordinario','Ordinario (esente art. 10 n. 18)']]},
    {k:'integr',l:'Contributo integrativo ENPAP',t:'select',o:Y_N},
    {k:'bollo',l:'Bollo',t:'select',o:[['auto','Automatico (oltre la soglia)'],['si','Sì, applica il bollo'],['no','No, nessun bollo']],h:'Avviso: il bollo è dovuto oltre '+fEur(s.bolloSoglia)+' per prestazioni senza IVA. Modificabile.'},
-   {k:'bolloAdd',l:'Il bollo si somma al totale (addebitato al paziente)',t:'select',o:Y_N}],
-   {tipo:'ricevuta',data:today(),pag:free.map(x=>x.id),reg:s.regime,integr:s.enpap?'1':'0',bollo:'auto',bolloAdd:s.bolloAdd?'1':'0'},async o=>{
+   {k:'bolloAdd',l:'Il bollo si somma al totale (addebitato al paziente)',t:'select',o:Y_N},
+   {k:'rit',l:'Ritenuta d’acconto (solo enti in regime ordinario)',t:'select',o:Y_N,h:'Aliquota '+s.ritAliq+'%, calcolata sul compenso (senza contributo integrativo né bollo). Da verificare con il commercialista.'}],
+   {tipo:'ricevuta',data:today(),pag:free.map(x=>x.id),reg:s.regime,integr:s.enpap?'1':'0',bollo:'auto',bolloAdd:s.bolloAdd?'1':'0',rit:(f.tipo==='ente'&&s.regime==='ordinario')?'1':'0'},async o=>{
     const ids=Array.isArray(o.pag)?o.pag:[];if(!ids.length)throw new Error('Scegli almeno un pagamento.');
     await fDocIssue(pid,ids,o)},
     (fStudioIncompleto().length?'<div class="banner warn small">I dati dello studio sono ancora incompleti ('+esc(fStudioIncompleto().join(', '))+'): il documento riporterà i segnaposto. <a href="#" data-act="fSetStudio">Compila i dati</a></div>':'')+(f.cf||f.tipo!=='pf'?'':'<p class="small mut">Il paziente non ha il codice fiscale: puoi emettere il documento, ma non sarà esportabile per la Tessera Sanitaria finché non lo inserisci.</p>'))}
@@ -4921,9 +4932,12 @@ async function fDocIssue(pid,ids,o){
   if(pg.some(x=>x.bonus>F_BONUS_MAX))throw new Error('Un pagamento ha una quota bonus oltre 50 €.');
   const bd=fDocBuild(pid,ids,{integr:o.integr==='1',bollo:o.bollo,bolloAdd:o.bolloAdd==='1'});
   if(bd.tot<=0)throw new Error('Il totale deve essere positivo.');
+  const regD=o.reg==='ordinario'?'ordinario':'forfettario',ritOn=o.rit==='1';
+  if(ritOn&&(f.tipo!=='ente'||regD!=='ordinario'))throw new Error('La ritenuta d’acconto riguarda solo enti e aziende in regime ordinario.');
+  const ritAl=ritOn?Number(s.ritAliq)||0:0,rit=ritOn?Math.round(bd.b.compenso*ritAl/100):0;
   const num=fNextNum(anno),id=uid();
   const doc={id,tipo:o.tipo==='fattura'?'fattura':'ricevuta',anno,num,numTxt:fDocNum(s,num,anno),data:o.data,pid,reg:o.reg==='ordinario'?'ordinario':'forfettario',
-    compenso:bd.b.compenso,integr:bd.b.integr,integrOn:o.integr==='1',aliq:o.integr==='1'?Number(s.enpapAliq)||0:0,bollo:bd.b.bollo,bolloAdd:bd.b.bolloAdd,totale:bd.b.totale,quotaBonus:bd.bonus,quotaPaz:bd.b.totale-bd.bonus,
+    compenso:bd.b.compenso,integr:bd.b.integr,integrOn:o.integr==='1',aliq:o.integr==='1'?Number(s.enpapAliq)||0:0,bollo:bd.b.bollo,bolloAdd:bd.b.bolloAdd,totale:bd.b.totale,quotaBonus:bd.bonus,quotaPaz:bd.b.totale-bd.bonus,rit,ritAliq:ritAl,
     righe:pg.map(x=>({data:x.data,imp:x.imp})),metodi:Array.from(new Set(pg.map(x=>x.metodo))),pagIds:ids.slice(),stornoDi:'',stornato:false,motivo:'',
     snap:{nome:nm(p),cf:f.cf,tipo:f.tipo,denom:f.denom,piva:f.piva,indirizzo:f.indirizzo,cap:f.cap,comune:f.comune,prov:f.prov,nazione:f.nazione,coddest:f.coddest,pec:f.pec,opp:f.opp},
     studio:{nome:fStudioName(),cf:s.cf,piva:s.piva,indirizzo:s.indirizzo,cap:s.cap,comune:s.comune,prov:s.prov,albo:s.albo,regioneAlbo:s.regioneAlbo,provAlbo:s.provAlbo,nalbo:s.nalbo,dalbo:s.dalbo,iban:s.iban,nome1:s.nome,cognome1:s.cognome},
@@ -4937,7 +4951,7 @@ A.fDocStorno=d=>{
     if(!parseDateT(o.data)||o.data>today())throw new Error('Data non valida.');
     const anno=Number(o.data.slice(0,4)),last=fLastDate(anno);if(last&&o.data<last)throw new Error('La data non può precedere l’ultimo documento ('+fd(last)+').');
     if(o.data<doc.data)throw new Error('Lo storno non può essere precedente al documento.');
-    const s=fSet(),num=fNextNum(anno),st={id:uid(),tipo:'storno',anno,num,numTxt:fDocNum(s,num,anno),data:o.data,pid:doc.pid,reg:doc.reg,compenso:-doc.compenso,integr:-doc.integr,integrOn:doc.integrOn,aliq:doc.aliq,bollo:-doc.bollo,bolloAdd:doc.bolloAdd,totale:-doc.totale,quotaBonus:-doc.quotaBonus,quotaPaz:-doc.quotaPaz,
+    const s=fSet(),num=fNextNum(anno),st={id:uid(),tipo:'storno',anno,num,numTxt:fDocNum(s,num,anno),data:o.data,pid:doc.pid,reg:doc.reg,compenso:-doc.compenso,integr:-doc.integr,integrOn:doc.integrOn,aliq:doc.aliq,bollo:-doc.bollo,bolloAdd:doc.bolloAdd,totale:-doc.totale,quotaBonus:-doc.quotaBonus,quotaPaz:-doc.quotaPaz,rit:-(doc.rit||0),ritAliq:doc.ritAliq||0,
       righe:doc.righe.map(r=>({data:r.data,imp:-r.imp})),metodi:doc.metodi,pagIds:[],stornoDi:doc.id,stornato:false,motivo,snap:doc.snap,studio:doc.studio,creato:new Date().toISOString()};
     D().fDoc.push(st);doc.stornato=true;doc.motivo=motivo;
     /* i pagamenti tornano disponibili solo se si vuole riemettere: restano legati al documento stornato */
@@ -4953,6 +4967,7 @@ function fDicit(doc){
   o.push(doc.reg==='forfettario'?s.dicForf:s.dicEsente);
   if(doc.integr)o.push(String(s.dicEnpap).replace('{aliq}',String(doc.aliq).replace('.',',')));
   if(doc.bollo)o.push(s.dicBollo);
+  if(doc.rit)o.push(String(s.dicRit).replace('{aliq}',String(doc.ritAliq).replace('.',',')));
   return o.filter(Boolean)}
 function fDocPdfBytes(doc){
   const s=fSet(),st=doc.studio||{},c=doc.snap||{},neg=doc.tipo==='storno';
@@ -4963,7 +4978,8 @@ function fDocPdfBytes(doc){
   const tot=[['Compenso',fEur(doc.compenso)]];
   if(doc.integr)tot.push(['Contributo integrativo ENPAP '+String(doc.aliq).replace('.',',')+'%',fEur(doc.integr)]);
   if(doc.bollo)tot.push(['Imposta di bollo'+(doc.bolloAdd?' (a carico del paziente)':' (assolta dal professionista)'),fEur(doc.bolloAdd?doc.bollo:0)]);
-  tot.push(['TOTALE',fEur(doc.totale)]);
+  if(doc.rit)tot.push(['Totale documento',fEur(doc.totale)],['Ritenuta d’acconto '+String(doc.ritAliq).replace('.',',')+'%',fEur(-doc.rit)],['NETTO A PAGARE',fEur(doc.totale-doc.rit)]);
+  else tot.push(['TOTALE',fEur(doc.totale)]);
   const blocks=[{t:'h',x:'Prestatore'},{t:'rows',r:rowsP},{t:'h',x:'Destinatario'},{t:'rows',r:rowsC},{t:'h',x:'Prestazione'},
     {t:'tab',w:[.72,.28],a:['l','r'],head:['Descrizione','Importo'],r:rig},{t:'gap',n:6},{t:'tab',w:[.72,.28],a:['l','r'],r:tot,boldLast:true},{t:'gap',n:4}];
   if(neg)blocks.push({t:'h',x:'Storno'},{t:'p',x:'Storna il documento '+((fDocs().find(x=>x.id===doc.stornoDi)||{}).numTxt||'')+'. Motivo: '+doc.motivo});
@@ -4984,25 +5000,33 @@ async function fExportGate(what){
 const fSave=(name,text,mime)=>dl(name,new Blob([text],{type:mime||'text/plain'}));
 
 /* ====================== Sistema Tessera Sanitaria ====================== */
-function fTsDeadline(anno){
-  const s=fSet();let d=new Date(anno+1,(Number(s.tsMM)||1)-1,Number(s.tsGG)||31,12);
-  if(d.getMonth()!==((Number(s.tsMM)||1)-1))d=new Date(anno+1,(Number(s.tsMM)||1),0,12);/* giorno oltre la fine del mese */
-  while(d.getDay()===0||d.getDay()===6)d.setDate(d.getDate()+1);
-  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+const fYmd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function fDl(y,m,g){m=Math.min(12,Math.max(1,Math.floor(Number(m)||1)));g=Math.min(31,Math.max(1,Math.floor(Number(g)||1)));let d=new Date(y,m-1,g,12);if(d.getMonth()!==m-1)d=new Date(y,m,0,12);/* giorno oltre la fine del mese */
+  while(d.getDay()===0||d.getDay()===6)d.setDate(d.getDate()+1);return fYmd(d)}
+function fTsDeadline(anno){const s=fSet();return fDl(anno+1,Number(s.tsMM)||1,Number(s.tsGG)||31)}
+/* i periodi di invio: l'anno intero, oppure due semestri; conta la data del pagamento */
+function fTsPers(anno){const s=fSet(),Y_=String(anno);
+  if(s.tsPer==='semestrale')return [{k:'s1',lab:'1° semestre',from:Y_+'-01-01',to:Y_+'-06-30',dl:fDl(anno,Number(s.ts1MM)||9,Number(s.ts1GG)||30)},{k:'s2',lab:'2° semestre',from:Y_+'-07-01',to:Y_+'-12-31',dl:fDl(anno+1,Number(s.ts2MM)||1,Number(s.ts2GG)||31)}];
+  return [{k:'a',lab:'Anno intero',from:Y_+'-01-01',to:Y_+'-12-31',dl:fTsDeadline(anno)}]}
+const fPerTag=(anno,p)=>p.k==='a'?String(anno):anno+'-'+p.k.toUpperCase();
+function fPerKeyOf(date){const y=Number(String(date).slice(0,4)),p=fTsPers(y).find(x=>date>=x.from&&date<=x.to);return y+'-'+(p?p.k:'?')}
+function fPerSel(anno){const ps=fTsPers(anno);return ps.find(p=>p.k===S.fper)||(ps.length>1?(ps.find(p=>p.dl>=today())||ps[ps.length-1]):ps[0])}
 function fTsNext(){
-  const t=today(),y=fYear();
-  for(const a of [y-1,y,y+1]){const d=fTsDeadline(a);if(d>=t)return {anno:a,data:d}}
-  return {anno:y,data:fTsDeadline(y)}}
-function fTsPrev(anno){
+  const t=today(),y=fYear();let last=null;
+  for(const a of [y-1,y,y+1])for(const p of fTsPers(a)){last=Object.assign({anno:a,per:p.k,data:p.dl},{lab:p.lab});if(p.dl>=t)return last}
+  return last}
+const fDocDp=doc=>{if(doc.tipo==='storno')return doc.data;const ds=fPagOfDoc(doc).map(x=>x.data).sort();return ds.length?ds[ds.length-1]:doc.data};
+function fTsPrev(anno,per){
+  per=per||fPerSel(anno);
   const rows=[],errs=[],warns=[];
-  const docs=fDocs().filter(d=>d.anno===anno).sort((a,b)=>a.num-b.num);
-  docs.forEach(doc=>{
-    const p=D().patients.find(x=>x.id===doc.pid),f=p?fPatF(p):Object.assign(fPatF(null),doc.snap||{}),r={doc,e:[],w:[],incl:false,rimborso:false,sp:0,aa:0,cf:''};
-    const orig=doc.tipo==='storno'?fDocs().find(x=>x.id===doc.stornoDi):null;
+  fDocs().slice().sort((a,b)=>a.anno-b.anno||a.num-b.num).forEach(doc=>{
+    const dp=fDocDp(doc);if(dp<per.from||dp>per.to)return;
+    const p=D().patients.find(x=>x.id===doc.pid),f=p?fPatF(p):Object.assign(fPatF(null),doc.snap||{}),r={doc,dp,e:[],w:[],incl:false,rimborso:false,sp:0,aa:0,cf:''};
+    const orig=doc.tipo==='storno'?fDocs().find(x=>x.id===doc.stornoDi):null,pk=fPerKeyOf(dp);
     if(doc.tipo==='storno'){
-      if(orig&&orig.anno===doc.anno){r.skip='Storno nello stesso anno del documento: si annulla con il documento originale.'}
-      else{r.rimborso=true;r.w.push('Storno di un documento di un altro anno: la gestione dei rimborsi nel tracciato ufficiale va verificata.')}}
-    else if(doc.stornato){const st=fDocs().find(x=>x.stornoDi===doc.id);if(st&&st.anno===doc.anno)r.skip='Stornato nello stesso anno: escluso.'}
+      if(orig&&fPerKeyOf(fDocDp(orig))===pk){r.skip='Storno nello stesso periodo del documento: si annulla con il documento originale.'}
+      else{r.rimborso=true;r.w.push('Storno di un documento di un altro periodo: viene indicato come rimborso (da verificare).')}}
+    else if(doc.stornato){const st=fDocs().find(x=>x.stornoDi===doc.id);if(st&&fPerKeyOf(st.data)===pk)r.skip='Stornato nello stesso periodo: escluso.'}
     if(!r.skip&&f.tipo!=='pf')r.skip=f.tipo==='ente'?'Ente o azienda: non rientra nell’invio (si usa la fattura elettronica).':'Estero: non rientra nell’invio.';
     if(!r.skip){
       const neg=doc.totale<0,base=doc.compenso+doc.integr;
@@ -5012,7 +5036,7 @@ function fTsPrev(anno){
         else{
           const sum=pg.reduce((t,x)=>t+x.imp,0);
           if(Math.abs(sum-doc.totale)>1)r.e.push('importo del documento ('+fEur(doc.totale)+') diverso dai pagamenti ('+fEur(sum)+')');
-          if(pg.some(x=>Number(x.data.slice(0,4))!==anno))r.w.push('pagamento in un anno diverso dal documento');
+          if(new Set(pg.map(x=>fPerKeyOf(x.data))).size>1)r.w.push('pagamenti in periodi diversi: nel file conta l’ultima data');
           if(pg.some(x=>(x.bonus||0)>F_BONUS_MAX))r.e.push('quota bonus oltre 50 € per seduta');
           if(pg.some(x=>!x.trac))r.w.push('pagamento non tracciabile');
         }
@@ -5023,39 +5047,44 @@ function fTsPrev(anno){
       r.aa=doc.quotaBonus;r.sp=base-doc.quotaBonus;r.incl=true}
     rows.push(r)});
   rows.forEach(r=>{r.e.forEach(x=>errs.push(fDocLabel(r.doc)+': '+x))});
-  const pagFree=fPags().filter(x=>!x.did&&x.data.slice(0,4)===String(anno)&&x.imp>0);
-  if(pagFree.length)warns.push(pagFree.length+' pagamenti del '+anno+' non hanno ancora un documento: non entrano nell’invio.');
-  return {rows,errs,warns,okRows:rows.filter(r=>r.incl&&!r.e.length)}}
-function fTsCsv(prev,anno){
-  const out=[['Anno','Tipo documento','Numero','Data documento','Codice fiscale','Tipo spesa','Importo (EUR)','Pagamento tracciabile','Nota']];
+  const pagFree=fPags().filter(x=>!x.did&&x.data>=per.from&&x.data<=per.to&&x.imp>0);
+  if(pagFree.length)warns.push(pagFree.length+' pagamenti del periodo non hanno ancora un documento: non entrano nell’invio.');
+  return {per,rows,errs,warns,okRows:rows.filter(r=>r.incl&&!r.e.length)}}
+function fTsCsv(prev,tag){
+  const out=[['Periodo','Tipo documento','Numero','Data documento','Codice fiscale','Tipo spesa','Importo (EUR)','Pagamento tracciabile','Nota']];
   prev.okRows.forEach(r=>{const d=r.doc,pg=fPagOfDoc(d),trac=pg.length?pg.every(x=>x.trac):true,sgn=r.rimborso?-1:1,t=r.rimborso?'storno/rimborso':(d.tipo==='fattura'?'fattura':'ricevuta');
-    const base=[anno,t,d.numTxt,d.data,r.cf];
+    const base=[tag,t,d.numTxt,d.data,r.cf];
     if(r.sp)out.push(base.concat(['SP',fNumC(Math.abs(r.sp)*sgn*(d.totale<0?-1:1)),trac?'sì':'no',r.rimborso?'rimborso':'']));
     if(r.aa)out.push(base.concat(['AA',fNumC(Math.abs(r.aa)*sgn*(d.totale<0?-1:1)),'sì','quota bonus psicologo']))});
   return csvOut(out)}
+A.fTsPer=d=>{S.fper=String(d.k||'');render()};
 A.fTsCsv=async()=>{
-  const anno=S.fanno||fYear(),pv=fTsPrev(anno);
+  const anno=S.fanno||fYear(),per=fPerSel(anno),pv=fTsPrev(anno,per),tag=fPerTag(anno,per);
   if(!pv.okRows.length){toast('Non c’è niente da esportare.');return}
   if(!await fExportGate('Il prospetto contiene codici fiscali e importi dei pazienti.'))return;
-  fSave('prospetto-TS-'+anno+'.csv',fTsCsv(pv,anno),'text/csv;charset=utf-8');
-  log('Prospetto Tessera Sanitaria esportato',anno+' · '+pv.okRows.length+' documenti');saveSoon()};
+  fSave('prospetto-TS-'+tag+'.csv',fTsCsv(pv,tag),'text/csv;charset=utf-8');
+  log('Prospetto Tessera Sanitaria esportato',tag+' · '+pv.okRows.length+' documenti');saveSoon()};
 A.fInvNew=()=>{
-  const anno=S.fanno||fYear(),pv=fTsPrev(anno);
+  const anno=S.fanno||fYear(),per=fPerSel(anno),pv=fTsPrev(anno,per),tag=fPerTag(anno,per);
   if(!pv.okRows.length){toast('Non ci sono documenti da segnare come inviati.');return}
   formModal('Segna come inviato',[{k:'data',l:'Data dell’invio',t:'date',req:1},{k:'prot',l:'Protocollo della ricevuta (lo scrivi tu)'},{k:'nota',l:'Nota'}],{data:today()},async o=>{
-    D().fInv.push({id:uid(),anno,data:o.data,prot:String(o.prot||'').trim().slice(0,60),nota:String(o.nota||'').trim().slice(0,200),docIds:pv.okRows.map(r=>r.doc.id)});
-    log('Invio Tessera Sanitaria registrato',anno+' · '+pv.okRows.length+' documenti');await save();render()},
-    '<p class="small mut">Registra a mano che hai caricato il file sul portale. Documenti inclusi: <b>'+pv.okRows.length+'</b> ('+anno+'). L’app non si collega al portale.</p>')};
+    D().fInv.push({id:uid(),anno,per:per.k,data:o.data,prot:String(o.prot||'').trim().slice(0,60),nota:String(o.nota||'').trim().slice(0,200),docIds:pv.okRows.map(r=>r.doc.id)});
+    log('Invio Tessera Sanitaria registrato',tag+' · '+pv.okRows.length+' documenti');await save();render()},
+    '<p class="small mut">Registra a mano che hai caricato il file sul portale. Periodo: <b>'+esc(per.lab)+' '+anno+'</b> · documenti inclusi: <b>'+pv.okRows.length+'</b>. L’app non si collega al portale.</p>')};
 A.fInvEdit=d=>{
   const it=D().fInv.find(x=>x.id===d.id);if(!it)return;
   formModal('Invio del '+fd(it.data),[{k:'data',l:'Data dell’invio',t:'date',req:1},{k:'prot',l:'Protocollo della ricevuta'},{k:'nota',l:'Nota'}],it,async o=>{it.data=o.data;it.prot=String(o.prot||'').trim().slice(0,60);it.nota=String(o.nota||'').trim().slice(0,200);await save();render()})};
 A.fInvDel=async d=>{const it=D().fInv.find(x=>x.id===d.id);if(!it||!await ask('<p>Togliere questa registrazione dal registro degli invii? I documenti risulteranno di nuovo «non inviati».</p>',{ok:'Togli'}))return;D().fInv=D().fInv.filter(x=>x.id!==it.id);await save();render()};
 const fSentIds=()=>{const s=new Set();D().fInv.forEach(i=>(i.docIds||[]).forEach(x=>s.add(x)));return s};
+/* promemoria in agenda: le prossime due scadenze */
 A.fScadAg=async()=>{
-  const n=fTsNext(),t='Scadenza invio Tessera Sanitaria '+n.anno+' (da confermare)';
-  D().formaz=D().formaz.filter(x=>!(x.fisc&&x.data===n.data));
-  D().formaz.push({id:uid(),titolo:t,data:n.data,dataFine:'',ente:'',nota:'Promemoria fiscale: verifica la scadenza con il commercialista.',fisc:true});
-  log('Promemoria Tessera Sanitaria in agenda',n.data);await save();toast('Promemoria aggiunto in agenda il '+fd(n.data));render()};
+  const t=today(),y=fYear(),L=[];
+  for(const a of [y-1,y,y+1])for(const p of fTsPers(a))if(p.dl>=t)L.push({a,p});
+  const pick=L.slice(0,2);if(!pick.length)return;
+  pick.forEach(({a,p})=>{
+    D().formaz=D().formaz.filter(x=>!(x.fisc&&x.data===p.dl));
+    D().formaz.push({id:uid(),titolo:'Scadenza invio Tessera Sanitaria · '+(p.k==='a'?'dati '+a:p.lab+' '+a)+' (da confermare)',data:p.dl,dataFine:'',ente:'',nota:'Promemoria fiscale: verifica la scadenza con il commercialista.',fisc:true})});
+  log('Promemoria Tessera Sanitaria in agenda',pick.map(x=>x.p.dl).join(', '));await save();toast(pick.length>1?'Promemoria aggiunti in agenda: '+pick.map(x=>fd(x.p.dl)).join(' e '):'Promemoria aggiunto in agenda il '+fd(pick[0].p.dl));render()};
 
 /* ====================== fattura elettronica (solo enti e aziende) ====================== */
 const XML_NS='http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2';
@@ -5089,6 +5118,7 @@ function fXml(doc){
   x+='<CessionarioCommittente><DatiAnagrafici>'+(pivaOk(cp)?'<IdFiscaleIVA>'+L('IdPaese',cn)+L('IdCodice',cp)+'</IdFiscaleIVA>':'')+(cfOk(cur.cf)||pivaOk(cur.cf)?L('CodiceFiscale',cur.cf):'')+'<Anagrafica>'+L('Denominazione',denom.slice(0,80))+'</Anagrafica></DatiAnagrafici>'+
     '<Sede>'+L('Indirizzo',String(cur.indirizzo).slice(0,60))+L('CAP',cn==='IT'?cur.cap:'00000')+L('Comune',String(cur.comune).slice(0,60))+(/^[A-Za-z]{2}$/.test(cur.prov||'')?L('Provincia',cur.prov.toUpperCase()):'')+L('Nazione',cn)+'</Sede></CessionarioCommittente>\n</FatturaElettronicaHeader>\n';
   x+='<FatturaElettronicaBody>\n<DatiGenerali><DatiGeneraliDocumento>'+L('TipoDocumento',neg?'TD04':'TD01')+L('Divisa','EUR')+L('Data',doc.data)+L('Numero',doc.numTxt);
+  if(doc.rit)x+='<DatiRitenuta>'+L('TipoRitenuta','RT01')+L('ImportoRitenuta',A_(doc.rit))+L('AliquotaRitenuta',Number(doc.ritAliq).toFixed(2))+L('CausalePagamento','A')+'</DatiRitenuta>';
   if(doc.bollo)x+='<DatiBollo>'+L('BolloVirtuale','SI')+L('ImportoBollo',A_(doc.bollo))+'</DatiBollo>';
   if(doc.integr)x+='<DatiCassaPrevidenziale>'+L('TipoCassa','TC21')+L('AlCassa',Number(doc.aliq).toFixed(2))+L('ImportoContributoCassa',A_(doc.integr))+L('ImponibileCassa',A_(doc.compenso))+L('AliquotaIVA','0.00')+L('Natura',nat)+'</DatiCassaPrevidenziale>';
   x+=L('ImportoTotaleDocumento',A_(doc.totale));
@@ -5100,13 +5130,13 @@ function fXml(doc){
   const sumR=doc.righe.reduce((t,r)=>t+r.imp,0);
   if(Math.abs(sumR)!==doc.compenso+doc.integr+(doc.bolloAdd?doc.bollo:0)){}
   x=x.replace(/<DettaglioLinee>[\s\S]*<\/DettaglioLinee>/,'');ln=1;
-  x+='<DettaglioLinee>'+L('NumeroLinea',1)+L('Descrizione','Prestazione psicologica')+L('Quantita','1.00')+L('PrezzoUnitario',A_(doc.compenso))+L('PrezzoTotale',A_(doc.compenso))+L('AliquotaIVA','0.00')+L('Natura',nat)+'</DettaglioLinee>';
+  x+='<DettaglioLinee>'+L('NumeroLinea',1)+L('Descrizione','Prestazione psicologica')+L('Quantita','1.00')+L('PrezzoUnitario',A_(doc.compenso))+L('PrezzoTotale',A_(doc.compenso))+L('AliquotaIVA','0.00')+(doc.rit?L('Ritenuta','SI'):'')+L('Natura',nat)+'</DettaglioLinee>';
   if(doc.bolloAdd){ln=2;x+='<DettaglioLinee>'+L('NumeroLinea',2)+L('Descrizione','Rimborso imposta di bollo')+L('Quantita','1.00')+L('PrezzoUnitario',A_(doc.bollo))+L('PrezzoTotale',A_(doc.bollo))+L('AliquotaIVA','0.00')+L('Natura','N1')+'</DettaglioLinee>'}
   x+='<DatiRiepilogo>'+L('AliquotaIVA','0.00')+L('Natura',nat)+L('ImponibileImporto',A_(doc.compenso+doc.integr))+L('Imposta','0.00')+L('EsigibilitaIVA','I')+L('RiferimentoNormativo',forf?'Regime forfettario L. 190/2014 art. 1 c. 54-89':'Esente art. 10 n. 18 DPR 633/72')+'</DatiRiepilogo>';
   if(doc.bolloAdd)x+='<DatiRiepilogo>'+L('AliquotaIVA','0.00')+L('Natura','N1')+L('ImponibileImporto',A_(doc.bollo))+L('Imposta','0.00')+L('RiferimentoNormativo','Escluso art. 15 DPR 633/72')+'</DatiRiepilogo>';
   x+='</DatiBeniServizi>\n';
   const mp=F_MP[(doc.metodi||[])[0]]||'MP05',iban=String(st.iban||'').replace(/\s/g,'');
-  x+='<DatiPagamento>'+L('CondizioniPagamento','TP02')+'<DettaglioPagamento>'+L('ModalitaPagamento',mp)+L('ImportoPagamento',A_(doc.totale))+(mp==='MP05'&&/^[A-Za-z]{2}\d{2}[A-Za-z0-9]{11,30}$/.test(iban)&&!FPH(iban)?L('IBAN',iban.toUpperCase()):'')+'</DettaglioPagamento></DatiPagamento>\n';
+  x+='<DatiPagamento>'+L('CondizioniPagamento','TP02')+'<DettaglioPagamento>'+L('ModalitaPagamento',mp)+L('ImportoPagamento',A_(doc.totale-(doc.rit||0)))+(mp==='MP05'&&/^[A-Za-z]{2}\d{2}[A-Za-z0-9]{11,30}$/.test(iban)&&!FPH(iban)?L('IBAN',iban.toUpperCase()):'')+'</DettaglioPagamento></DatiPagamento>\n';
   x+='</FatturaElettronicaBody>\n</p:FatturaElettronica>\n';
   return {xml:x,name,errors:[]}}
 A.fDocXml=async d=>{
@@ -5148,7 +5178,7 @@ function fPan(){
   const anno=S.fanno||fYear(),P=fPros(anno),free=fPagFree(),sent=fSentIds(),ts=fTsNext();
   const act_=D().patients.filter(p=>fPags().some(x=>x.pid===p.id)||fDocs().some(x=>x.pid===p.id));
   const noCf=act_.filter(p=>{const f=fPatF(p);return f.tipo==='pf'&&!f.opp&&!cfOk(f.cf)});
-  const notSent=fValidDocs(anno).filter(d=>!sent.has(d.id)&&fIsPF(D().patients.find(x=>x.id===d.pid)||{fisc:d.snap}));
+  const notSent=fValidDocs().filter(d=>fDocDp(d).slice(0,4)===String(anno)&&!sent.has(d.id)&&fIsPF(D().patients.find(x=>x.id===d.pid)||{fisc:d.snap}));
   const days=Math.round((new Date(ts.data+'T12:00:00')-new Date(today()+'T12:00:00'))/86400000);
   const item=(n,t,btn)=>'<div class="fitem'+(n?' warn':' ok')+'"><b>'+n+'</b><span>'+t+'</span>'+(n&&btn?btn:'')+'</div>';
   return '<div class="fgrid">'+
@@ -5156,7 +5186,7 @@ function fPan(){
     item(free.length,'pagamenti senza documento','<button class="btn sm" data-act="fTab" data-t="doc">Emetti</button>')+
     item(noCf.length,'pazienti senza codice fiscale valido'+(noCf.length?': '+esc(noCf.slice(0,3).map(nm).join(', ')+(noCf.length>3?'…':'')):''),noCf.length?'<button class="btn sm" data-act="fPat" data-id="'+noCf[0].id+'">Inserisci</button>':'')+
     item(notSent.length,'documenti '+anno+' non inclusi in un invio alla Tessera Sanitaria','<button class="btn sm" data-act="fTab" data-t="ts">Vai</button>')+
-    '<div class="fitem ok"><b>'+(days<0?'!':days)+'</b><span>'+(days<0?'scadenza passata':'giorni alla scadenza TS')+' · dati '+ts.anno+' entro il '+esc(fd(ts.data))+' <small>(da confermare)</small></span><button class="btn sm" data-act="fScadAg">Metti in agenda</button></div></div>'+
+    '<div class="fitem ok"><b>'+(days<0?'!':days)+'</b><span>'+(days<0?'scadenza passata':'giorni alla scadenza TS')+' · '+(ts.per==='a'?'dati '+ts.anno:esc(ts.lab)+' '+ts.anno)+' entro il '+esc(fd(ts.data))+' <small>(da confermare)</small></span><button class="btn sm" data-act="fScadAg">Metti in agenda</button></div></div>'+
    '<div class="card fkpi"><h3>Numeri del '+anno+'</h3>'+
     [['Compensi',fEur(P.T.comp)],['Contributo integrativo',fEur(P.T.integr)],['Bolli addebitati',fEur(P.T.bollo)],['Totale documenti',fEur(P.T.tot)],['Di cui bonus psicologo',fEur(P.T.bonus)],['Documenti emessi',String(P.T.n)]].map(r=>'<div class="frow"><span>'+r[0]+'</span><b>'+r[1]+'</b></div>').join('')+'</div></div>'}
 function fPagTab(){
@@ -5170,14 +5200,17 @@ function fDocTab(){
    (Object.keys(by).length?'<div class="card fpend"><b>Da documentare</b>'+Object.keys(by).map(pid=>'<div class="frow"><span>'+esc(fPatName(pid))+' · '+by[pid].length+(by[pid].length===1?' pagamento':' pagamenti')+' · '+esc(fEur(by[pid].reduce((t,x)=>t+x.imp,0)))+'</span><button class="btn sm" data-act="fDocNew" data-pid="'+pid+'">Emetti</button></div>').join('')+'</div>':'')+
    fTable(['N.','Data','Paziente','>Totale','Stato',''],L.map(d=>'<tr><td><b>'+esc(d.numTxt)+'</b><div class="small mut">'+(d.tipo==='storno'?'storno':d.tipo)+'</div></td><td>'+esc(fd(d.data))+'</td><td>'+esc(fPatName(d.pid,d.snap))+'</td><td class="r">'+esc(fEur(d.totale))+'</td><td>'+(d.tipo==='storno'?fBadge('Storno','off'):d.stornato?fBadge('Stornato','off'):fBadge('Emesso','ok'))+(d.motivo&&d.stornato?'<div class="small mut">'+esc(d.motivo)+'</div>':'')+'</td><td class="r"><button class="btn sm" data-act="fDocPdf" data-id="'+d.id+'">PDF</button>'+(d.tipo!=='storno'&&!d.stornato?' <button class="btn sm" data-act="fDocStorno" data-id="'+d.id+'">Storna</button>':'')+'</td></tr>'),'Nessun documento nel '+anno+'. I documenti non si cancellano: si annullano con uno storno motivato.')}
 function fTsTab(){
-  const anno=S.fanno||fYear(),pv=fTsPrev(anno),sent=fSentIds(),inv=D().fInv.filter(x=>x.anno===anno).sort((a,b)=>b.data.localeCompare(a.data)),ts=fTsNext();
+  const anno=S.fanno||fYear(),pers=fTsPers(anno),per=fPerSel(anno),pv=fTsPrev(anno,per),sent=fSentIds(),inv=D().fInv.filter(x=>x.anno===anno).sort((a,b)=>b.data.localeCompare(a.data)),ts=fTsNext(),tag=fPerTag(anno,per);
+  const xb=pv.okRows.length?fTsXmlBuild(anno,per):{errors:[]},blockers=xb.errors.filter(e=>!pv.errs.includes(e));
   const rows=pv.rows.map(r=>{const d=r.doc;return '<tr class="'+(r.e.length?'fe':'')+'"><td><b>'+esc(d.numTxt)+'</b></td><td>'+esc(fd(d.data))+'</td><td>'+esc(fPatName(d.pid,d.snap))+'</td><td>'+esc(r.cf||(r.incl?'—':''))+'</td><td class="r">'+(r.incl?esc(fEur(r.sp))+(r.aa?' + AA '+esc(fEur(r.aa)):''):'')+'</td><td>'+(r.skip?'<span class="mut small">'+esc(r.skip)+'</span>':r.e.length?'<span class="small" style="color:var(--terra)">'+esc(r.e.join('; '))+'</span>':fBadge(sent.has(d.id)?'Inviato':'Pronto','ok'))+(r.w.length?'<div class="small mut">'+esc(r.w.join('; '))+'</div>':'')+'</td></tr>'});
-  return '<div class="bar"><h3 style="margin:0">Sistema Tessera Sanitaria · '+anno+'</h3><span class="row"><button class="btn pri" data-act="fTsXml"'+(pv.okRows.length?'':' disabled')+'>Prepara il file per il Sistema TS</button><button class="btn" data-act="fTsCsv"'+(pv.okRows.length?'':' disabled')+'>Prospetto CSV</button><button class="btn" data-act="fInvNew"'+(pv.okRows.length?'':' disabled')+'>Segna come inviato</button></span></div>'+
-   '<div class="banner warn small"><b>File nel tracciato di Sistema TS</b> (schema <code>730_precompilata.xsd</code>, cifratura con il certificato '+(fTsPub()?'caricato':'<b>non ancora caricato</b>: <a href="#" data-act="fTab" data-t="imp">Impostazioni fiscali</a>')+'). Lo carichi tu sul portale: l’app non si collega a nulla e <b>non posso garantire l’accettazione</b> finché non lo provi (meglio prima con l’ambiente di test). Periodicità e scadenza sono impostazioni da confermare (ora: '+esc(fSet().tsPer)+', entro il '+esc(fd(ts.data))+').</div>'+
+  return '<div class="bar"><h3 style="margin:0">Sistema Tessera Sanitaria · '+(per.k==='a'?anno:esc(per.lab)+' '+anno)+'</h3><span class="row"><button class="btn pri" data-act="fTsXml"'+(pv.okRows.length?'':' disabled')+'>Prepara il file per il Sistema TS</button><button class="btn" data-act="fTsCsv"'+(pv.okRows.length?'':' disabled')+'>Prospetto CSV</button><button class="btn" data-act="fInvNew"'+(pv.okRows.length?'':' disabled')+'>Segna come inviato</button></span></div>'+
+   (pers.length>1?'<div class="ftabs">'+pers.map(p=>'<button class="npchip'+(p.k===per.k?' on':'')+'" data-act="fTsPer" data-k="'+p.k+'">'+esc(p.lab)+' · entro il '+esc(fd(p.dl))+'</button>').join('')+'</div>':'')+
+   '<div class="banner warn small"><b>File nel tracciato di Sistema TS</b> (schema <code>730_precompilata.xsd</code>, cifratura con il certificato '+(fTsPub()?'caricato':'<b>non ancora caricato</b>: <a href="#" data-act="fTab" data-t="imp">Impostazioni fiscali</a>')+'). Lo carichi tu sul portale: l’app non si collega a nulla e <b>non posso garantire l’accettazione</b> finché non lo provi (meglio prima con l’ambiente di test). Conta la <b>data del pagamento</b>. Periodicità e scadenza sono impostazioni da confermare (ora: '+esc(fSet().tsPer)+'; questo invio entro il '+esc(fd(per.dl))+').</div>'+
+   (blockers.length?'<div class="banner info small"><b>Per preparare il file ufficiale manca:</b><ul>'+blockers.slice(0,6).map(e=>'<li>'+esc(e)+'</li>').join('')+'</ul></div>':'')+
    (pv.errs.length?'<div class="banner bad small"><b>Da correggere prima dell’esportazione ('+pv.errs.length+')</b><ul>'+pv.errs.slice(0,8).map(e=>'<li>'+esc(e)+'</li>').join('')+(pv.errs.length>8?'<li>…</li>':'')+'</ul>I documenti con errori restano fuori dal prospetto.</div>':'')+
    pv.warns.map(w=>'<div class="banner info small">'+esc(w)+'</div>').join('')+
-   fTable(['N.','Data','Paziente','Codice fiscale','>Spesa','Controlli'],rows,'Nessun documento nel '+anno+'.')+
-   '<h3 class="npsec">Registro degli invii</h3>'+fTable(['Data invio','Documenti','Protocollo ricevuta','Nota',''],inv.map(i=>'<tr><td>'+esc(fd(i.data))+'</td><td>'+(i.docIds||[]).length+'</td><td>'+esc(i.prot||'—')+'</td><td>'+esc(i.nota||'')+'</td><td class="r"><button class="btn sm" data-act="fInvEdit" data-id="'+i.id+'">Modifica</button> <button class="btn sm" data-act="fInvDel" data-id="'+i.id+'">Togli</button></td></tr>'),'Nessun invio registrato per il '+anno+'. Dopo aver caricato il file sul portale, registra qui data e protocollo.')}
+   fTable(['N.','Data','Paziente','Codice fiscale','>Spesa','Controlli'],rows,'Nessun documento con pagamento in questo periodo ('+esc(tag)+').')+
+   '<h3 class="npsec">Registro degli invii</h3>'+fTable(['Data invio','Periodo','Documenti','Protocollo ricevuta','Nota',''],inv.map(i=>'<tr><td>'+esc(fd(i.data))+'</td><td>'+esc(!i.per||i.per==='a'?'anno':i.per==='s1'?'1° semestre':'2° semestre')+'</td><td>'+(i.docIds||[]).length+'</td><td>'+esc(i.prot||'—')+'</td><td>'+esc(i.nota||'')+'</td><td class="r"><button class="btn sm" data-act="fInvEdit" data-id="'+i.id+'">Modifica</button> <button class="btn sm" data-act="fInvDel" data-id="'+i.id+'">Togli</button></td></tr>'),'Nessun invio registrato per il '+anno+'. Dopo aver caricato il file sul portale, registra qui data e protocollo.')}
 function fXmlTab(){
   const anno=S.fanno||fYear(),all=fDocs().filter(x=>x.anno===anno).sort((a,b)=>b.num-a.num);
   const isEnte=d=>{const p=D().patients.find(x=>x.id===d.pid);return (p?fPatF(p):d.snap||{}).tipo==='ente'};
@@ -5203,7 +5236,7 @@ function fImpTab(){
    '<div class="card"><div class="bar"><h3 style="margin:0">Listino</h3><button class="btn sm" data-act="fListNew">+ Prestazione</button></div>'+
     (D().fList.length?D().fList.map(x=>'<div class="frow"><span>'+esc(x.nome)+'</span><span><b>'+esc(fEur(x.imp))+'</b> <button class="btn sm" data-act="fListEdit" data-id="'+x.id+'">Modifica</button> <button class="btn sm" data-act="fListDel" data-id="'+x.id+'">Elimina</button></span></div>').join(''):'<p class="mut small">Nessuna prestazione. Con il listino il pagamento si compila da solo.</p>')+'</div>'+
    '<div class="card"><div class="bar"><h3 style="margin:0">Diciture</h3><button class="btn sm" data-act="fSetDic">Modifica</button></div><p class="small mut" style="margin:0">Testi per regime, contributo integrativo e bollo. Bozze da far validare con il commercialista.</p></div>'+
-   '<div class="card"><div class="bar"><h3 style="margin:0">Tessera Sanitaria</h3><button class="btn sm" data-act="fSetTs">Modifica</button></div><p class="small mut" style="margin:0 0 8px">Invio '+esc(s.tsPer)+', prossima scadenza indicata: <b>'+esc(fd(ts.data))+'</b> (dati '+ts.anno+'). Da confermare.</p>'+
+   '<div class="card"><div class="bar"><h3 style="margin:0">Tessera Sanitaria</h3><button class="btn sm" data-act="fSetTs">Modifica</button></div><p class="small mut" style="margin:0 0 8px">Invio '+esc(s.tsPer==='semestrale'?'semestrale':'annuale')+': '+fTsPers(ts.anno).map(p=>(p.k==='a'?'dati '+ts.anno:p.lab)+' entro il <b>'+esc(fd(p.dl))+'</b>').join(' · ')+'. Natura IVA '+esc(s.tsNatF)+' / '+esc(s.tsNatO)+', tipo documento '+esc(s.tsTipoDoc)+'. Da confermare.</p>'+
     '<div class="frow"><span>Certificato di cifratura</span><b>'+(s.tsCert?'caricato · RSA '+s.tsCertBits+' bit · impronta '+esc(s.tsCertFp||''):'non caricato')+'</b></div><div class="row" style="margin-top:8px"><button class="btn sm" data-act="fTsCert">'+(s.tsCert?'Sostituisci':'Carica il certificato')+'</button>'+(s.tsCert?' <button class="btn sm" data-act="fTsCertDel">Togli</button>':'')+'</div></div>'+
    '<p class="small mut">L’app prepara documenti e file da caricare a mano; non si collega a nessun servizio. Testi, soglie e aliquote sono bozze modificabili: non sono consulenza fiscale.</p>'}
 function vFis(){
@@ -5300,8 +5333,9 @@ A.fTsCert=()=>formModal('Certificato di cifratura del Sistema TS',[{k:'file',l:'
 A.fTsCertDel=async()=>{if(!await ask('<p>Togliere il certificato di cifratura? Senza, il file per il Sistema TS non si può preparare.</p>',{ok:'Togli'}))return;const s=fSet();s.tsCert='';s.tsCertFp='';s.tsCertBits=0;log('Certificato Sistema TS tolto','');await save();render()};
 
 const TS_NUMOK=/^[A-Za-z0-9_.\/\\-]{1,20}$/;
-function fTsXmlBuild(anno){
-  const s=fSet(),pv=fTsPrev(anno),E=pv.errs.slice(),W=pv.warns.slice(),pub=fTsPub();
+function fTsXmlBuild(anno,per){
+  per=per||fPerSel(anno);
+  const s=fSet(),pv=fTsPrev(anno,per),E=pv.errs.slice(),W=pv.warns.slice(),pub=fTsPub();
   if(!pub)E.unshift('manca il certificato di cifratura del Sistema TS');
   const piva=String(s.piva||'').replace(/\s/g,'');
   if(!pivaOk(piva))E.unshift('partita IVA dello studio mancante o non valida');
@@ -5321,24 +5355,24 @@ function fTsXmlBuild(anno){
     const voci=[];
     [['SP',Math.abs(r.sp)],['AA',Math.abs(r.aa)]].forEach(([t,v])=>{if(v>0){if(v>9999999)E.push(lab+': importo oltre il limite del tracciato');voci.push({t,v})}});
     if(!voci.length)E.push(lab+': nessun importo da comunicare');
-    rows.push({d,orig,dp,antic,voci,trac:pg.length?pg.every(x=>x.trac):true,ids:ids(d),idr:orig?ids(orig):null,opp:!r.cf,cf:r.cf,nat:d.reg==='forfettario'?'N2':'N4'})});
+    rows.push({d,orig,dp,antic,voci,trac:pg.length?pg.every(x=>x.trac):true,ids:ids(d),idr:orig?ids(orig):null,opp:!r.cf,cf:r.cf,nat:d.reg==='forfettario'?(s.tsNatF||'N2'):(s.tsNatO||'N4')})});
   if(E.length)return {errors:Array.from(new Set(E)),warnings:W};
   const L=(t,v)=>'<'+t+'>'+xmlE(v)+'</'+t+'>',idt=i=>'<pIva>'+i.p+'</pIva>'+L('dataEmissione',i.dt)+'<numDocumentoFiscale>'+L('dispositivo','1')+L('numDocumento',i.n)+'</numDocumentoFiscale>';
   let x='<?xml version="1.0" encoding="UTF-8"?>\n<precompilata xsi:noNamespaceSchemaLocation="730_precompilata.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">\n<proprietario>'+L('cfProprietario',rsaEncB64(pub,s.cf.toUpperCase().replace(/\s/g,'')))+'</proprietario>\n';
   rows.forEach(r=>{
     x+='<documentoSpesa><idSpesa>'+idt(r.ids)+'</idSpesa>'+(r.idr?'<idRimborso>'+idt(r.idr)+'</idRimborso>':'')+L('dataPagamento',r.dp)+(r.antic?L('flagPagamentoAnticipato','1'):'')+L('flagOperazione',r.orig?'R':'I')+
-      (r.opp?'':L('cfCittadino',rsaEncB64(pub,r.cf)))+L('pagamentoTracciato',r.trac?'SI':'NO')+L('tipoDocumento','F')+L('flagOpposizione',r.opp?'1':'0')+
+      (r.opp?'':L('cfCittadino',rsaEncB64(pub,r.cf)))+L('pagamentoTracciato',r.trac?'SI':'NO')+L('tipoDocumento',s.tsTipoDoc==='D'?'D':'F')+L('flagOpposizione',r.opp?'1':'0')+
       r.voci.map(v=>'<voceSpesa>'+L('tipoSpesa',v.t)+L('importo',fNum(v.v))+L('naturaIVA',r.nat)+'</voceSpesa>').join('')+'</documentoSpesa>\n'});
   x+='</precompilata>\n';
   const bytes=new TextEncoder().encode(x);
   if(bytes.length>4800000)return {errors:['il file supera i 5 MB ammessi: dividi per periodo'],warnings:W};
-  return {xml:x,bytes,count:rows.length,name:'730_'+anno+'.xml',zip:'TS-spese-'+anno+'.zip',errors:[],warnings:W}}
+  const tg=fPerTag(anno,per).replace('-','_');return {xml:x,bytes,count:rows.length,name:'730_'+tg+'.xml',zip:'TS-spese-'+fPerTag(anno,per)+'.zip',errors:[],warnings:W}}
 A.fTsXml=async()=>{
-  const anno=S.fanno||fYear(),r=fTsXmlBuild(anno);
+  const anno=S.fanno||fYear(),per=fPerSel(anno),r=fTsXmlBuild(anno,per);
   if(r.errors.length){modal('<h3>Il file per il Sistema TS non si può ancora preparare</h3><ul>'+r.errors.slice(0,12).map(e=>'<li>'+esc(e)+'</li>').join('')+(r.errors.length>12?'<li>…</li>':'')+'</ul><div class="row end"><button class="btn pri" data-act="close">Chiudi</button></div>');return}
   if(!await fExportGate('Il file contiene, <b>cifrati</b>, i codici fiscali dei pazienti e gli importi delle prestazioni ('+r.count+' documenti). Il nome del file non riporta dati identificativi.'))return;
   dl(r.zip,await zipStore([{name:r.name,data:r.bytes}]));
-  log('File Sistema TS esportato (zip con XML)',anno+' · '+r.count+' documenti');saveSoon();
+  log('File Sistema TS esportato (zip con XML)',fPerTag(anno,per)+' · '+r.count+' documenti');saveSoon();
   if(r.warnings.length)toast('Attenzione: '+r.warnings[0])};
 
 /* ---------- 10. AVVIO ---------- */
