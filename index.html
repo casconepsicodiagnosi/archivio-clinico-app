@@ -208,7 +208,7 @@ nav button svg,.lockb svg{width:17px;height:17px;flex:none;fill:none;stroke:curr
 nav button{padding:8px 12px;position:relative}
 nav button.on{background:#F1E4CF;color:var(--gtx)}nav button.on svg{stroke:var(--terra-dark)}
 .lockb{margin-left:0}
-@media(max-width:1200px){nav button span{display:none}nav button.on span{display:inline}nav button{padding:9px 12px}}
+@media(max-width:1260px){nav button span{display:none}nav button.on span{display:inline}nav button{padding:9px 12px}}
 @media(max-width:620px){.topin{flex-wrap:wrap;row-gap:6px}.brand{order:1}.lockb{order:2;margin-left:auto}nav{order:3;flex:1 0 100%;justify-content:flex-start;padding-bottom:4px}nav button span{display:inline}nav button{padding:8px 13px}}
 
 /* cronologia, v0.4 */
@@ -1013,8 +1013,41 @@ html[data-eff=dark] .dlg{--dlgb:#20241A}
   /* mentre scrivi la parte alta si toglie, così il campo resta sopra la tastiera */
   html.typing .lk-hero,html.kb .lk-hero{display:none}
   html.typing .lk-badge,html.typing .lk-t,html.kb .lk-badge,html.kb .lk-t{display:none}
-  html.typing .gate:has(.lk-wrap),html.kb .gate:has(.lk-wrap){padding-top:max(88px,calc(env(safe-area-inset-top,0px) + 82px))}
+  /* con la tastiera aperta la schermata di accesso resta ferma nell'area visibile: non scivola più verso l'alto */
+  html.typing .gate:has(.lk-wrap),html.kb .gate:has(.lk-wrap){position:fixed;left:0;right:0;top:var(--vvt,0px);height:var(--vvh,100svh);min-height:0;overflow:hidden;
+    align-items:center;padding-top:max(88px,calc(env(safe-area-inset-top,0px) + 82px));padding-bottom:12px}
+  html.typing,html.kb{overscroll-behavior:none}
 }
+
+/* calendario di accesso: giorno con pazienti e formazione insieme, numero leggibile su entrambe le metà */
+.lc-d.mx{color:var(--ink);font-weight:700;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 5px #fff}
+html[data-eff=dark] .lc-d.mx{color:#fff;text-shadow:0 0 3px #000,0 0 3px #000,0 0 5px #000}
+
+/* ---------- v34: registratore, memo vocale, note personali ---------- */
+.recbox{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 0 10px;text-align:center}
+.rect{font:600 34px/1 var(--ff,inherit);font-variant-numeric:tabular-nums;letter-spacing:.02em;color:var(--ink)}
+.recgo{width:76px;height:76px;border-radius:50%;border:0;background:var(--terra,#B5553A);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 18px rgba(181,85,58,.32);transition:transform .15s}
+.recgo svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.recgo:active{transform:scale(.95)}
+.recgo.on{animation:recpulse 1.3s ease-in-out infinite}
+.recgo.on svg{display:none}
+.recgo.on::before{content:"";width:24px;height:24px;border-radius:5px;background:#fff}
+@keyframes recpulse{0%,100%{box-shadow:0 0 0 0 rgba(181,85,58,.45)}50%{box-shadow:0 0 0 14px rgba(181,85,58,0)}}
+@media (prefers-reduced-motion:reduce){.recgo.on{animation:none}}
+.recs{min-height:2.6em;max-width:30ch}
+.recbox audio{width:100%;max-width:340px}
+.memohero{display:flex;align-items:center;gap:14px;width:100%;margin:2px 0 14px;padding:14px 16px;border-radius:18px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-align:left;cursor:pointer;font:inherit}
+.memohero-i{flex:none;width:46px;height:46px;border-radius:14px;background:var(--terra,#B5553A);color:#fff;display:grid;place-items:center}
+.memohero-i svg,.memohero-c svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.memohero-t{flex:1;display:flex;flex-direction:column;gap:2px}
+.memohero-t small{color:var(--mut)}
+.memohero-c{flex:none;color:var(--mut)}
+.memohero-c svg{width:18px;height:18px}
+.npr{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 0;border-top:1px solid var(--line)}
+.npn{border-top:1px solid var(--line);padding:10px 0}
+.npn-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+/* v34: con otto voci la barra resta intera: voci più strette, solo icone sotto i 1260 px */
+@media(min-width:1261px){nav button{padding:8px 7px;gap:4px;font-size:14px}.topin{gap:8px}}
 
 /* tema scuro */
 html[data-eff=dark]{--glass:32,36,26;--glass2:19,21,14;--green:#3B4122;--green-deep:#2A2E17;--green-soft:#7F8A56;--gtx:#CBD39E;--cream:#13150E;--cream-2:#1C1F14;--paper:#1A1D13;--card:#20241A;--hero:#1E2216;--terra:#D27C58;--terra-dark:#E5A07F;--terra-light:#C0724F;--terra-bg:#3A261C;--ink:#EEE7D7;--body:#D3CCBA;--mut:#B5AB96;--line:#363B2B;--sand:#4C5239;--pri2:#2C3220;--ok:#BDD596;--ok2:#27311B;--warn:#EBC57E;--warn2:#3A2F15;--bad:#F3A898;--bad2:#40211B;color-scheme:dark}
@@ -1303,8 +1336,8 @@ function render(){
   if(S.screen==='error'){r.innerHTML=vError();return}
   if(S.screen==='setup'){r.innerHTML=vSetup();return}
   if(S.screen==='lock'){r.innerHTML=vLock();return}
-  const IC={dash:'M4 13h6V4H4zM14 20h6V11h-6zM4 20h6v-3H4zM14 8h6V4h-6z',pats:'M9 11a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM2.5 20c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6M16 4.3a3.5 3.5 0 010 6.4M18.2 14.3c2 .8 3.3 2.7 3.3 5.7',agenda:'M5 5h14v15H5zM5 10h14M9 3v4M15 3v4',imp:'M12 16V5M7.5 9.5L12 5l4.5 4.5M5 15v4h14v-4',mod:'M4 6l8 6 8-6M4 6v12h16V6M4 6h16',sec:'M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z',set:'M4 7h8.8M17.2 7H20M4 17h2.8M11.2 17H20M15 4.8a2.2 2.2 0 110 4.4 2.2 2.2 0 010-4.4zM9 14.8a2.2 2.2 0 110 4.4 2.2 2.2 0 010-4.4z'};
-  const nav=[['dash','Dashboard','Home'],['pats','Pazienti'],['agenda','Agenda'],['imp','Importa'],['mod','Modelli'],['sec','Sicurezza'],['set','Impostazioni','Opzioni']];
+  const IC={dash:'M4 13h6V4H4zM14 20h6V11h-6zM4 20h6v-3H4zM14 8h6V4h-6z',pats:'M9 11a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM2.5 20c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6M16 4.3a3.5 3.5 0 010 6.4M18.2 14.3c2 .8 3.3 2.7 3.3 5.7',agenda:'M5 5h14v15H5zM5 10h14M9 3v4M15 3v4',np:'M7 3h10v18H7zM10 8h4M10 12h4M10 16h2',imp:'M12 16V5M7.5 9.5L12 5l4.5 4.5M5 15v4h14v-4',mod:'M4 6l8 6 8-6M4 6v12h16V6M4 6h16',sec:'M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z',set:'M4 7h8.8M17.2 7H20M4 17h2.8M11.2 17H20M15 4.8a2.2 2.2 0 110 4.4 2.2 2.2 0 010-4.4zM9 14.8a2.2 2.2 0 110 4.4 2.2 2.2 0 010-4.4z'};
+  const nav=[['dash','Dashboard','Home'],['pats','Pazienti'],['agenda','Agenda'],['np','Note'],['imp','Importa'],['mod','Modelli'],['sec','Sicurezza'],['set','Impostazioni','Opzioni']];
   const cur=S.view==='pat'?'pats':S.view,key=S.view+'|'+(S.pid||''),enter=key!==S._k;S._k=key;
   r.innerHTML='<div id="app"><header class="top"><div class="topin"><a class="brand" href="#" data-act="go" data-v="dash" aria-label="Vai alla dashboard">'+LOGO+'<span class="brand-t"><span class="brand-name">Archivio clinico</span><span class="brand-role">Simone Cascone · Psicologo</span></span></a><nav aria-label="Navigazione principale">'+
     nav.map(n=>'<button class="'+(cur===n[0]?'on':'')+'" data-act="go" data-v="'+n[0]+'"'+(cur===n[0]?' aria-current="page"':'')+'><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+IC[n[0]]+'"/></svg><span class="nvl">'+n[1]+'</span><span class="nvs" aria-hidden="true">'+(n[2]||n[1])+'</span></button>').join('')+
@@ -1358,8 +1391,8 @@ function tPan(p){return tPanNew(p)}
 const delBtn=(coll,id)=>'<button class="btn sm" data-act="delRec" data-coll="'+coll+'" data-id="'+id+'">Elimina</button>';
 function tEpi(p){
   const L=byP(D().episodes,p.id).sort((a,b)=>b.dataApertura.localeCompare(a.dataApertura));
-  return '<div class="bar"><h2>Episodi di cura</h2><button class="btn pri" data-act="newEpi">+ Episodio</button></div>'+(L.length?L.map(e=>'<div class="it epi">'+dblock(e.dataApertura)+'<div class="it-b"><div class="it-h"><div><div class="it-t">'+esc(e.categoria||'Episodio di cura')+'</div><div class="it-s">aperto il '+fd(e.dataApertura)+(e.dataChiusura?' · chiuso il '+fd(e.dataChiusura):'')+'</div></div><div class="it-a"><span class="badge '+(e.dataChiusura?'':'ok')+'">'+(e.dataChiusura?'chiuso':'aperto')+'</span><button class="btn sm" data-act="editRec" data-coll="episodes" data-id="'+e.id+'">Modifica</button>'+delBtn('episodes',e.id)+'</div></div>'+
-    '<div class="lbs">'+[['Motivo della richiesta',e.motivo],['Inquadramento',e.inquadramento],['Obiettivi',e.obiettivi],['Piano',e.piano],['Esito',e.esito]].filter(r=>r[1]&&r[1].trim()).map(r=>'<div class="lb"><span>'+r[0]+'</span><div class="note">'+esc(r[1])+'</div></div>').join('')+'</div>'+kwChips(e.kw)+'</div></div>').join(''):'<div class="card mut">Nessun episodio. Un episodio raccoglie motivo, inquadramento, obiettivi e piano di un percorso. Le diagnosi codificate si registrano nella scheda “Diagnosi”.</div>');
+  return '<div class="bar"><h2>Domande</h2><button class="btn pri" data-act="newEpi">+ Domanda</button></div>'+(L.length?L.map(e=>'<div class="it epi">'+dblock(e.dataApertura)+'<div class="it-b"><div class="it-h"><div><div class="it-t">'+esc(e.categoria||'Domanda')+'</div><div class="it-s">aperto il '+fd(e.dataApertura)+(e.dataChiusura?' · chiuso il '+fd(e.dataChiusura):'')+'</div></div><div class="it-a"><span class="badge '+(e.dataChiusura?'':'ok')+'">'+(e.dataChiusura?'chiuso':'aperto')+'</span><button class="btn sm" data-act="editRec" data-coll="episodes" data-id="'+e.id+'">Modifica</button>'+delBtn('episodes',e.id)+'</div></div>'+
+    '<div class="lbs">'+[['Motivo della richiesta',e.motivo],['Inquadramento',e.inquadramento],['Obiettivi',e.obiettivi],['Piano',e.piano],['Esito',e.esito]].filter(r=>r[1]&&r[1].trim()).map(r=>'<div class="lb"><span>'+r[0]+'</span><div class="note">'+esc(r[1])+'</div></div>').join('')+'</div>'+kwChips(e.kw)+'</div></div>').join(''):'<div class="card mut">Nessuna domanda. Una domanda raccoglie motivo, inquadramento, obiettivi e piano di un percorso. Le diagnosi codificate si registrano nella scheda “Diagnosi”.</div>');
 }
 function tDx(p){
   const L=byP(D().dx,p.id).sort((a,b)=>b.data.localeCompare(a.data));
@@ -1406,7 +1439,7 @@ function tPri(p){
   const L=D().audit.filter(a=>a.pid===p.id).slice(0,60),rs=retStatus(p);
   const msg=rs.s==='attivo'?'Percorso non concluso: la documentazione va conservata.':rs.s==='incorso'?'Conservazione minima fino al <b>'+fd(rs.fine)+'</b> ('+D().set.retYears+' anni dall’ultima attività, a percorso concluso). Prima di quella data l’eliminazione definitiva richiede una conferma speciale.':'Il termine minimo di conservazione (<b>'+fd(rs.fine)+'</b>) è trascorso. Puoi decidere se conservare ancora o eliminare: nulla avviene in automatico.';
   const bd=rs.s==='attivo'?'<span class="badge ok">percorso attivo</span>':rs.s==='incorso'?'<span class="badge warn">conservazione in corso</span>':'<span class="badge bad">termine trascorso</span>';
-  return '<div class="card pv cons"><div class="ch"><span class="chi">'+ICON.arc+'</span><h3>Conservazione</h3>'+bd+'</div><p>'+msg+'</p><div class="row" style="margin-top:8px"><button class="btn" data-act="printPat">Stampa (colori)</button><button class="btn" data-act="printPatBW">Stampa (bianco e nero)</button><button class="btn pri" data-act="pdfPat">Scarica PDF (colori)</button><button class="btn" data-act="pdfPatBW">Scarica PDF (bianco e nero)</button></div><div class="row" style="margin-top:14px"><button class="btn danger" data-act="delPat">Elimina paziente…</button></div><p class="small mut">La cartella stampabile comprende anagrafica, episodi, diagnosi, sedute, test e consensi. Non include le note personali; i file allegati si aprono o si scaricano da “Documenti”.</p></div>'+
+  return '<div class="card pv cons"><div class="ch"><span class="chi">'+ICON.arc+'</span><h3>Conservazione</h3>'+bd+'</div><p>'+msg+'</p><div class="row" style="margin-top:8px"><button class="btn" data-act="printPat">Stampa (colori)</button><button class="btn" data-act="printPatBW">Stampa (bianco e nero)</button><button class="btn pri" data-act="pdfPat">Scarica PDF (colori)</button><button class="btn" data-act="pdfPatBW">Scarica PDF (bianco e nero)</button></div><div class="row" style="margin-top:14px"><button class="btn danger" data-act="delPat">Elimina paziente…</button></div><p class="small mut">La cartella stampabile comprende anagrafica, domande, diagnosi, sedute, test e consensi. Non include le note personali; i file allegati si aprono o si scaricano da “Documenti”.</p></div>'+
    '<div class="card pv cod"><div class="ch"><span class="chi">'+ICON.key+'</span><h3>Codici identificativi</h3></div><div class="idg"><div><span class="idl">Codice paziente</span><code class="big">'+esc(p.cod||'—')+'</code><p class="small mut">Progressivo, unico, mai riutilizzato nemmeno dopo un’eliminazione. Distingue sempre due pazienti con lo stesso nome.</p></div><div><span class="idl">Codice di ricerca</span><code class="big">'+esc(p.rid||'—')+'</code><p class="small mut">Casuale: sostituisce il nome nei file per ricerca e nelle altre app. Non deriva dai dati anagrafici.</p><button class="btn sm" data-act="newRid">Rigenera codice di ricerca</button></div></div></div>'+
    '<div class="card pv acc"><div class="ch"><span class="chi">'+ICON.eye+'</span><h3>Accessi a questa scheda</h3><span class="badge">'+L.length+'</span></div>'+(L.length?'<ul class="acl">'+L.map(a=>'<li><span class="small mut">'+fdt(a.t)+'</span><span>'+esc(a.a)+'</span></li>').join('')+'</ul>':'<p class="mut">Nessun accesso registrato.</p>')+'</div>';
 }
@@ -1432,9 +1465,9 @@ function vSet(){
    fieldHTML({k:'k',l:'Soglia minima per l’esportazione per ricerca (min. 3)',t:'number',min:3,max:50},s.k)+fieldHTML({k:'backupDays',l:'Promemoria backup ogni (giorni)',t:'number',min:1,max:365},s.backupDays)+fieldHTML({k:'retYears',l:'Conservazione minima dopo la conclusione (anni, almeno 5)',t:'number',min:RETMIN,max:50},s.retYears)+'</div>'+
    fieldHTML({k:'tpl',l:'Modello per le note di seduta',t:'textarea',r:6},s.tpl)+'<div class="err"></div><button class="btn pri">Salva impostazioni</button></form></div>'+
    lockCardHTML()+
-   '<div class="card"><div class="bar" style="margin-bottom:4px"><h3 style="margin:0">Strumenti psicometrici</h3><div class="row"><button class="btn sm" data-act="instrPreset">Da modello</button><button class="btn sm pri" data-act="addInstr">+ Strumento</button></div></div><p class="small mut">Catalogo degli strumenti di cui registri i punteggi (per sottoscala o totale). I risultati si inseriscono nella scheda del paziente, in “Test e scale”, e restano collegati a paziente, episodio e referto.</p>'+
+   '<div class="card"><div class="bar" style="margin-bottom:4px"><h3 style="margin:0">Strumenti psicometrici</h3><div class="row"><button class="btn sm" data-act="instrPreset">Da modello</button><button class="btn sm pri" data-act="addInstr">+ Strumento</button></div></div><p class="small mut">Catalogo degli strumenti di cui registri i punteggi (per sottoscala o totale). I risultati si inseriscono nella scheda del paziente, in “Test e scale”, e restano collegati a paziente, domanda e referto.</p>'+
    instrListHTML()+'</div>'+
-   '<div class="card"><div class="bar" style="margin-bottom:4px"><h3 style="margin:0">Parole chiave</h3><button class="btn sm" data-act="addKw">+ Aggiungi</button></div><p class="small mut">Vocabolario controllato per etichettare episodi e sedute: serve per cercare e per le statistiche. Eliminando una parola la si toglie anche dalle schede.</p>'+
+   '<div class="card"><div class="bar" style="margin-bottom:4px"><h3 style="margin:0">Parole chiave</h3><button class="btn sm" data-act="addKw">+ Aggiungi</button></div><p class="small mut">Vocabolario controllato per etichettare domande e sedute: serve per cercare e per le statistiche. Eliminando una parola la si toglie anche dalle schede.</p>'+
    Object.keys(areas).map(a=>'<p class="small mut" style="margin:10px 0 4px">'+esc(a)+'</p><div class="kwrow">'+areas[a].map(v=>'<span class="chip" style="margin:0">'+esc(v.t)+' <button data-act="delKw" data-id="'+v.id+'" aria-label="Elimina '+esc(v.t)+'">×</button></span>').join('')+'</div>').join('')+'</div>'+
    '<div class="card"><div class="bar" style="margin-bottom:4px"><h3 style="margin:0">Scale e questionari a item</h3><button class="btn sm pri" data-act="addScale">+ Nuova scala</button></div><p class="small mut">Per ogni scala si registrano le risposte ai singoli item. Puoi creare scale con risposte Likert (da 2 a 100 punti, con etichette), Vero/Falso, Sì/No, frequenza, accordo, opzioni personalizzate o numeri liberi, con item inversi, sottoscale e fasce di lettura decise da te.</p>'+
    scaleListHTML()+'</div>'+
@@ -1489,21 +1522,21 @@ A.newPat=()=>formModal('Nuovo paziente',PAT_F(),{presa:today(),stato:'in carico'
 A.editPat=()=>{const p=pat(S.pid);formModal('Modifica paziente',PAT_F(),Object.assign({},p,{tags:(p.tags||[]).join(', ')}),patSave(p))};
 
 const EPI_F=()=>[{k:'categoria',l:'Categoria del motivo (per le statistiche)',t:'select',o:CATS,req:1},{k:'motivo',l:'Motivo della richiesta',t:'textarea',req:1},{k:'kw',l:'Parole chiave',t:'multi',o:kwOpts()},{k:'inquadramento',l:'Inquadramento clinico (testo libero)'},{k:'obiettivi',l:'Obiettivi',t:'textarea',r:3},{k:'piano',l:'Piano',t:'textarea',r:3},{k:'dataApertura',l:'Data apertura',t:'date',req:1},{k:'dataChiusura',l:'Data chiusura',t:'date'},{k:'esito',l:'Esito',t:'textarea',r:2}];
-const SES_F=pid=>{const eps=byP(D().episodes,pid);return [{k:'data',l:'Data',t:'date',req:1},{k:'durata',l:'Durata (minuti)',t:'number',min:1,max:600},{k:'tipo',l:'Tipo',t:'select',o:['individuale','coppia','famiglia','gruppo']}].concat(eps.length?[{k:'epId',l:'Episodio di cura',t:'select',o:[['','—']].concat(eps.map(e=>[e.id,(e.categoria||'')+' '+fd(e.dataApertura)]))}]:[]).concat([{k:'kw',l:'Parole chiave',t:'multi',o:kwOpts()},{k:'nota',l:'Nota clinica',t:'textarea',r:9}])};
+const SES_F=pid=>{const eps=byP(D().episodes,pid);return [{k:'data',l:'Data',t:'date',req:1},{k:'durata',l:'Durata (minuti)',t:'number',min:1,max:600},{k:'tipo',l:'Tipo',t:'select',o:['individuale','coppia','famiglia','gruppo']}].concat(eps.length?[{k:'epId',l:'Domanda',t:'select',o:[['','—']].concat(eps.map(e=>[e.id,(e.categoria||'')+' '+fd(e.dataApertura)]))}]:[]).concat([{k:'kw',l:'Parole chiave',t:'multi',o:kwOpts()},{k:'nota',l:'Nota clinica',t:'textarea',r:9}])};
 const DX_F=pid=>[{k:'sistema',l:'Sistema di classificazione',t:'select',o:['ICD-10','DSM-5-TR','ICD-11'],req:1},{k:'codice',l:'Codice',req:1,list:'dxl',h:'Scegli dall’elenco o scrivi il codice: la diagnosi si compila da sola.'},{k:'etichetta',l:'Diagnosi',req:1},{k:'stato',l:'Stato',t:'select',o:['ipotesi','confermata','in remissione','esclusa']},{k:'gravita',l:'Gravità',t:'select',o:['','lieve','moderata','grave']},{k:'data',l:'Data della valutazione',t:'date',req:1},{k:'nota',l:'Nota',t:'textarea',r:2}];
 const APPT_F=()=>[{k:'pid',l:'Paziente',t:'select',o:act().sort((a,b)=>nm(a).localeCompare(nm(b))).map(p=>[p.id,nm(p)]),req:1},{k:'data',l:'Data',t:'date',req:1},{k:'ora',l:'Ora',t:'time',req:1},{k:'durata',l:'Durata (minuti)',t:'number',min:5,max:600},{k:'tipo',l:'Tipo',t:'select',o:['individuale','coppia','famiglia','gruppo']},{k:'stato',l:'Stato',t:'select',o:['previsto','svolto','annullato','saltato']},{k:'nota',l:'Nota'}];
 
 const CON_F=pid=>[{k:'tipo',l:'Documento',t:'select',o:['Informativa privacy','Consenso al trattamento dei dati','Consenso informato alla cura','Consenso del responsabile genitoriale',RES_CONS,'Consenso alla registrazione audio'],req:1},{k:'versione',l:'Versione del testo (es. v1 – gen 2026)'},{k:'data',l:'Data',t:'date',req:1},{k:'firmato',l:'Firmato dal paziente / responsabile',t:'select',o:[['1','Sì'],['0','No (o revocato)']]},{k:'docId',l:'Documento firmato (caricato in Documenti)',t:'select',o:[['','—']].concat(byP(D().docs,pid).map(d=>[d.id,d.nome]))},{k:'nota',l:'Nota'}];
-const COLL={episodes:{t:'Episodio',f:EPI_F,d:()=>({dataApertura:today(),kw:[]})},sessions:{t:'Seduta',f:()=>SES_F(S.pid),d:()=>({data:today(),durata:50,tipo:'individuale',nota:D().set.tpl,kw:[]})},consents:{t:'Consenso',f:()=>CON_F(S.pid),d:()=>({data:today(),firmato:'1'})},dx:{t:'Diagnosi',f:()=>DX_F(S.pid),d:()=>({sistema:'ICD-10',stato:'ipotesi',data:today()})},appts:{t:'Appuntamento',f:APPT_F,d:()=>({data:today(),ora:'09:00',durata:50,tipo:'individuale',stato:'previsto'})}};
+const COLL={episodes:{t:'Domanda',g:'f',f:EPI_F,d:()=>({dataApertura:today(),kw:[]})},sessions:{t:'Seduta',g:'f',f:()=>SES_F(S.pid),d:()=>({data:today(),durata:50,tipo:'individuale',nota:D().set.tpl,kw:[]})},consents:{t:'Consenso',f:()=>CON_F(S.pid),d:()=>({data:today(),firmato:'1'})},dx:{t:'Diagnosi',g:'f',f:()=>DX_F(S.pid),d:()=>({sistema:'ICD-10',stato:'ipotesi',data:today()})},appts:{t:'Appuntamento',f:APPT_F,d:()=>({data:today(),ora:'09:00',durata:50,tipo:'individuale',stato:'previsto'})}};
 function recForm(coll,rec,defs,after){
   const c=COLL[coll],vals=rec?Object.assign({},rec,coll==='consents'?{firmato:rec.firmato?'1':'0'}:{}):Object.assign(c.d(),defs||{});
-  formModal((rec?'Modifica ':'Nuovo ')+c.t.toLowerCase(),c.f(),vals,async o=>{
+  formModal((rec?'Modifica ':(c.g==='f'?'Nuova ':'Nuovo '))+c.t.toLowerCase(),c.f(),vals,async o=>{
     if(coll==='consents')o.firmato=o.firmato==='1';
     if(coll==='dx')o.codice=o.codice.toUpperCase();
     if(rec)Object.assign(rec,o);else D()[coll].push(Object.assign({id:uid(),pid:S.pid},o));
     if(after)after();
     const pid=rec?rec.pid:(o.pid||S.pid);
-    log((rec?'Modifica ':'Nuovo ')+c.t.toLowerCase(),nm(pat(pid)),pid);await save();render();},
+    log((rec?'Modifica ':(c.g==='f'?'Nuova ':'Nuovo '))+c.t.toLowerCase(),nm(pat(pid)),pid);await save();render();},
     coll==='dx'?DXDATALIST():'');
 }
 A.newEpi=()=>recForm('episodes');A.newSes=()=>{S.tab='ses';recForm('sessions')};A.newCon=()=>recForm('consents');A.newDx=()=>recForm('dx');
@@ -1567,7 +1600,7 @@ A.delProt=async d=>{if(!await ask('Eliminare questa nota personale?',{ok:'Elimin
 A.delPat=async()=>{
   const p=pat(S.pid),c=k=>byP(D()[k],p.id).length,pr=D().prot.items.filter(i=>i.pid===p.id).length,rs=retStatus(p);
   const warn=rs.s==='scaduta'?'':'<div class="banner warn small">'+(rs.s==='attivo'?'Il percorso non risulta concluso.':'Il termine minimo di conservazione scade il '+fd(rs.fine)+'.')+' Nel cestino il paziente resta recuperabile, ma non eliminarlo in modo definitivo prima del termine.</div>';
-  const ok=await ask('<p>Stai per eliminare <b>'+esc(nm(p))+'</b>. Verranno rimossi dall’uso corrente:</p><ul><li>'+c('sessions')+' sedute</li><li>'+c('episodes')+' episodi</li><li>'+c('docs')+' documenti</li><li>'+(c('scales')+c('tests'))+' rilevazioni di test</li><li>'+c('dx')+' diagnosi</li><li>'+c('appts')+' appuntamenti</li><li>'+c('consents')+' consensi</li><li>'+pr+' note personali</li></ul>'+warn+'<p>La scheda va nel <b>Cestino</b> (Impostazioni) e può essere ripristinata. L’eliminazione definitiva è sempre una scelta manuale.</p>',{typed:'ELIMINA',ok:'Sposta nel cestino'});
+  const ok=await ask('<p>Stai per eliminare <b>'+esc(nm(p))+'</b>. Verranno rimossi dall’uso corrente:</p><ul><li>'+c('sessions')+' sedute</li><li>'+c('episodes')+' domande</li><li>'+c('docs')+' documenti</li><li>'+(c('scales')+c('tests'))+' rilevazioni di test</li><li>'+c('dx')+' diagnosi</li><li>'+c('appts')+' appuntamenti</li><li>'+c('consents')+' consensi</li><li>'+pr+' note personali</li></ul>'+warn+'<p>La scheda va nel <b>Cestino</b> (Impostazioni) e può essere ripristinata. L’eliminazione definitiva è sempre una scelta manuale.</p>',{typed:'ELIMINA',ok:'Sposta nel cestino'});
   if(!ok)return;p.deletedAt=today();log('Paziente spostato nel cestino',nm(p),p.id);await save();S.view='pats';S.pid=null;render();toast('Spostato nel cestino');
 };
 A.restorePat=async d=>{const p=pat(d.id);delete p.deletedAt;log('Paziente ripristinato dal cestino',nm(p),p.id);await save();render()};
@@ -1586,7 +1619,7 @@ A.printPat=()=>{
   log('Cartella clinica stampata/esportata',nm(p),p.id);saveSoon();
   const insT=byP(D().tests,p.id).sort((a,b)=>a.data.localeCompare(b.data)).map(x=>{const ins=D().instr.find(i=>i.id===x.instrId);return [fd(x.data),instrName(x.instrId),(ins?ins.sub:[]).filter(s=>x.vals&&x.vals[s.id]!=null).map(s=>s.nome+': '+x.vals[s.id]).join('; '),x.nota||'']});
   printHTML('<div style="font:13px/1.45 -apple-system,Arial,sans-serif;color:#000"><h2>Cartella clinica: '+esc(nm(p))+'</h2><p>Nato/a il '+fd(p.nascita)+' · Presa in carico '+fd(p.presa)+' · Stato: '+esc(p.stato)+'<br>Contatti: '+esc([p.tel,p.email].filter(Boolean).join(' · '))+(p.tutore?'<br>Responsabile genitoriale: '+esc(p.tutore+' '+(p.tutoreContatto||'')):'')+'<br>Note: '+esc(p.note||'')+'</p>'+
-   t('Episodi di cura',byP(D().episodes,p.id).map(e=>[fd(e.dataApertura)+(e.dataChiusura?' – '+fd(e.dataChiusura):''),(e.categoria||'')+'\n'+e.motivo+'\nInquadramento: '+(e.inquadramento||'')+'\nObiettivi: '+(e.obiettivi||'')+'\nPiano: '+(e.piano||'')+'\nEsito: '+(e.esito||'')]))+
+   t('Domande',byP(D().episodes,p.id).map(e=>[fd(e.dataApertura)+(e.dataChiusura?' – '+fd(e.dataChiusura):''),(e.categoria||'')+'\n'+e.motivo+'\nInquadramento: '+(e.inquadramento||'')+'\nObiettivi: '+(e.obiettivi||'')+'\nPiano: '+(e.piano||'')+'\nEsito: '+(e.esito||'')]))+
    t('Diagnosi',byP(D().dx,p.id).map(x=>[fd(x.data),x.sistema+' '+x.codice,x.etichetta+(x.gravita?' ('+x.gravita+')':''),x.stato]))+
    t('Sedute',byP(D().sessions,p.id).sort((a,b)=>a.data.localeCompare(b.data)).map(s=>[fd(s.data)+'\n'+s.tipo+(s.durata?' '+s.durata+' min':''),s.nota||'']))+
    t('Test e scale a item',byP(D().scales,p.id).sort((a,b)=>a.data.localeCompare(b.data)).map(s=>[fd(s.data),s.scala,String(s.punti),s.items?s.items.join(' '):'',s.nota||'']))+
@@ -1667,7 +1700,7 @@ function runStat(metric,f){
     ESITI.forEach(e=>{const c=C.filter(p=>p.esito===e).length;add(e,c,c)});const ni=C.filter(p=>!p.esito).length;if(ni)add('non indicato',ni,ni);
     const ab=C.filter(p=>p.esito==='abbandono').length;
     res.note.push(C.length<k?'Percorsi conclusi in numero insufficiente (meno di '+k+') per calcolare il tasso di abbandono.':'Tasso di abbandono: '+(ab===0?'0%':ab<k?'inferiore al '+Math.ceil(k/C.length*100)+'%':Math.round(ab/C.length*100)+'%')+' su '+C.length+' percorsi conclusi.');}
-  else if(metric==='motivi'){res.cols=['Categoria','Episodi'];
+  else if(metric==='motivi'){res.cols=['Categoria','Domande'];
     const E=D().episodes.filter(e=>ids.has(e.pid)&&(!(f.da||f.a)||inP(e.dataApertura)));
     CATS.forEach(c=>{const L=E.filter(e=>e.categoria===c);add(c,L.length,new Set(L.map(e=>e.pid)).size)});}
   else if(metric==='dx'||metric==='dxcodice'||metric==='kw'){
@@ -1815,7 +1848,7 @@ A.newScale=()=>{
 
 A.merge=async d=>{
   const keep=pat(S.pid),drop=pat(d.id);if(!keep||!drop)return;
-  if(!await ask('<p>Tutti i dati di <b>'+esc(nm(drop))+'</b> (sedute, episodi, documenti, diagnosi, test, consensi, appuntamenti, note riservate) verranno spostati in <b>'+esc(nm(keep))+'</b> e l’altra scheda sarà eliminata. I campi vuoti della scheda attuale vengono completati con quelli dell’altra.</p><p>Consiglio: esporta un backup prima.</p>',{typed:'UNISCI',ok:'Unisci le schede'}))return;
+  if(!await ask('<p>Tutti i dati di <b>'+esc(nm(drop))+'</b> (sedute, domande, documenti, diagnosi, test, consensi, appuntamenti, note riservate) verranno spostati in <b>'+esc(nm(keep))+'</b> e l’altra scheda sarà eliminata. I campi vuoti della scheda attuale vengono completati con quelli dell’altra.</p><p>Consiglio: esporta un backup prima.</p>',{typed:'UNISCI',ok:'Unisci le schede'}))return;
   await snapshot('Prima di unire due schede',true);['episodes','sessions','docs','scales','consents','events','dx','appts','tests'].forEach(k=>D()[k].forEach(x=>{if(x.pid===drop.id)x.pid=keep.id}));
   D().prot.items.forEach(x=>{if(x.pid===drop.id)x.pid=keep.id});
   D().audit.forEach(x=>{if(x.pid===drop.id)x.pid=keep.id});
@@ -1844,7 +1877,7 @@ A.addKw=()=>formModal('Nuova parola chiave',[{k:'area',l:'Area',t:'select',o:Arr
 A.delKw=async d=>{
   const v=D().vocab.find(x=>x.id===d.id);if(!v)return;
   const n=[].concat(D().episodes,D().sessions).filter(x=>(x.kw||[]).indexOf(v.id)>=0).length;
-  if(!await ask('Eliminare la parola chiave <b>'+esc(v.t)+'</b>?'+(n?' Verrà tolta da '+n+' schede (episodi/sedute).':''),{ok:'Elimina'}))return;
+  if(!await ask('Eliminare la parola chiave <b>'+esc(v.t)+'</b>?'+(n?' Verrà tolta da '+n+' schede (domande/sedute).':''),{ok:'Elimina'}))return;
   [].concat(D().episodes,D().sessions).forEach(x=>{if(x.kw)x.kw=x.kw.filter(i=>i!==v.id)});
   D().vocab=D().vocab.filter(x=>x.id!==v.id);log('Parola chiave eliminata',v.t);await save();render();
 };
@@ -1894,7 +1927,7 @@ async function buildResearch(withKey,stable){
   F['strumenti.csv']=csv(['id','strumento','sottoscala','mese','punteggio'],D().tests.filter(x=>inS(x.pid)).flatMap(x=>{const ins=D().instr.find(i=>i.id===x.instrId);return (ins?ins.sub:[]).filter(s=>x.vals&&x.vals[s.id]!=null).map(s=>[code[x.pid],instrName(x.instrId),s.nome,mo(P(x.pid),x.data),x.vals[s.id]])}));
   F['sedute.csv']=csv(['id','mese','durata_min','tipo'],D().sessions.filter(x=>inS(x.pid)).map(x=>[code[x.pid],mo(P(x.pid),x.data),x.durata||'',x.tipo]));
   F['episodi.csv']=csv(['id','categoria','mese_apertura','mese_chiusura'],D().episodes.filter(x=>inS(x.pid)).map(x=>[code[x.pid],x.categoria||'',mo(P(x.pid),x.dataApertura),mo(P(x.pid),x.dataChiusura)]));
-  F['LEGGIMI.txt']='﻿Pacchetto dati per ricerca — generato il '+today()+'\r\n\r\nPazienti inclusi: '+ord.length+' (solo quelli con consenso firmato all’uso dei dati per ricerca).\r\n\r\nI dati sono PSEUDONIMIZZATI, non anonimi: i codici non contengono nomi, contatti o testo libero, le date sono espresse come mesi dalla presa in carico e l’età in fasce, ma la combinazione di più informazioni può rendere una persona riconoscibile. Conservali cifrati, usali solo per lo scopo del consenso e non condividerli senza una valutazione specifica (base giuridica, eventuale parere etico, protocollo di ricerca).\r\n\r\nFile: pazienti, diagnosi, parole_chiave, test (con item_1…item_N), sedute, episodi. Separatore: punto e virgola, codifica UTF-8. I codici sono assegnati a caso a ogni esportazione e non sono confrontabili tra esportazioni diverse.\r\n';
+  F['LEGGIMI.txt']='﻿Pacchetto dati per ricerca — generato il '+today()+'\r\n\r\nPazienti inclusi: '+ord.length+' (solo quelli con consenso firmato all’uso dei dati per ricerca).\r\n\r\nI dati sono PSEUDONIMIZZATI, non anonimi: i codici non contengono nomi, contatti o testo libero, le date sono espresse come mesi dalla presa in carico e l’età in fasce, ma la combinazione di più informazioni può rendere una persona riconoscibile. Conservali cifrati, usali solo per lo scopo del consenso e non condividerli senza una valutazione specifica (base giuridica, eventuale parere etico, protocollo di ricerca).\r\n\r\nFile: pazienti, diagnosi, parole_chiave, test (con item_1…item_N), sedute, domande (file episodi.csv). Separatore: punto e virgola, codifica UTF-8. I codici sono assegnati a caso a ogni esportazione e non sono confrontabili tra esportazioni diverse.\r\n';
   const files=Object.keys(F).map(n=>({name:n,data:enc.encode(F[n])}));
   const key=withKey?csv(['id','cognome','nome'],ord.map(p=>[code[p.id],p.cognome,p.nome])):null;
   return {n:ord.length,zip:zipStore(files),key};
@@ -2022,7 +2055,7 @@ function retStatus(p){
   return {s:fine>today()?'incorso':'scaduta',fine};
 }
 
-/* strumenti psicometrici e risultati collegati a paziente, episodio e referto */
+/* strumenti psicometrici e risultati collegati a paziente, domanda e referto */
 function instrName(id){const x=D().instr.find(a=>a.id===id);return x?x.nome+(x.versione?' '+x.versione:''):'(strumento eliminato)'}
 function tTestInstr(p){
   const all=byP(D().tests,p.id);
@@ -2030,7 +2063,7 @@ function tTestInstr(p){
   if(!all.length)return head+'<div class="card mut">Nessun risultato registrato.'+(D().instr.length?'':' Prima definisci uno strumento in Impostazioni.')+'</div>';
   const ids=Array.from(new Set(all.map(t=>t.instrId)));
   return head+ids.map(id=>{const ins=D().instr.find(x=>x.id===id),L=all.filter(t=>t.instrId===id).sort((a,b)=>b.data.localeCompare(a.data));
-    return '<div class="card"><h3>'+esc(instrName(id))+'</h3><table><thead><tr><th>Data</th><th>Punteggi</th><th>Episodio</th><th></th></tr></thead><tbody>'+L.map(t=>{
+    return '<div class="card"><h3>'+esc(instrName(id))+'</h3><table><thead><tr><th>Data</th><th>Punteggi</th><th>Domanda</th><th></th></tr></thead><tbody>'+L.map(t=>{
       const sc=(ins?ins.sub:[]).filter(s=>t.vals&&t.vals[s.id]!=null).map(s=>esc(s.nome)+': <b>'+esc(t.vals[s.id])+'</b>').join(' · ');
       const ep=t.epId&&D().episodes.find(e=>e.id===t.epId),doc=t.docId&&D().docs.find(d=>d.id===t.docId);
       return '<tr><td>'+fd(t.data)+'</td><td class="small">'+sc+(t.nota?'<br><span class="mut">'+esc(t.nota)+'</span>':'')+'</td><td class="small mut">'+(ep?esc((ep.categoria||'')+' '+fd(ep.dataApertura)):'—')+'</td><td class="row">'+(doc?'<button class="btn sm" data-act="viewDoc" data-id="'+doc.id+'">Referto</button>':'')+delBtn('tests',t.id)+'</td></tr>'}).join('')+'</tbody></table></div>'}).join('');
@@ -2044,7 +2077,7 @@ A.newRes=()=>{
   if(!D().instr.length){toast('Prima definisci uno strumento in Impostazioni, nella sezione “Strumenti psicometrici”.');return}
   const eps=byP(D().episodes,S.pid),docs=byP(D().docs,S.pid);
   formModal('Nuovo risultato',[{k:'instrId',l:'Strumento',t:'select',o:D().instr.map(i=>[i.id,i.nome+(i.versione?' '+i.versione:'')]),req:1},{k:'data',l:'Data della somministrazione',t:'date',req:1}]
-    .concat(eps.length?[{k:'epId',l:'Episodio di cura',t:'select',o:[['','—']].concat(eps.map(e=>[e.id,(e.categoria||'')+' '+fd(e.dataApertura)]))}]:[])
+    .concat(eps.length?[{k:'epId',l:'Domanda',t:'select',o:[['','—']].concat(eps.map(e=>[e.id,(e.categoria||'')+' '+fd(e.dataApertura)]))}]:[])
     .concat([{k:'docId',l:'Referto (caricato in Documenti)',t:'select',o:[['','—']].concat(docs.map(d=>[d.id,d.nome]))},{k:'nota',l:'Nota'}]),
     {data:today(),instrId:D().instr[0].id},async o=>{
     const ins=D().instr.find(x=>x.id===o.instrId),vals={};let n=0;
@@ -2259,7 +2292,7 @@ A.printPat=()=>{
   const scans=byP(D().docs,p.id).filter(d=>d.scan).sort((a,b)=>(a.dataTest||'').localeCompare(b.dataTest||'')).map(d=>[fd(d.dataTest||d.dataDoc),d.strumento||instrName(d.instrId)||d.nome,d.testo?d.testo:'(scansione non trascritta)']);
   const meta=[['Codice paziente',p.cod||''],['Data di nascita',p.nascita?fd(p.nascita)+' ('+age(p.nascita)+' anni)':''],['Presa in carico',fd(p.presa)],['Stato',p.stato+(p.dataConcl?' il '+fd(p.dataConcl):'')+(p.esito?' ('+p.esito+')':'')],['Contatti',[p.tel,p.email].filter(Boolean).join(' · ')],['Responsabile genitoriale',p.tutore?p.tutore+' '+(p.tutoreContatto||''):''],['Note anagrafiche',p.note||'']].filter(r=>r[1]);
   const body='<div class="pr-meta">Stampata il '+fd(today())+'</div>'+sec('Dati del paziente',meta)+
-   sec('Episodi di cura',byP(D().episodes,p.id).map(e=>[fd(e.dataApertura)+(e.dataChiusura?' – '+fd(e.dataChiusura):''),(e.categoria||'')+'\n'+e.motivo+(e.inquadramento?'\nInquadramento: '+e.inquadramento:'')+(e.obiettivi?'\nObiettivi: '+e.obiettivi:'')+(e.piano?'\nPiano: '+e.piano:'')+(e.esito?'\nEsito: '+e.esito:'')]))+
+   sec('Domande',byP(D().episodes,p.id).map(e=>[fd(e.dataApertura)+(e.dataChiusura?' – '+fd(e.dataChiusura):''),(e.categoria||'')+'\n'+e.motivo+(e.inquadramento?'\nInquadramento: '+e.inquadramento:'')+(e.obiettivi?'\nObiettivi: '+e.obiettivi:'')+(e.piano?'\nPiano: '+e.piano:'')+(e.esito?'\nEsito: '+e.esito:'')]))+
    sec('Diagnosi',byP(D().dx,p.id).map(x=>[fd(x.data),x.sistema+' '+x.codice,x.etichetta+(x.gravita?' ('+x.gravita+')':''),x.stato]))+
    sec('Sedute',byP(D().sessions,p.id).sort((a,b)=>a.data.localeCompare(b.data)).map(s=>[fd(s.data)+'\n'+s.tipo+(s.durata?' '+s.durata+' min':''),s.nota||'']))+
    sec('Test e scale a item',byP(D().scales,p.id).sort((a,b)=>a.data.localeCompare(b.data)).map(s=>[fd(s.data),s.scala,s.punti+' / '+SC[s.scala],s.items?'item: '+s.items.join(' '):'']))+
@@ -2328,7 +2361,7 @@ const TLT={
   test:['Test e scale','--t-test','M5 20V10M12 20V4M19 20v-7'],
   stato:['Cambio di stato','--t-stato','M12 7v5l3 2'],
   dx:['Diagnosi','--t-dx','M9 3h6v6h6v6h-6v6H9v-6H3V9h6z'],
-  ep:['Episodio di cura','--t-ep','M6 21V4h11l-2 4 2 4H6']
+  ep:['Domanda','--t-ep','M6 21V4h11l-2 4 2 4H6']
 };
 function timelineHTML(pid){
   const ev=[],H=S.tlh||[];
@@ -2339,7 +2372,7 @@ function timelineHTML(pid){
   byP(D().tests,pid).forEach(c=>ev.push([c.data,'test','Strumento',instrName(c.instrId)]));
   byP(D().events,pid).forEach(e=>ev.push([e.data,'stato','Cambio di stato',e.testo]));
   byP(D().dx,pid).forEach(x=>ev.push([x.data,'dx','Diagnosi '+x.stato,x.codice+' '+x.etichetta]));
-  byP(D().episodes,pid).forEach(e=>ev.push([e.dataApertura,'ep','Episodio aperto',e.categoria||'']));
+  byP(D().episodes,pid).forEach(e=>ev.push([e.dataApertura,'ep','Domanda aperta',e.categoria||'']));
   if(!ev.length)return '<p class="mut small">Nessuna attività.</p>';
   const cnt={};ev.forEach(e=>cnt[e[1]]=(cnt[e[1]]||0)+1);
   const chips='<div class="tlf">'+Object.keys(TLT).filter(k=>cnt[k]).map(k=>'<button style="--c:var('+TLT[k][1]+')" class="'+(H.indexOf(k)>=0?'off':'')+'" data-act="tlToggle" data-k="'+k+'" aria-pressed="'+(H.indexOf(k)<0)+'"><i class="sh-'+k+'"></i>'+TLT[k][0]+' · '+cnt[k]+'</button>').join('')+'</div>';
@@ -2553,7 +2586,7 @@ function plistNew(){
 function vPatNew(){
   const p=pat(S.pid);if(!p||p.deletedAt){S.view='pats';return vPats()}
   const n=(a)=>byP(a,p.id).length,nT=n(D().scales)+n(D().tests)+byP(D().docs,p.id).filter(d=>d.scan).length;
-  const tabs=[['pan','Panoramica',''],['epi','Episodi',n(D().episodes)],['dx','Diagnosi',n(D().dx)],['ses','Sedute e note',n(D().sessions)],['doc','Documenti',byP(D().docs,p.id).filter(d=>!d.scan&&!d.audio).length],['test','Test e scale',nT],['con','Consensi',n(D().consents)],['pri','Privacy','']];
+  const tabs=[['pan','Panoramica',''],['epi','Domande',n(D().episodes)],['dx','Diagnosi',n(D().dx)],['ses','Sedute e note',n(D().sessions)],['doc','Documenti',byP(D().docs,p.id).filter(d=>!d.scan&&!d.audio).length],['test','Test e scale',nT],['con','Consensi',n(D().consents)],['pri','Privacy','']];
   const dup=dupOf(p);let body='';
   switch(S.tab){case 'pan':body=tPan(p);break;case 'epi':body=tEpi(p);break;case 'dx':body=tDx(p);break;case 'ses':body=tSes(p);break;case 'doc':body=tDoc(p);break;case 'test':body=tTest(p);break;case 'con':body=tCon(p);break;case 'pri':body=tPri(p)}
   const lastS=byP(D().sessions,p.id).map(s=>s.data).sort().pop(),nx=byP(D().appts,p.id).filter(a=>a.stato==='previsto'&&a.data>=today()).sort((a,b)=>(a.data+(a.ora||'')).localeCompare(b.data+(b.ora||'')))[0];
@@ -2579,7 +2612,7 @@ function tPanNew(p){
   return warn+(nx?'<div class="banner info nxb"><span>Prossimo appuntamento: <b>'+fd(nx.data)+(nx.ora?' alle '+esc(nx.ora):'')+'</b> ('+esc(nx.tipo)+')</span><button class="btn sm" data-act="cardAppt" data-id="'+nx.id+'">Biglietto PNG</button></div>':'')+
    '<div class="card"><div class="ch"><span class="chi tn-g">'+ICON.pat+'</span><h3>Anagrafica</h3></div><div class="kvg">'+kv.filter(r=>r[1]).map(r=>'<div class="kv"><span>'+r[0]+'</span><b>'+esc(r[1])+'</b></div>').join('')+'</div>'+(p.note?'<div class="kv wide"><span>Note anagrafiche</span><div class="note">'+esc(p.note)+'</div></div>':'')+'</div>'+
    '<div class="card"><div class="ch"><span class="chi tn-t"><svg class="ic" viewBox="0 0 24 24"><path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/></svg></span><h3>Diagnosi attive</h3></div>'+(dxs.length?dxs.map(x=>'<div class="dxl"><span class="dxc">'+esc(x.codice)+'</span><span>'+esc(x.etichetta)+'</span>'+dxBadge(x.stato)+'<span class="mut small">'+esc(x.sistema)+'</span></div>').join(''):'<p class="mut" style="margin:0">Nessuna diagnosi registrata.</p>')+'</div>'+
-   '<div class="card"><div class="ch"><span class="chi tn-o"><svg class="ic" viewBox="0 0 24 24"><path d="M6 21V4h11l-2 4 2 4H6"/></svg></span><h3>Episodi di cura aperti</h3></div>'+(eps.length?eps.map(e=>'<p style="margin:0 0 6px"><b>'+esc(e.categoria||'')+'</b> — '+esc(e.motivo)+'</p>').join(''):'<p class="mut" style="margin:0">Nessun episodio aperto.</p>')+(kws.length?'<div style="margin-top:12px">'+kwChips(kws)+'</div>':'')+'</div>';
+   '<div class="card"><div class="ch"><span class="chi tn-o"><svg class="ic" viewBox="0 0 24 24"><path d="M6 21V4h11l-2 4 2 4H6"/></svg></span><h3>Domande aperte</h3></div>'+(eps.length?eps.map(e=>'<p style="margin:0 0 6px"><b>'+esc(e.categoria||'')+'</b> — '+esc(e.motivo)+'</p>').join(''):'<p class="mut" style="margin:0">Nessuna domanda aperta.</p>')+(kws.length?'<div style="margin-top:12px">'+kwChips(kws)+'</div>':'')+'</div>';
 }
 A.printTrascr=d=>{const m=D().docs.find(x=>x.id===d.id),p=pat(m.pid);log('Trascrizione stampata',m.nome,m.pid);saveSoon();
   printHTML(printDoc('Trascrizione della registrazione','Seduta del '+fd(m.dataReg||m.dataDoc)+(p?' · '+nm(p):''),'<div class="pr-meta">File originale: '+esc(m.nome)+(m.notaScan?' · '+esc(m.notaScan):'')+'</div><div class="pr-text">'+esc(m.testo||'(trascrizione non ancora inserita)')+'</div>','Trascrizione redatta a mano dal professionista. Documento riservato.'))};
@@ -2676,7 +2709,7 @@ function cartellaData(p){
   const scans=byP(D().docs,p.id).filter(d=>d.scan).sort((a,b)=>(a.dataTest||'').localeCompare(b.dataTest||'')).map(d=>[fd(d.dataTest||d.dataDoc),d.strumento||instrName(d.instrId)||d.nome,d.testo?d.testo:'(scansione non trascritta)']);
   const meta=[['Codice paziente',p.cod||''],['Data di nascita',p.nascita?fd(p.nascita)+' ('+age(p.nascita)+' anni)':''],['Presa in carico',fd(p.presa)],['Stato',p.stato+(p.dataConcl?' il '+fd(p.dataConcl):'')+(p.esito?' ('+p.esito+')':'')],['Contatti',[p.tel,p.email].filter(Boolean).join(' · ')],['Responsabile genitoriale',p.tutore?p.tutore+' '+(p.tutoreContatto||''):''],['Note anagrafiche',p.note||'']].filter(r=>r[1]);
   return [['Dati del paziente',meta],
-   ['Episodi di cura',byP(D().episodes,p.id).map(e=>[fd(e.dataApertura)+(e.dataChiusura?' – '+fd(e.dataChiusura):''),(e.categoria||'')+'\n'+e.motivo+(e.inquadramento?'\nInquadramento: '+e.inquadramento:'')+(e.obiettivi?'\nObiettivi: '+e.obiettivi:'')+(e.piano?'\nPiano: '+e.piano:'')+(e.esito?'\nEsito: '+e.esito:'')])],
+   ['Domande',byP(D().episodes,p.id).map(e=>[fd(e.dataApertura)+(e.dataChiusura?' – '+fd(e.dataChiusura):''),(e.categoria||'')+'\n'+e.motivo+(e.inquadramento?'\nInquadramento: '+e.inquadramento:'')+(e.obiettivi?'\nObiettivi: '+e.obiettivi:'')+(e.piano?'\nPiano: '+e.piano:'')+(e.esito?'\nEsito: '+e.esito:'')])],
    ['Diagnosi',byP(D().dx,p.id).map(x=>[fd(x.data),x.sistema+' '+x.codice,x.etichetta+(x.gravita?' ('+x.gravita+')':''),x.stato])],
    ['Sedute',byP(D().sessions,p.id).sort((a,b)=>a.data.localeCompare(b.data)).map(s=>[fd(s.data)+'\n'+s.tipo+(s.durata?' '+s.durata+' min':''),s.nota||''])],
    ['Test e scale a item',byP(D().scales,p.id).sort((a,b)=>a.data.localeCompare(b.data)).map(s=>[fd(s.data),s.scala,s.punti+' / '+SC[s.scala],s.items?'item: '+s.items.join(' '):''])],
@@ -2857,7 +2890,7 @@ const IMP_T=[
  ['nuovo','Nuovo paziente',['nuovo','nuovopaziente','paziente'],0],
  ['seduta','Seduta',['seduta','sedute'],1],
  ['nota','Nota anagrafica',['nota','note'],1],
- ['episodio','Episodio di cura',['episodio','motivo'],1],
+ ['episodio','Domanda',['episodio','domanda','motivo'],1],
  ['diagnosi','Diagnosi',['diagnosi','dx'],1],
  ['appuntamento','Appuntamento',['appuntamento','appt'],1],
  ['modifica','Modifica dei dati',['modifica','aggiorna','dati'],1],
@@ -2978,7 +3011,7 @@ function impPlan(it,all){
      if(!attachNeeded&&!txt.trim())return fail('Il file non contiene testo: scrivi il motivo della richiesta.');
      const dd=nz(it.descT.join(' ')),cat=CATS.find(c=>dd&&nz(c)&&dd.includes(nz(c).split(' ')[0]))||'Altro';
      P.rec={categoria:cat,motivo:attachNeeded?'Vedi documento allegato «'+it.name+'».':txt,dataApertura:date||today()};P.attach=attachNeeded;
-     P.sum='Nuovo episodio di cura («'+cat+'») dal '+fd(P.rec.dataApertura)+' per '+who;if(cat==='Altro'&&it.descT.length===0)A_('Categoria non indicata: usata «Altro». Puoi metterla nel nome (es. …_Ansia).');break}
+     P.sum='Nuova domanda («'+cat+'») dal '+fd(P.rec.dataApertura)+' per '+who;if(cat==='Altro'&&it.descT.length===0)A_('Categoria non indicata: usata «Altro». Puoi metterla nel nome (es. …_Ansia).');break}
    case 'diagnosi':{
      const ds=it.descT.join(' '),m=/\b([A-Z]\d{2}(?:\.\d{1,2})?|\d[A-Z]\d{1,2}(?:\.\d)?)\b/i.exec(ds);
      if(!m)return fail('Non trovo il codice della diagnosi nel nome (es. …_F41.1).');
@@ -3040,7 +3073,7 @@ async function impApply(it,made){
    case 'nuovo':{const rec=Object.assign({id:uid(),creato:today(),rid:newRid(),cod:nextCod(D())},P.rec);D().patients.push(rec);made[it.id]=rec.id;await impAttach(rec.id,it,'scheda anamnestica',today());log('Nuovo paziente (da file)',nm(rec),rec.id);return 'Creato '+nm(rec)+' ('+rec.cod+')'}
    case 'seduta':D().sessions.push({id:uid(),pid,data:P.data,durata:P.dur,tipo:'individuale',epId:'',kw:[],nota:P.nota});if(P.attach)await impAttach(pid,it,'altro',P.data);log('Seduta importata da file',nm(p),pid);return 'Seduta del '+fd(P.data)+' aggiunta';
    case 'nota':p.note=(p.note?p.note+'\n\n':'')+'['+fd(today())+' · da file] '+P.nota;if(P.attach)await impAttach(pid,it,'altro',today());log('Nota importata da file',nm(p),pid);return 'Nota aggiunta alle note anagrafiche';
-   case 'episodio':D().episodes.push(Object.assign({id:uid(),pid,kw:[],inquadramento:'',obiettivi:'',piano:'',dataChiusura:'',esito:''},P.rec));if(P.attach)await impAttach(pid,it,'altro',P.rec.dataApertura);log('Episodio importato da file',nm(p),pid);return 'Episodio aggiunto';
+   case 'episodio':D().episodes.push(Object.assign({id:uid(),pid,kw:[],inquadramento:'',obiettivi:'',piano:'',dataChiusura:'',esito:''},P.rec));if(P.attach)await impAttach(pid,it,'altro',P.rec.dataApertura);log('Domanda importata da file',nm(p),pid);return 'Domanda aggiunta';
    case 'diagnosi':D().dx.push(Object.assign({id:uid(),pid},P.rec));if(P.attach)await impAttach(pid,it,'altro',P.rec.data);log('Diagnosi importata da file',nm(p),pid);return 'Diagnosi '+P.rec.codice+' aggiunta';
    case 'appuntamento':D().appts.push(Object.assign({id:uid(),pid},P.rec));log('Appuntamento importato da file',nm(p),pid);return 'Appuntamento aggiunto in agenda';
    case 'modifica':{const ch=Object.assign({},P.ch);if(ch.tags!=null)ch.tags=String(ch.tags).split(',').map(x=>x.trim()).filter(Boolean);if(ch.stato&&ch.stato!==p.stato)D().events.push({id:uid(),pid,data:today(),testo:'Stato: '+p.stato+' → '+ch.stato});Object.assign(p,ch);log('Modifica importata da file',nm(p),pid);return 'Dati aggiornati'}
@@ -3116,7 +3149,7 @@ const IMP_TPL={
  seduta:{ic:'M4 5h16v11H9l-5 4z',nome:'SEDUTA_PZ-0000_AAAA-MM-GG_50min',des:'Aggiunge una seduta: il testo del file diventa la nota clinica. Sostituisci PZ-0000 con il codice del paziente (o con Cognome_Nome) e AAAA-MM-GG con la data. La durata (50min) è facoltativa.',
   body:[CM,'// Scrivi sotto la nota clinica della seduta.',''],fmt:['docx','txt']},
  nota:{ic:'M4 20l1-4L16 5l3 3L8 19zM14 7l3 3',nome:'NOTA_PZ-0000',des:'Aggiunge il testo alle note anagrafiche del paziente, con la data dell’importazione.',body:[CM,'// Scrivi sotto la nota.',''],fmt:['docx','txt']},
- episodio:{ic:'M6 21V4M6 4h11l-2 4 2 4H6',nome:'EPISODIO_PZ-0000_AAAA-MM-GG_Ansia',des:'Apre un episodio di cura: il testo è il motivo della richiesta. Dopo la data scrivi la categoria: Ansia, Umore, Relazioni, Trauma, Lavoro, Lutto, Sviluppo, Altro.',body:[CM,'// Scrivi sotto il motivo della richiesta.',''],fmt:['docx','txt']},
+ episodio:{ic:'M6 21V4M6 4h11l-2 4 2 4H6',nome:'DOMANDA_PZ-0000_AAAA-MM-GG_Ansia',des:'Apre una domanda (si accetta anche il vecchio nome EPISODIO_…): il testo è il motivo della richiesta. Dopo la data scrivi la categoria: Ansia, Umore, Relazioni, Trauma, Lavoro, Lutto, Sviluppo, Altro.',body:[CM,'// Scrivi sotto il motivo della richiesta.',''],fmt:['docx','txt']},
  diagnosi:{ic:'M9 3h6v6h6v6h-6v6H9v-6H3V9h6z',nome:'DIAGNOSI_PZ-0000_AAAA-MM-GG_F41.1_ipotesi',des:'Registra una diagnosi. Dopo la data scrivi il codice (ICD-10 o DSM-5-TR) e lo stato: ipotesi, confermata, in remissione o esclusa. Il testo del file, se c’è, diventa la nota.',body:[CM,'// Facoltativo: scrivi sotto una nota sulla diagnosi.',''],fmt:['docx','txt']},
  appuntamento:{ic:'M5 5h14v15H5zM5 10h14M9 3v4M15 3v4',nome:'APPUNTAMENTO_PZ-0000_AAAA-MM-GG_15.30',des:'Mette un appuntamento in agenda: servono data e ora (15.30) nel nome. Il contenuto del file non viene letto né archiviato, può essere anche un file vuoto.',body:[CM,'// Il contenuto di questo file non viene usato: conta solo il nome.'],fmt:['txt','docx']},
  modifica:{ic:'M4 7h8.8M17.2 7H20M4 17h2.8M11.2 17H20M15 4.8a2.2 2.2 0 110 4.4 2.2 2.2 0 010-4.4zM9 14.8a2.2 2.2 0 110 4.4 2.2 2.2 0 010-4.4z',nome:'MODIFICA_PZ-0000',des:'Cambia i dati anagrafici di un paziente: scrivi solo le righe da modificare. Prima di confermare vedi il confronto vecchio → nuovo.',body:[CM,'// Compila solo i campi da cambiare e cancella gli altri. Date: AAAA-MM-GG.','',...KVL],fmt:['docx','txt','xlsx']},
@@ -3136,7 +3169,7 @@ function vImp(){
   return '<h1>Importa da file</h1>'+
   '<ol class="impsteps"><li><b>1</b><span>Prepara il file<small>Parti da un modello e rinominalo</small></span></li><li><b>2</b><span>Trascinalo qui<small>Anche più file insieme</small></span></li><li><b>3</b><span>Controlla e conferma<small>Nulla si scrive prima del tuo ok</small></span></li></ol>'+
   '<div class="card impdrop" id="impdrop" tabindex="0" data-act="impPick"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V5M7.5 9.5L12 5l4.5 4.5M5 15v4h14v-4"/></svg><div><b>Trascina qui i file, oppure clicca per sceglierli</b><div class="small mut">Word, PDF, Excel, testo, immagini · fino a 10 MB ciascuno · il nome del file dice dove inserirlo</div></div></div>'+
-  '<input type="file" id="impf" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.md,.rtf,.odt,.ods,.jpg,.jpeg,.png,.acpk" hidden>'+
+  '<input type="file" id="impf" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.csv,.md,.rtf,.odt,.ods,.jpg,.jpeg,.png,.acpk,.m4a,.mp4,.webm,.ogg,.mp3,.wav,.aac,.caf,.opus" hidden>'+
   '<div id="impList">'+impListHTML()+'</div>'+
   '<div class="card imptpl"><div class="bar"><div><h3>Modelli da scaricare</h3><p class="small mut" style="margin:2px 0 0">Uno per ogni tipo, già con il nome giusto da adattare. Compilali e rinominali anche altrove, poi importali qui.</p></div><div class="row"><button class="btn sm" data-act="tplZip" data-f="docx">Tutti in Word/Excel (.zip)</button><button class="btn sm" data-act="tplZip" data-f="txt">Tutti in testo (.zip)</button></div></div>'+
   '<div class="imgt">'+types.map(k=>{const t=IMP_TPL[k],T=IMP_T.find(x=>x[0]===k);return '<div class="img"><div class="img-h"><span class="img-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+t.ic+'"/></svg></span><div class="img-t">'+esc(T[1])+'</div></div><div class="img-d">'+esc(t.des)+'</div><code>'+esc(t.nome)+'.ext</code><div class="img-b"><span>Scarica modello:</span>'+t.fmt.map(f=>'<button class="btn sm" data-act="tplDl" data-k="'+k+'" data-f="'+f+'">'+TPL_LBL[f]+'</button>').join('')+'</div></div>'}).join('')+'</div></div>'+
@@ -3144,8 +3177,8 @@ function vImp(){
   '<ul class="impul"><li><b>TIPO</b>: una delle parole dei modelli qui sopra (maiuscole o minuscole, non importa).</li><li><b>Paziente</b>: <b>Cognome_Nome</b> (es. Rossi_Mario) oppure, più sicuro, il <b>codice</b> della scheda (es. PZ-0004). Se due pazienti hanno lo stesso nome usa sempre il codice.</li><li><b>Data</b>: sempre AAAA-MM-GG (accetto anche GG-MM-AAAA). Significa data della seduta, di nascita, del documento… a seconda del tipo.</li><li><b>Dettaglio</b>: facoltativo, dipende dal tipo (codice diagnosi, categoria, ora, titolo del corso).</li><li>Evita i caratteri <b>/ \\ : * ? &quot; &lt; &gt; |</b> nei nomi dei file.</li><li>Nel dubbio l’app <b>non indovina</b>: la riga resta “Da correggere” e scegli tu tipo e paziente.</li><li>Nei file di testo le righe che iniziano con <b>//</b> sono istruzioni e non vengono importate.</li></ul>'+
   '<h3 style="margin-top:16px">Passo per passo</h3><ol class="impol"><li>Scarica il modello del tipo che ti serve (sezione “Modelli da scaricare”) e conservalo: il suo nome è già nel formato giusto.</li><li>Sostituisci <b>Paziente</b> con <b>Cognome_Nome</b> oppure con il codice scheda (PZ-0004); sostituisci la data; se serve, scrivi il dettaglio.</li><li>Compila il contenuto del file seguendo le istruzioni scritte dentro il modello.</li><li>Trascina il file in alto: vedrai l’anteprima con tipo, paziente, data e cosa verrà scritto. Le righe incerte restano “Da correggere”.</li><li>Conferma solo dopo aver controllato: fino a quel momento nell’archivio non cambia nulla.</li></ol>'+
   '<h3>Esempi per ogni tipo</h3><table class="impx"><tbody>'+Object.keys(IMP_TPL).map(k=>{const T=IMP_T.find(x=>x[0]===k);return '<tr><td><b>'+esc(T[1])+'</b></td><td><code>'+esc(IMP_TPL[k].nome)+'.docx</code><div class="small mut">'+esc(IMP_TPL[k].des)+'</div></td></tr>'}).join('')+'</tbody></table>'+
-  '<h3 style="margin-top:14px">Errori frequenti</h3><ul class="impul"><li>Paziente scritto con una variante (Rossi Mario invece di Rossi_Mario): se non c’è corrispondenza esatta, la riga resta da correggere.</li><li>Due pazienti con lo stesso nome: usa sempre il codice.</li><li>Data in formato diverso (18 ottobre 2026): scrivila 2026-10-18.</li><li>Tipo scritto in inglese o abbreviato: usa le parole dei modelli (seduta, nota, episodio, diagnosi, appuntamento, modifica, documento, consenso, formazione, nuovo).</li><li>File troppo grande: oltre 10 MB non viene accettato.</li></ul>'+
-  '<h3 style="margin-top:18px">Cosa legge l’app dentro i file</h3><p class="small">Di <b>.txt, .csv, .md, .docx e .xlsx</b> estrae il testo (seduta, nota, episodio, diagnosi, modifica, nuovo paziente). I <b>PDF, le immagini e i vecchi .doc/.xls</b> vengono archiviati nei Documenti del paziente senza leggerne il contenuto: per una seduta la nota rimanda al file allegato. Il testo di .docx e .xlsx si legge solo se il browser lo consente (Chrome, Edge, Safari 16.4 o successivi, e l’app desktop). Tutto resta cifrato dentro l’archivio e nessun file esce dal computer.</p></div>'}
+  '<h3 style="margin-top:14px">Errori frequenti</h3><ul class="impul"><li>Paziente scritto con una variante (Rossi Mario invece di Rossi_Mario): se non c’è corrispondenza esatta, la riga resta da correggere.</li><li>Due pazienti con lo stesso nome: usa sempre il codice.</li><li>Data in formato diverso (18 ottobre 2026): scrivila 2026-10-18.</li><li>Tipo scritto in inglese o abbreviato: usa le parole dei modelli (seduta, nota, domanda, diagnosi, appuntamento, modifica, documento, consenso, formazione, nuovo).</li><li>File troppo grande: oltre 10 MB non viene accettato.</li></ul>'+
+  '<h3 style="margin-top:18px">Cosa legge l’app dentro i file</h3><p class="small">Di <b>.txt, .csv, .md, .docx e .xlsx</b> estrae il testo (seduta, nota, domanda, diagnosi, modifica, nuovo paziente). I <b>PDF, le immagini e i vecchi .doc/.xls</b> vengono archiviati nei Documenti del paziente senza leggerne il contenuto: per una seduta la nota rimanda al file allegato. Il testo di .docx e .xlsx si legge solo se il browser lo consente (Chrome, Edge, Safari 16.4 o successivi, e l’app desktop). Tutto resta cifrato dentro l’archivio e nessun file esce dal computer.</p></div>'}
 
 A.applyView=d=>{const v=D().views.find(x=>x.id===d.id);if(v){S.f=Object.assign({q:'',stato:'',tag:'',da:'',a:'',dxg:'',kw:''},v.f);render()}};
 A.delViewId=d=>{const v=D().views.find(x=>x.id===d.id);if(!v)return;D().views=D().views.filter(x=>x.id!==d.id);save().then(()=>{render();toastAct('Ricerca «'+v.name+'» eliminata','Annulla',()=>{D().views.push(v);save().then(render)})})};
@@ -3355,7 +3388,7 @@ A.newRes=()=>{
   if(!D().instr.length){toast('Prima definisci uno strumento in Impostazioni, nella sezione “Strumenti psicometrici”.');return}
   const eps=byP(D().episodes,S.pid),docs=byP(D().docs,S.pid);
   formModal('Nuovo risultato',[{k:'instrId',l:'Strumento',t:'select',o:D().instr.map(i=>[i.id,i.nome+(i.versione?' '+i.versione:'')]),req:1},{k:'data',l:'Data della somministrazione',t:'date',req:1}]
-    .concat(eps.length?[{k:'epId',l:'Episodio di cura',t:'select',o:[['','—']].concat(eps.map(e=>[e.id,(e.categoria||'')+' '+fd(e.dataApertura)]))}]:[])
+    .concat(eps.length?[{k:'epId',l:'Domanda',t:'select',o:[['','—']].concat(eps.map(e=>[e.id,(e.categoria||'')+' '+fd(e.dataApertura)]))}]:[])
     .concat([{k:'docId',l:'Referto (caricato in Documenti)',t:'select',o:[['','—']].concat(docs.map(d=>[d.id,d.nome]))},{k:'nota',l:'Nota'}]),
     {data:today(),instrId:D().instr[0].id},async o=>{
     const ins=D().instr.find(x=>x.id===o.instrId),vals={};let n=0;
@@ -3376,7 +3409,7 @@ function tTestInstr(p){
   return head+ids.map(id=>{const ins=D().instr.find(x=>x.id===id),L=all.filter(t=>t.instrId===id).sort((a,b)=>b.data.localeCompare(a.data)),asc=L.slice().reverse();
     const meta=ins?[ins.autore,ins.ambito,ins.modalita].filter(Boolean).join(' · '):'';
     const trend=ins&&asc.length>1?'<div class="subtr">'+ins.sub.map(s=>{const pts=asc.filter(t=>t.vals&&t.vals[s.id]!=null).map(t=>({d:t.data,v:t.vals[s.id]}));if(pts.length<2)return '';const mx=s.max!=null?s.max:Math.ceil(Math.max(...pts.map(q=>q.v))*1.15)||1;return '<div class="card"><h4>'+esc(s.nome)+(s.tipo&&s.tipo!=='grezzo'?' <span class="small mut">('+esc(s.tipo)+')</span>':'')+'</h4>'+chartSVG(pts,mx)+'</div>'}).join('')+'</div>':'';
-    return '<div class="card"><h3>'+esc(instrName(id))+'</h3>'+(meta?'<p class="small mut" style="margin:-4px 0 8px">'+esc(meta)+'</p>':'')+trend+'<table><thead><tr><th>Data</th><th>Punteggi</th><th>Episodio</th><th></th></tr></thead><tbody>'+L.map(t=>{
+    return '<div class="card"><h3>'+esc(instrName(id))+'</h3>'+(meta?'<p class="small mut" style="margin:-4px 0 8px">'+esc(meta)+'</p>':'')+trend+'<table><thead><tr><th>Data</th><th>Punteggi</th><th>Domanda</th><th></th></tr></thead><tbody>'+L.map(t=>{
       const sc=(ins?ins.sub:[]).filter(s=>t.vals&&t.vals[s.id]!=null).map(s=>esc(s.nome)+(s.tipo&&s.tipo!=='grezzo'?' ('+esc(s.tipo)+')':'')+': <b>'+esc(t.vals[s.id])+'</b>').join(' · ');
       const ex=t.extra?Object.keys(t.extra).map(k=>'<span class="tagm">'+esc(k)+': '+esc(t.extra[k])+'</span>').join(''):'';
       const ep=t.epId&&D().episodes.find(e=>e.id===t.epId),doc=t.docId&&D().docs.find(d=>d.id===t.docId);
@@ -3556,7 +3589,7 @@ const ACC_SPEC=[
  {m:'Resoconti clinici',id:'a-rpt',ic:'doc',t:'Resoconti clinici',s:'Tipi di resoconto per medici, famiglie e altri destinatari'},
  {m:'Moduli di consenso',id:'a-cons',ic:'cons',t:'Moduli di consenso',s:'Informativa e consensi da stampare o scaricare in PDF'},
  {m:'Registro accessi',id:'a-log',ic:'log',t:'Registro accessi',s:'Che cosa è stato fatto e quando (ultimi 150 eventi)'},
- {m:'Parole chiave',id:'a-kw',ic:'tag',t:'Parole chiave',s:'Vocabolario per etichettare episodi e sedute'},
+ {m:'Parole chiave',id:'a-kw',ic:'tag',t:'Parole chiave',s:'Vocabolario per etichettare domande e sedute'},
  {m:'Scale e questionari',id:'a-scale',ic:'scale',t:'Scale e questionari a item',s:'Risposte Likert, Vero/Falso, frequenza e altri formati'},
  {m:'Strumenti psicometrici',id:'a-instr',ic:'instr',t:'Strumenti psicometrici',s:'Catalogo dei test e dei loro punteggi'},
  {m:'Come si scrive il nome',id:'a-file',ic:'file',t:'Come si scrive il nome del file',s:'La regola dei nomi, con esempi per ogni tipo'},
@@ -3641,7 +3674,7 @@ function lcHTML(off){
   for(let i=1;i<=n;i++){
     const k=cm+'-'+p2(i),v=sm&&sm[k],c=v?v[0]:0,e=v?v[1]:0;
     const bg=c&&e?'linear-gradient(135deg,'+G[lv(c)]+' 50%,'+T[lv(e)]+' 50%)':c?G[lv(c)]:e?T[lv(e)]:'';
-    cells+='<span style="--k:'+i+(bg?';background:'+bg:'')+'" class="lc-d'+(k===td?' t':'')+(bg?' on':'')+(c>=4?' dk':'')+'">'+i+'</span>';
+    cells+='<span style="--k:'+i+(bg?';background:'+bg:'')+'" class="lc-d'+(k===td?' t':'')+(bg?' on':'')+(c&&e?' mx':c>=4?' dk':'')+'">'+i+'</span>';
   }
   return '<div class="lc-h"><button type="button" class="lc-n" data-act="lcNav" data-n="-1" aria-label="Mese precedente"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><b>'+esc(title)+'</b><button type="button" class="lc-n" data-act="lcNav" data-n="1" aria-label="Mese successivo"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div><div class="lc-g">'+cells+'</div>'+
    '<div class="lc-f">'+(on?'<span><i style="background:'+G[1]+'"></i>giorni con pazienti</span><span><i style="background:'+T[2]+'"></i>formazione</span>':'Nessun dettaglio: i colori dei giorni si attivano in Impostazioni › Blocco automatico.')+'</div>';
@@ -3699,6 +3732,7 @@ const _mig11=migrate;
 migrate=function(d){
   const r=_mig11.apply(this,arguments);
   if(!Array.isArray(r.out))r.out=[];
+  if(!Array.isArray(r.npIn))r.npIn=[];
   if(!r.plist||typeof r.plist!=='object')r.plist={at:'',pz:[],ag:[]};
   return r};
 /* il telefono parte in modalità raccolta se l'archivio è nuovo e lo schermo è stretto */
@@ -3801,7 +3835,7 @@ const CT={
   name:v=>'NUOVO_'+fz(v.cognome)+'_'+fz(v.nome)+'_'+v.nascita,
   text:v=>lineKV([['Cognome',v.cognome],['Nome',v.nome],['Data di nascita',v.nascita],['Genere',v.genere],['Telefono',v.tel],['Email',v.email],['Responsabile genitoriale',v.tutore],['Contatti tutore',v.tutoreContatto],['Note',v.note]]),
   chk:v=>v.nascita>today()?'La data di nascita è nel futuro.':'',sum:v=>v.cognome+' '+v.nome},
- episodio:{l:'Episodio di cura',s:'Motivo della richiesta',ic:'M12 21s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.5-7 10-7 10z',pz:1,
+ episodio:{l:'Domanda',s:'Motivo della richiesta',ic:'M12 21s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.5-7 10-7 10z',pz:1,
   f:()=>[PZF,DTF('data','Data di apertura'),{k:'cat',l:'Categoria',t:'select',o:CATS},{k:'motivo',l:'Motivo della richiesta',t:'textarea',r:6,req:1}],
   name:(v,z)=>'EPISODIO_'+z+'_'+v.data+'_'+fz(v.cat),text:v=>v.motivo,sum:v=>fd(v.data)+' · '+v.cat},
  diagnosi:{l:'Diagnosi',s:'Codice ICD / DSM e stato',ic:'M5 5h14v14H5zM9 9h6M9 13h6',pz:1,
@@ -3875,7 +3909,7 @@ async function ctSave(type,o,editId){
   if(miss.length)throw new Error('Compila: '+miss.map(f=>f.l).join(', ')+'.');
   fl.filter(f=>f.t==='date'&&v[f.k]).forEach(f=>{if(!parseDateT(v[f.k]))throw new Error('Data non valida: '+f.l+'.')});
   let pz='';
-  if(T.pz){pz=normPz(o.pz);if(!pz)throw new Error('Scrivi il codice del paziente (per esempio PZ-0001) oppure «Cognome Nome» di un paziente nuovo creato qui.')}
+  if(T.pz){pz=normPz(o.pz);if(!pz&&(T.pz!==2||String(o.pz||'').trim()))throw new Error('Scrivi il codice del paziente (per esempio PZ-0001) oppure «Cognome Nome» di un paziente nuovo creato qui.')}
   if(T.chk){const e=T.chk(v);if(e)throw new Error(e)}
   const old=editId?OUT().find(x=>x.id===editId):null;
   if(T.photo&&!o.foto&&!(old&&old.photo))throw new Error('Scegli la foto da allegare.');
@@ -4090,7 +4124,8 @@ function vCSet(){
    '<div class="card"><h3>Pazienti e agenda dal Mac</h3><p class="small mut">'+(P.at?'Caricato il '+fd(P.at)+': <b>'+P.pz.length+'</b> pazienti (solo codice e iniziali), <b>'+P.ag.length+'</b> appuntamenti.':'Nessun elenco caricato. Senza elenco scrivi tu il codice PZ-… ogni volta, ed è la scelta più riservata.')+'</p><button class="btn" data-act="plPick">'+(P.at?'Aggiorna l’elenco':'Carica l’elenco dal Mac')+'</button></div>'+
    '<div class="card"><h3>Svuota il telefono</h3><p class="small mut">Dopo aver importato sul Mac, apri la ricevuta che il Mac ti ha dato: il telefono cancella da solo le voci importate.</p><div class="row"><button class="btn pri" data-act="crcPick">Apri la ricevuta</button><button class="btn" data-act="cclear"'+(ex?'':' disabled')+'>Cancella le '+ex+' già esportate</button></div></div>'+
    '<div class="card"><h3>Blocco automatico</h3><form data-form="lockset"><div class="grid">'+fieldHTML({k:'idleMin',l:'Blocca dopo',t:'select',o:opts.map(m=>[String(m),m===1?'1 minuto':m+' minuti'])},String(cur))+fieldHTML({k:'pw',l:'Password per confermare',t:'password',req:1})+'</div>'+
-   '<label class="chkrow"><input type="checkbox" name="hideLock"'+(s.hideLock!==false?' checked':'')+'> Blocca anche se l’app resta in secondo piano per più di un minuto</label><div class="err"></div><div class="row"><button class="btn pri">Salva</button><button type="button" class="btn" data-act="lock">Blocca adesso</button></div></form></div>'+
+   '<label class="chkrow"><input type="checkbox" name="hideLock"'+(s.hideLock!==false?' checked':'')+'> Blocca anche se l’app resta in secondo piano per più di un minuto</label>'+
+   '<label class="chkrow"><input type="checkbox" name="loginCal"'+(s.loginCal!==false?' checked':'')+'> <span>Mostra nella schermata di accesso il calendario con i colori dei giorni (appuntamenti e formazione). Non mostra nomi.</span></label><div class="err"></div><div class="row"><button class="btn pri">Salva</button><button type="button" class="btn" data-act="lock">Blocca adesso</button></div></form></div>'+
    modeCardHTML()+
    '<p class="small mut">Per cambiare la password o fare un backup passa alla modalità Completa.</p>'}
 function vCAg(){
@@ -4139,9 +4174,11 @@ closeModal=function(){try{document.documentElement.classList.remove('mopen')}cat
 /* tastiera dell'iPhone: la finestra resta sopra la tastiera e la barra in basso si nasconde */
 try{if(window.visualViewport){
   const vv=visualViewport,R=document.documentElement;let raf=0;
-  const up=()=>{raf=0;const kb=Math.max(0,Math.round(innerHeight-vv.height-vv.offsetTop));R.style.setProperty('--kb',kb+'px');R.classList.toggle('kb',kb>120)};
+  const up=()=>{raf=0;const kb=Math.max(0,Math.round(innerHeight-vv.height-vv.offsetTop));R.style.setProperty('--kb',kb+'px');R.classList.toggle('kb',kb>120);
+    /* area davvero visibile (sopra la tastiera): la schermata di accesso si aggancia a questa */
+    R.style.setProperty('--vvh',Math.round(vv.height)+'px');R.style.setProperty('--vvt',Math.round(vv.offsetTop)+'px')};
   const q=()=>{if(!raf)raf=requestAnimationFrame(up)};
-  vv.addEventListener('resize',q);vv.addEventListener('scroll',q);
+  vv.addEventListener('resize',q);vv.addEventListener('scroll',q);up();
 }}catch(e){}
 try{document.addEventListener('focusin',e=>{const t=e.target;if(TOUCH&&t&&t.matches&&t.matches('input:not([type=checkbox]):not([type=radio]):not([type=file]),textarea,select'))document.documentElement.classList.add('typing')});
   document.addEventListener('focusout',()=>{setTimeout(()=>{const a=document.activeElement;if(!a||!a.matches||!a.matches('input,textarea,select'))document.documentElement.classList.remove('typing')},60)})}catch(e){}
@@ -4149,7 +4186,7 @@ try{document.addEventListener('focusin',e=>{const t=e.target;if(TOUCH&&t&&t.matc
 /* ---------- v32: dati sempre nel formato atteso (difesa da file alterati) ----------
    Codici interni: solo lettere, cifre, - e _. Date: AAAA-MM-GG. Ore: HH:MM.
    Si applica a ogni apertura dell'archivio e a ogni ripristino di backup. */
-const SAFE_ID_K=['id','pid','epId','docId','instrId'];
+const SAFE_ID_K=['id','pid','epId','docId','instrId','rif'];
 const SAFE_DATE_K=['data','dataApertura','dataChiusura','dataConcl','dataDoc','dataCarico','dataTest','dataFine','nascita','presa','creato','deletedAt'];
 const cleanId=v=>String(v).replace(/[^A-Za-z0-9_-]/g,'').slice(0,64);
 const okYmd=v=>/^\d{4}-\d{2}-\d{2}$/.test(v);
@@ -4162,7 +4199,7 @@ function sanitizeDb(d){
     ['kw'].forEach(k=>{if(Array.isArray(x[k]))x[k]=x[k].map(v=>typeof v==='string'?cleanId(v):v)});
     if(typeof x.cod==='string'&&x.cod!==''&&!/^PZ-\d{1,6}$/.test(x.cod)){x.cod='';fixed++}
   };
-  ['patients','episodes','sessions','docs','scales','consents','events','dx','appts','tests','instr','tpls','views','formaz','inbox','customScales','vocab','out'].forEach(c=>{if(Array.isArray(d[c]))d[c].forEach(fix)});
+  ['patients','episodes','sessions','docs','scales','consents','events','dx','appts','tests','instr','tpls','views','formaz','inbox','customScales','vocab','out','npIn'].forEach(c=>{if(Array.isArray(d[c]))d[c].forEach(fix)});
   if(Array.isArray(d.out))d.out.forEach(it=>{if(it&&it.v)fix(it.v);if(it&&it.photo)fix(it.photo)});
   if(d.prot&&Array.isArray(d.prot.items))d.prot.items.forEach(fix);
   return fixed}
@@ -4246,6 +4283,280 @@ const _render33=render;
 render=function(){
   const r=_render33.apply(this,arguments);
   try{if(TOUCH&&S.screen==='lock'){document.querySelectorAll('input[autofocus]').forEach(i=>i.removeAttribute('autofocus'));unfocus33();requestAnimationFrame(()=>{unfocus33();requestAnimationFrame(unfocus33)});setTimeout(unfocus33,200)}}catch(e){}
+  return r};
+
+/* ---------- v33: calendario prima dell'accesso anche sul telefono (appuntamenti e formazione) ---------- */
+const _calSummary33=calSummary;
+calSummary=function(){
+  if(!isComp())return _calSummary33.apply(this,arguments);
+  const now=new Date(),out={},keyOf=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+  const pts={},fzd={};
+  const addP=(dt,who)=>{if(/^\d{4}-\d{2}-\d{2}$/.test(dt||''))(pts[dt]=pts[dt]||new Set()).add(String(who||'?'))};
+  OUT().forEach(i=>{const v=i.v||{};
+    if(i.type==='appuntamento'||i.type==='seduta')addP(v.data,i.pz);
+    if(i.type==='formazione'&&/^\d{4}-\d{2}-\d{2}$/.test(v.data||'')){
+      let a=new Date(v.data+'T12:00:00'),z=new Date((v.dataFine&&v.dataFine>=v.data?v.dataFine:v.data)+'T12:00:00'),n=0;
+      for(;a<=z&&n<120;a.setDate(a.getDate()+1),n++){const k=keyOf(a);fzd[k]=(fzd[k]||0)+1}}});
+  PLI().ag.forEach(a=>addP(a.d,a.c));
+  for(let k=-1;k<=2;k++){
+    const d=new Date(now.getFullYear(),now.getMonth()+k,1),cm=d.getFullYear()+'-'+p2(d.getMonth()+1),m={};
+    Object.keys(pts).forEach(x=>{if(x.slice(0,7)===cm)m[x]=[pts[x].size,0]});
+    Object.keys(fzd).forEach(x=>{if(x.slice(0,7)===cm)(m[x]=m[x]||[0,0])[1]=fzd[x]});
+    out[cm]=m}
+  return out};
+const _lock33=lock;
+lock=function(){try{if(S.db&&S.db.set&&isComp()&&S.db.set.loginCal===undefined)S.db.set.loginCal=true}catch(e){}return _lock33.apply(this,arguments)};
+
+/* ---------- v33: chiudere le finestre a pannello trascinandole verso il basso (telefono) ---------- */
+try{(function(){
+  if(!TOUCH)return;
+  let st=null;
+  const sheet=()=>{try{return matchMedia('(max-width:760px)').matches}catch(e){return false}};
+  const back=()=>{if(!st)return;const d=st.d,ov=d.parentNode;d.style.transition='transform .28s cubic-bezier(.32,.72,0,1)';d.style.transform='';if(ov)ov.style.opacity='';setTimeout(()=>{d.style.transition=''},320)};/* l'animazione di entrata non va ripristinata: ripartirebbe da capo */
+  document.addEventListener('touchstart',e=>{
+    st=null;if(e.touches.length!==1||!sheet())return;
+    const d=e.target&&e.target.closest?e.target.closest('#modal .dlg'):null;if(!d)return;
+    try{if(d.querySelector('.recbox')&&(REC.blob||REC.mr))return}catch(x){}/* una registrazione non salvata non si perde con uno scivolone */
+    const t=e.touches[0],top=t.clientY-d.getBoundingClientRect().top<70,onField=!!(e.target.closest&&e.target.closest('input,textarea,select,[contenteditable]'));
+    if(onField||(!top&&d.scrollTop>1))return;
+    st={d,x0:t.clientX,y0:t.clientY,t0:Date.now(),on:false,dy:0}},{passive:true});
+  document.addEventListener('touchmove',e=>{
+    if(!st)return;const t=e.touches[0],dy=t.clientY-st.y0;
+    if(!st.on){
+      if(dy>10&&Math.abs(t.clientX-st.x0)<dy){st.on=true;st.d.style.transition='none';st.d.style.animation='none'}
+      else if(dy<-8||Math.abs(t.clientX-st.x0)>24){st=null;return}else return}
+    if(e.cancelable)e.preventDefault();
+    st.dy=Math.max(0,dy);st.d.style.transform='translate3d(0,'+st.dy+'px,0)';
+    const ov=st.d.parentNode;if(ov)ov.style.opacity=String(1-Math.min(.5,st.dy/700))},{passive:false});
+  document.addEventListener('touchend',()=>{
+    if(!st)return;if(!st.on){st=null;return}
+    const d=st.d,v=st.dy/Math.max(1,Date.now()-st.t0);
+    if(st.dy>Math.min(140,d.offsetHeight*.28)||(v>.55&&st.dy>40)){
+      d.style.transition='transform .2s ease-in';d.style.transform='translate3d(0,110%,0)';
+      const go=()=>{try{closeModal()}catch(e){}};setTimeout(go,190)}
+    else back();
+    st=null},{passive:true});
+  document.addEventListener('touchcancel',()=>{if(st&&st.on)back();st=null},{passive:true});
+})()}catch(e){}
+
+
+/* ====================================================================
+   v34 · Note personali (Mac) e memo vocali (telefono)
+   - un registratore condiviso (MediaRecorder, tutto in locale);
+   - telefono: tessere «Memo vocale» e «Nota personale», esportate nel pacchetto come gli altri file;
+   - Mac: vista «Note personali» (note scritte con la seconda password + registrazioni) e importazione dei due nuovi tipi.
+   ==================================================================== */
+
+/* ---------- registratore ---------- */
+const REC={mr:null,ch:[],stream:null,tm:0,t0:0,blob:null,mime:'',sec:0,url:null,go:null};
+const REC_MAX=900;/* 15 minuti */
+const micIc='M12 15a3 3 0 003-3V6a3 3 0 00-6 0v6a3 3 0 003 3zM6 11a6 6 0 0012 0M12 17v4';
+const mmss=s=>{s=Math.max(0,Math.floor(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+function recMime(){try{for(const m of ['audio/mp4','audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus'])if(MediaRecorder.isTypeSupported(m))return m}catch(e){}return ''}
+const recExt=m=>/mp4|aac/i.test(m)?'m4a':/ogg/i.test(m)?'ogg':'webm';
+const audMime=ext=>({m4a:'audio/mp4',mp4:'audio/mp4',aac:'audio/aac',mp3:'audio/mpeg',wav:'audio/wav',ogg:'audio/ogg',opus:'audio/ogg',webm:'audio/webm',caf:'audio/x-caf'})[String(ext||'').toLowerCase()]||'audio/mp4';
+function recFree(all){
+  try{if(REC.mr&&REC.mr.state!=='inactive'){REC.mr.onstop=null;REC.mr.ondataavailable=null;REC.mr.stop()}}catch(e){}
+  REC.mr=null;
+  if(REC.stream){try{REC.stream.getTracks().forEach(t=>t.stop())}catch(e){}REC.stream=null}
+  clearInterval(REC.tm);REC.tm=0;
+  if(all){if(REC.url){try{URL.revokeObjectURL(REC.url)}catch(e){}}REC.url=null;REC.blob=null;REC.go=null;REC.sec=0;REC.ch=[]}}
+function recUI(st,msg){
+  const g=$('#rec-go'),s=$('#rec-s'),sv=$('#rec-sv'),a=$('#rec-a'),t=$('#rec-t');if(!g)return;
+  g.classList.toggle('on',st==='rec');
+  g.setAttribute('aria-label',st==='rec'?'Ferma la registrazione':st==='done'?'Registra di nuovo':'Avvia la registrazione');
+  if(sv)sv.disabled=st!=='done';
+  if(a){if(st==='done'&&REC.url){a.src=REC.url;a.hidden=false}else{a.hidden=true;try{a.removeAttribute('src');a.load()}catch(e){}}}
+  if(t&&st==='done')t.textContent=mmss(REC.sec);
+  if(t&&st==='idle')t.textContent='0:00';
+  if(s)s.textContent=msg||(st==='rec'?'Registrazione in corso… tocca il pulsante per fermare.':st==='done'?'Pronta: ascoltala, poi salva oppure registra di nuovo.':'Tocca il microfono per iniziare (massimo 15 minuti).')}
+function recErr(m){const e=$('#rec-e');if(e)e.textContent=m||''}
+function recTick(){
+  const el=$('#rec-t');if(!el){recFree(true);return}
+  const s=(Date.now()-REC.t0)/1000;el.textContent=mmss(s);try{bump()}catch(e){}/* mentre registri il blocco automatico non scatta */
+  if(s>=REC_MAX&&REC.mr&&REC.mr.state==='recording')REC.mr.stop()}
+A.recGo=async()=>{
+  recErr('');
+  if(REC.mr&&REC.mr.state==='recording'){REC.mr.stop();return}
+  if(REC.busy)return;REC.busy=1;try{await recStart()}finally{REC.busy=0}};
+async function recStart(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder){recErr('Questo dispositivo non permette di registrare dall’app.');return}
+  if(REC.url){try{URL.revokeObjectURL(REC.url)}catch(e){}REC.url=null}REC.blob=null;recUI('idle');
+  let stream;
+  try{stream=await navigator.mediaDevices.getUserMedia({audio:true})}
+  catch(e){recErr(TOUCH?'Non riesco a usare il microfono. Se hai rifiutato il permesso: Impostazioni › Safari › Microfono (o Impostazioni dell’app) per riattivarlo.':'Non riesco a usare il microfono. Sul Mac: Impostazioni di Sistema › Privacy e sicurezza › Microfono, poi consenti Archivio clinico.');return}
+  if(!$('#rec-go')){stream.getTracks().forEach(t=>t.stop());return}/* finestra chiusa nel frattempo */
+  REC.stream=stream;const mime=recMime();let mr;
+  try{mr=mime?new MediaRecorder(stream,{mimeType:mime,audioBitsPerSecond:48000}):new MediaRecorder(stream,{audioBitsPerSecond:48000})}
+  catch(e){try{mr=new MediaRecorder(stream)}catch(e2){recFree();recErr('Il formato di registrazione non è disponibile su questo dispositivo.');return}}
+  REC.mr=mr;REC.ch=[];REC.mime=mr.mimeType||mime||'audio/mp4';
+  mr.ondataavailable=e=>{if(e.data&&e.data.size)REC.ch.push(e.data)};
+  mr.onstop=()=>{
+    const sec=Math.round((Date.now()-REC.t0)/1000);
+    try{REC.stream&&REC.stream.getTracks().forEach(t=>t.stop())}catch(e){}REC.stream=null;clearInterval(REC.tm);REC.tm=0;REC.mr=null;
+    const b=new Blob(REC.ch,{type:REC.mime});REC.ch=[];
+    if(!b.size){recErr('La registrazione è vuota. Riprova.');recUI('idle');return}
+    REC.blob=b;REC.sec=sec;REC.url=URL.createObjectURL(b);recUI('done')};
+  REC.t0=Date.now();
+  try{mr.start(1000)}catch(e){recFree();recErr('Non riesco ad avviare la registrazione.');return}
+  recUI('rec');REC.tm=setInterval(recTick,250)}
+A.recSave=async()=>{
+  if(!REC.blob||!REC.go)return;recErr('');
+  const sv=$('#rec-sv');if(sv)sv.disabled=true;
+  const r={blob:REC.blob,mime:REC.mime,ext:recExt(REC.mime),sec:REC.sec,titolo:(($('#rec-ti')||{}).value||'').trim(),pz:(($('#rec-pz')||{}).value||'').trim()};
+  try{await REC.go(r);recFree(true);closeModal()}
+  catch(e){recErr(e.message||String(e));if(sv)sv.disabled=false}};
+function recModal(o){
+  recFree(true);REC.go=o.onSave;
+  modal('<h3>'+esc(o.title)+'</h3><div class="recbox"><div class="rect" id="rec-t" aria-hidden="true">0:00</div>'+
+   '<button type="button" class="recgo" id="rec-go" data-act="recGo" aria-label="Avvia la registrazione">'+svgI(micIc)+'</button>'+
+   '<div class="recs small mut" id="rec-s" role="status">Tocca il microfono per iniziare (massimo 15 minuti).</div>'+
+   '<audio id="rec-a" controls hidden></audio></div>'+
+   '<label class="fld"><span>Titolo (facoltativo)</span><input id="rec-ti" maxlength="80" autocomplete="off" placeholder="Per esempio: Idee dopo la supervisione"></label>'+(o.pzHTML||'')+
+   '<div class="err" id="rec-e"></div><div class="row end"><button type="button" class="btn" data-act="close">Annulla</button><button type="button" class="btn pri" id="rec-sv" data-act="recSave" disabled>Salva</button></div>')}
+const _close34=closeModal;
+closeModal=function(){recFree(true);return _close34.apply(this,arguments)};
+
+/* ---------- telefono: «Memo vocale» e «Nota personale» ---------- */
+CT.notap={l:'Nota personale',s:'Un tuo appunto, fuori dalla cartella clinica',ic:'M7 3h10v18H7zM10 8h4M10 12h4M10 16h2',pz:2,
+  f:()=>[Object.assign({},PZF,{req:0,l:'Paziente (facoltativo)',h:'Se vuoi collegarla a un paziente: codice (PZ-0001). Altrimenti lascia vuoto.'}),DTF(),{k:'titolo',l:'Titolo (facoltativo)'},{k:'nota',l:'Nota',t:'textarea',r:8,req:1}],
+  name:(v,z)=>'NOTAPERS_'+(z?z+'_':'')+v.data+(v.titolo?'_'+fz(v.titolo):''),text:v=>v.nota,sum:v=>fd(v.data)+(v.titolo?' · '+oneL(v.titolo).slice(0,32):' · '+oneL(v.nota).slice(0,32))};
+CT.memo={l:'Memo vocale',s:'La tua voce, cifrata sul telefono',ic:micIc,pz:2,photo:1,
+  f:()=>[],name:(v,z)=>'MEMO_'+(z?z+'_':'')+v.data+(v.titolo?'_'+fz(v.titolo):''),
+  sum:v=>fd(v.data)+' · '+mmss(v.sec||0)+(v.titolo?' · '+oneL(v.titolo).slice(0,28):'')};
+CT_ORDER.splice(CT_ORDER.indexOf('nota')+1,0,'notap');
+const _vCNew34=vCNew;
+vCNew=function(){
+  const h=_vCNew34.apply(this,arguments);
+  const hero='<button class="memohero" data-act="cnewT" data-t="memo"><span class="memohero-i">'+svgI(micIc)+'</span><span class="memohero-t"><b>Memo vocale</b><small>Registra la tua voce: si esporta come gli altri file</small></span><span class="memohero-c">'+svgI(CI.chev)+'</span></button>';
+  return h.replace('<div class="ctiles">',hero+'<div class="ctiles">')};
+const _ctOpen34=ctOpen;
+ctOpen=function(type,it){
+  if(type==='memo'){it?memoView(it):memoNew();return}
+  return _ctOpen34.apply(this,arguments)};
+function memoNew(){
+  recModal({title:'Memo vocale',onSave:memoSave,
+    pzHTML:'<datalist id="pzl">'+pzOptions()+'</datalist><label class="fld"><span>Paziente (facoltativo)</span><input id="rec-pz" list="pzl" autocomplete="off" autocapitalize="characters" placeholder="PZ-0001"><small>Solo se il memo riguarda un paziente. Altrimenti lascia vuoto.</small></label>'})}
+async function memoSave(r){
+  let pz='';if(r.pz){pz=normPz(r.pz);if(!pz)throw new Error('Il paziente va scritto come codice (PZ-0001) oppure «Cognome Nome». Oppure lascia vuoto.')}
+  const bytes=new Uint8Array(await r.blob.arrayBuffer());
+  if(bytes.length>MAXDOC)throw new Error('La registrazione è troppo grande per essere importata sul Mac (massimo 10 MB). Registra un memo più breve.');
+  const id=uid();
+  await idbPut('docs',id,await encB(S.key,bytes));
+  const it={id:uid(),type:'memo',t:new Date().toISOString(),v:{data:today(),titolo:r.titolo,sec:r.sec},pz,photo:{id,mime:String(r.mime||'audio/mp4').split(';')[0],ext:r.ext,size:bytes.length},batch:null,sentAt:null};
+  OUT().push(it);log('Memo vocale aggiunto',mmss(r.sec));await save();render();toast('In uscita: memo vocale')}
+async function memoView(it){
+  const T=CT.memo,p=await idbGet('docs',it.photo.id);
+  if(!p){toast('Manca il file audio di questo memo: cancellalo.');return}
+  const buf=await decB(S.key,p),url=URL.createObjectURL(new Blob([buf],{type:it.photo.mime||'audio/mp4'}));VIEWURL=url;
+  modal('<h3>Memo vocale</h3><p class="small mut">'+esc(T.sum(it.v,it))+(it.pz?' · '+esc(pzLabel(it.pz)):'')+'</p><audio controls src="'+url+'" style="width:100%"></audio><p class="small mut">Resta cifrato su questo telefono finché non lo esporti, come le altre voci.</p><div class="row end"><button class="btn pri" data-act="close">Chiudi</button></div>')}
+
+/* ---------- Mac: importare «Nota personale» e «Memo vocale» ---------- */
+IMP_T.push(['notap','Nota personale',['notapers','notapersonale','notap'],0],['memo','Memo vocale',['memo','memovocale'],0]);
+const AUD_EXT=['m4a','mp4','webm','ogg','mp3','wav','aac','caf','opus'];
+IMP_EXT.push(...AUD_EXT);
+const _plan34=impPlan;
+impPlan=function(it,all){
+  if(it.type!=='notap'&&it.type!=='memo')return _plan34.apply(this,arguments);
+  const P={st:'ok',skip:false,sum:'',notes:[]},fail=m=>{P.st='err';P.sum=m;return P};
+  if(!IMP_EXT.includes(it.ext))return fail('Formato .'+it.ext+' non supportato.');
+  const isN=it.type==='notap';
+  if(isN&&!['txt','md'].includes(it.ext))return fail('Una nota personale deve essere un file di testo (.txt).');
+  if(!isN&&!AUD_EXT.includes(it.ext))return fail('Un memo vocale deve essere un file audio (.m4a, .webm, .mp3…).');
+  const p=it.cod?act().find(x=>x.cod===it.cod):null,date=it.dates[0]||today(),titolo=[...it.nameT,...it.descT].join(' ').trim().slice(0,80),txt=String(it.text||'').trim();
+  if(it.cod&&!p)P.notes.push('Il paziente '+it.cod+' non è in questo archivio: verrà salvata senza collegamento.');
+  if(isN&&!txt)return fail('Il file è vuoto.');
+  if(isN&&D().npIn.some(x=>x.h&&x.h===it.hash)){P.skip=true;P.notes.push('Già in attesa nelle Note personali: non è selezionata.')}
+  if(!isN&&D().docs.some(d=>d.np&&d.hash===it.hash)){P.skip=true;P.notes.push('Questa registrazione è già nelle Note personali: non è selezionata.')}
+  try{const s=pkSeenAt(it.f);if(s){P.skip=true;P.notes.push('Già importata dal telefono il '+fd(s)+': non è selezionata.')}}catch(e){}
+  P.rec={rif:p?p.id:'',date,titolo,txt};P.who=p?nm(p):'';
+  P.sum=(isN?'Nota personale':'Memo vocale')+(titolo?' «'+titolo+'»':'')+' del '+fd(date)+(p?' · '+nm(p):'')+(isN?' → Note personali (si apre con la seconda password)':' → Note personali, registrazioni');
+  if(P.notes.length)P.st='warn';
+  return P};
+const _apply34=impApply;
+impApply=async function(it,made){
+  if(it.type!=='notap'&&it.type!=='memo')return _apply34.apply(this,arguments);
+  const R=it.pl.rec;
+  if(it.type==='notap'){
+    D().npIn.push({id:uid(),rif:R.rif,data:R.date,titolo:R.titolo,t:R.txt,h:it.hash});
+    log('Nota personale ricevuta dal telefono','',R.rif);return 'Messa in attesa nelle Note personali: si aggiunge quando le sblocchi con la seconda password'}
+  const buf=await it.f.arrayBuffer();
+  await npAddAudio({bytes:new Uint8Array(buf),mime:it.f.type||audMime(it.ext),ext:it.ext,titolo:R.titolo,rif:R.rif,date:R.date,sec:0,hash:it.hash,quiet:true});
+  log('Memo vocale ricevuto dal telefono','',R.rif);return 'Registrazione aggiunta alle Note personali'};
+
+/* ---------- Mac: vista «Note personali» ---------- */
+const npAud=()=>D().docs.filter(d=>d.np).sort((a,b)=>(b.dataReg||'').localeCompare(a.dataReg||'')||(b.dataCarico||'').localeCompare(a.dataCarico||''));
+const npWho=rif=>{const p=rif?D().patients.find(x=>x.id===rif):null;return p?nm(p):''};
+async function npAddAudio(o){
+  const bytes=o.bytes||new Uint8Array(await o.blob.arrayBuffer());
+  if(bytes.length>MAXDOC)throw new Error('Il file è troppo grande (massimo 10 MB).');
+  const id=uid(),ext=String(o.ext||'m4a').toLowerCase().replace(/[^a-z0-9]/g,'').slice(0,5)||'m4a',d=o.date||today();
+  const nome=(fz(o.titolo||'')||'Registrazione')+' – '+d+'.'+ext;
+  await idbPut('docs',id,await encB(S.key,bytes));
+  D().docs.push({id,pid:'',rif:o.rif||'',nome,tipo:'registrazione',np:true,audio:true,titolo:o.titolo||'',dataDoc:d,dataCarico:today(),dataReg:d,size:bytes.length,mime:String(o.mime||audMime(ext)).split(';')[0],hash:o.hash||await sha256(bytes),testo:'',sec:o.sec||0});
+  if(!o.quiet){log('Registrazione personale aggiunta','');await save();render()}}
+const npPz=()=>'<label class="fld"><span>Paziente (facoltativo)</span><select id="rec-pz"><option value="">— nessuno —</option>'+act().sort((a,b)=>nm(a).localeCompare(nm(b))).map(p=>'<option value="'+esc(p.id)+'">'+esc(nm(p))+'</option>').join('')+'</select></label>';
+function npAudRow(d){
+  const w=npWho(d.rif);
+  return '<div class="npr"><div class="npr-m"><b>'+esc(d.titolo||'Registrazione')+'</b><div class="small mut">'+esc(fd(d.dataReg||d.dataDoc))+(d.sec?' · '+mmss(d.sec):'')+' · '+Math.max(1,Math.round(d.size/1024))+' KB'+(w?' · '+esc(w):'')+'</div></div>'+
+   '<div class="row"><button class="btn sm pri" data-act="playAudio" data-id="'+d.id+'">Ascolta</button><button class="btn sm" data-act="npDl" data-id="'+d.id+'">Scarica</button><button class="btn sm" data-act="npDel" data-id="'+d.id+'">Elimina</button></div></div>'}
+function vNP(){
+  const P=D().prot,has=!!P.salt,pend=D().npIn.length,AU=npAud();
+  let h='<div class="bar"><h2>Note personali</h2></div><p class="rule-note small">Appunti e registrazioni tuoi, <b>separati dalla cartella clinica</b>: supervisione, riflessioni, idee. Restano fuori dal fascicolo, dalla ricerca, dalle statistiche e dalle esportazioni. Non vi vanno informazioni necessarie alla cura: quelle stanno nella cartella del paziente.</p>';
+  h+='<div class="card"><div class="bar"><h3 style="margin:0">Note scritte</h3>'+(S.key2?'<span class="row"><button class="btn sm pri" data-act="npNew">+ Nota</button><button class="btn sm" data-act="lockProt">Blocca</button></span>':'')+'</div>';
+  if(!S.key2){
+    h+='<p class="mut small">Cifrate con una <b>seconda password</b>, diversa da quella dell’archivio.'+(pend?' Dal telefono ne sono arrivate <b>'+pend+'</b>: compariranno qui appena le sblocchi.':'')+'</p><button class="btn" data-act="unlockProt">'+(has?'Sblocca':'Imposta la seconda password')+'</button>'}
+  else{
+    const L=P.items.slice().sort((a,b)=>(b.data||'').localeCompare(a.data||''));
+    h+=(L.length?L.map(i=>{const w=npWho(i.pid);return '<div class="npn"><div class="npn-h"><b>'+esc(fd(i.data))+'</b>'+(w?' <span class="badge">'+esc(w)+'</span>':'')+' <button class="btn sm" data-act="npEdit" data-id="'+i.id+'">Modifica</button> <button class="btn sm" data-act="npDelNote" data-id="'+i.id+'">Elimina</button></div><div class="note">'+esc(S.plain[i.id]||'')+'</div></div>'}).join(''):'<p class="mut">Nessuna nota scritta.</p>')+'<p class="mut small">Si bloccano da sole dopo 3 minuti.</p>'}
+  h+='</div>';
+  h+='<div class="card"><div class="bar"><h3 style="margin:0">Registrazioni vocali</h3><span class="row"><button class="btn sm pri" data-act="npRec">Registra</button><button class="btn sm" data-act="npUp">Carica un file</button></span></div>'+
+   (AU.length?AU.map(npAudRow).join(''):'<p class="mut">Nessuna registrazione. Qui arrivano anche i memo vocali registrati dal telefono.</p>')+
+   '<p class="mut small">Le registrazioni restano cifrate nell’archivio, come i documenti, e rientrano nelle copie di sicurezza. Se le scarichi, il file esce dalla cifratura.</p></div>';
+  return h}
+const _vMain34=vMain;
+vMain=function(){return S.view==='np'?vNP():_vMain34.apply(this,arguments)};
+function npForm(it){
+  const pats=act().sort((a,b)=>nm(a).localeCompare(nm(b))),o=[['','— nessuno —']].concat(pats.map(p=>[p.id,nm(p)]));
+  formModal(it?'Modifica nota personale':'Nuova nota personale',[{k:'data',l:'Data',t:'date',req:1},{k:'pid',l:'Paziente (facoltativo)',t:'select',o},{k:'t',l:'Nota',t:'textarea',r:9,req:1}],it?{data:it.data,pid:it.pid||'',t:S.plain[it.id]}:{data:today(),pid:''},async v=>{
+    if(!S.key2)throw new Error('Le note sono bloccate: sbloccale di nuovo.');
+    const e=await encJ(S.key2,{t:v.t});
+    if(it){Object.assign(it,pk(e),{data:v.data,pid:v.pid||''});S.plain[it.id]=v.t}
+    else{const n=Object.assign({id:uid(),pid:v.pid||'',data:v.data},pk(e));D().prot.items.push(n);S.plain[n.id]=v.t}
+    log('Nota personale '+(it?'modificata':'creata'),'',v.pid||'');await save();render()})}
+A.npNew=()=>npForm(null);
+A.npEdit=d=>{const it=D().prot.items.find(x=>x.id===d.id);if(it&&S.key2)npForm(it)};
+A.npDelNote=async d=>{
+  const it=D().prot.items.find(x=>x.id===d.id);if(!it||!S.key2)return;
+  if(!await ask('<p>Eliminare questa nota personale? <b>Non si può annullare.</b></p>',{ok:'Elimina'}))return;
+  D().prot.items=D().prot.items.filter(x=>x.id!==it.id);delete S.plain[it.id];log('Nota personale eliminata','',it.pid||'');await save();render()};
+A.npRec=()=>recModal({title:'Nuova registrazione',pzHTML:npPz(),onSave:r=>npAddAudio({blob:r.blob,mime:r.mime,ext:r.ext,titolo:r.titolo,rif:r.pz,sec:r.sec})});
+A.npUp=()=>formModal('Carica un file audio',[{k:'file',l:'File audio',t:'file',accept:'audio/*,.m4a,.mp3,.wav,.ogg,.webm,.aac',req:1},{k:'titolo',l:'Titolo (facoltativo)'},{k:'rif',l:'Paziente (facoltativo)',t:'select',o:[['','— nessuno —']].concat(act().map(p=>[p.id,nm(p)]))}],{},async o=>{
+  const f=o.file;if(!f)throw new Error('Scegli un file audio.');
+  const ext=((f.name.match(/\.([^.]+)$/)||[])[1]||'').toLowerCase();
+  if(!AUD_EXT.includes(ext))throw new Error('Formato non riconosciuto: usa un file audio (.m4a, .mp3, .wav…).');
+  if(f.size>MAXDOC)throw new Error('Il file è troppo grande (massimo 10 MB).');
+  await npAddAudio({bytes:new Uint8Array(await f.arrayBuffer()),mime:f.type||audMime(ext),ext,titolo:o.titolo||f.name.replace(/\.[^.]+$/,''),rif:o.rif})});
+A.npDl=async d=>{
+  if(!await ask('<p>Il file scaricato <b>esce dall’archivio cifrato</b> e resta sul disco finché non lo cancelli. Procedere?</p>',{ok:'Scarica',danger:false}))return;
+  return A.getDoc(d)};
+A.npDel=async d=>{
+  const m=D().docs.find(x=>x.id===d.id&&x.np);if(!m)return;
+  if(!await ask('<p>Eliminare definitivamente questa registrazione? <b>Non si può annullare.</b></p>',{ok:'Elimina'}))return;
+  try{await idbDel('docs',m.id)}catch(e){}
+  D().docs=D().docs.filter(x=>x.id!==m.id);log('Registrazione personale eliminata','');await save();render()};
+/* le note arrivate dal telefono entrano tra quelle scritte appena la seconda password è sbloccata */
+async function npMigrate(){
+  if(!S.key2||!S.plain||!D().npIn.length)return;
+  const P=D().prot,n=D().npIn.length;
+  for(const x of D().npIn){
+    const txt=(x.titolo?x.titolo+'\n\n':'')+(x.t||''),e=await encJ(S.key2,{t:txt}),it=Object.assign({id:uid(),pid:x.rif||'',data:x.data||today()},pk(e));
+    P.items.push(it);S.plain[it.id]=txt}
+  D().npIn=[];log('Note personali dal telefono aggiunte',String(n));await save();render()}
+const _render34=render;
+render=function(){
+  const r=_render34.apply(this,arguments);
+  try{if(S.key2&&D().npIn&&D().npIn.length&&!S._npm){S._npm=1;npMigrate().catch(()=>{}).then(()=>{S._npm=0})}}catch(e){}
   return r};
 
 /* ---------- 10. AVVIO ---------- */
