@@ -4702,6 +4702,8 @@ function pivaOk(s){
   return (10-t%10)%10===+s[10]}
 const cfOrPivaOk=s=>cfOk(s)||pivaOk(s);
 
+/* certificato «SanitelCF» del kit tecnico di prova (SOGEI, 2016): pubblico, serve solo a cifrare. Risulta scaduto il 23/04/2018: va sostituito con quello in vigore. */
+const TS_KIT_B64='MIIESjCCAzKgAwIBAgIDHG6uMA0GCSqGSIb3DQEBBQUAMG0xCzAJBgNVBAYTAklUMR4wHAYDVQQKExVBZ2VuemlhIGRlbGxlIEVudHJhdGUxGzAZBgNVBAsTElNlcnZpemkgVGVsZW1hdGljaTEhMB8GA1UEAxMYQ0EgQWdlbnppYSBkZWxsZSBFbnRyYXRlMB4XDTE1MDQyMzEzNDY1MloXDTE4MDQyMzEzNDY0NlowXjELMAkGA1UEBhMCSVQxHjAcBgNVBAoTFUFnZW56aWEgZGVsbGUgRW50cmF0ZTEbMBkGA1UECxMSU2Vydml6aSBUZWxlbWF0aWNpMRIwEAYDVQQDEwlTYW5pdGVsQ0YwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBANQfl8dJ65QsUGAIRviObyQPA2AYBpxgVjTimrn+B9C9YUSz6bbZv83ZX5dMYb368G6zsJhvZvoqVZQGofz5psc9HzXNAtZ9BqaZfFQ1JJmdenarRSsTdPWXuJrkktAMQ10hEo1By2fG2oy1f934idprxOvcoxsO6tqSF8W9MtHvAgMBAAGjggGEMIIBgDAOBgNVHQ8BAf8EBAMCBDAwgZkGA1UdIwSBkTCBjoAU6kQ/HxnjNz6rqpSCpZ/r/Ba6f7WhcaRvMG0xCzAJBgNVBAYTAklUMR4wHAYDVQQKExVBZ2VuemlhIGRlbGxlIEVudHJhdGUxGzAZBgNVBAsTElNlcnZpemkgVGVsZW1hdGljaTEhMB8GA1UEAxMYQ0EgQWdlbnppYSBkZWxsZSBFbnRyYXRlggMQYnAwgbIGA1UdHwSBqjCBpzCBpKCBoaCBnoaBm2xkYXA6Ly9jYWRzLmVudHJhdGUuZmluYW56ZS5pdC9jbiUzZENBJTIwQWdlbnppYSUyMGRlbGxlJTIwRW50cmF0ZSxvdSUzZFNlcnZpemklMjBUZWxlbWF0aWNpLG8lM2RBZ2VuemlhJTIwZGVsbGUlMjBFbnRyYXRlLGMlM2RpdD9jZXJ0aWZpY2F0ZVJldm9jYXRpb25MaXN0MB0GA1UdDgQWBBSTjSlo+yQSiry17pHw8rX38FvTYDANBgkqhkiG9w0BAQUFAAOCAQEAsMpmdoET+LHOWLgm5h2VRnhJOn7znKgidf2PYRvfWnlWVvhrd5ogpfzL0+k4UHrq1RIyyVuFgmbCEPjnnXEnP+URBLAv48t8Owb1NVEhXD+Ae4xmekpq/50eND/h+3iwcDGIzbH6yIPi7Z3kJIBKMGTVd3fZq6rCtyHI/EYm9UNjmGMTRqEzeOkgRQEiY8bWEN7Edgxk+0/Ppo6G6YNllPAGfSYwjqe5j+4wbLvB4P9fGvpsw3IblZbNa/DC40fcQCLGYaoW/eYfM44oYk69FZQjKGDdIPaqRB89iKeY98Nj4K6Fj/CFxQYzknculhxpOkQ1uuyugsl9l3/StuN0OA==';
 /* ---------- dati ---------- */
 const F_METODI=[['contanti','Contanti'],['bonifico','Bonifico'],['carta','Carta / POS'],['assegno','Assegno'],['bonus','Bonus psicologo'],['altro','Altro']];
 const F_MP={contanti:'MP01',assegno:'MP02',bonifico:'MP05',carta:'MP08',bonus:'MP05',altro:'MP05'};
@@ -4717,7 +4719,7 @@ function fSetDef(){return {
   dicEsente:'Prestazione sanitaria esente da IVA ai sensi dell’art. 10, n. 18, D.P.R. 633/1972.',
   dicEnpap:'Contributo integrativo ENPAP {aliq}% (art. 1, comma 212, L. 662/1996 e regolamento ENPAP).',
   dicBollo:'Imposta di bollo da 2,00 € assolta sull’originale ai sensi del D.P.R. 642/1972.',
-  tsGG:31,tsMM:1,tsPer:'annuale',ts1GG:30,ts1MM:9,ts2GG:31,ts2MM:1,tsNatF:'N2',tsNatO:'N4',tsTipoDoc:'F',tsCert:'',tsCertFp:'',tsCertBits:0,
+  tsGG:31,tsMM:1,tsPer:'annuale',ts1GG:30,ts1MM:9,ts2GG:31,ts2MM:1,tsNatF:'N2',tsNatO:'N4',tsTipoDoc:'F',tsCert:TS_KIT_B64,tsCertFp:'dbc0725fe1afc6a2',tsCertBits:1024,tsCertSrc:'kit',
   ritAliq:20,dicRit:'Compenso soggetto a ritenuta d’acconto del {aliq}% ai sensi dell’art. 25 del D.P.R. 600/1973.'}}
 function fSet(){const d=D();if(!d.fSet||typeof d.fSet!=='object')d.fSet={};const def=fSetDef();Object.keys(def).forEach(k=>{if(d.fSet[k]===undefined)d.fSet[k]=def[k]});return d.fSet}
 const _mig35=migrate;
@@ -5206,6 +5208,7 @@ function fTsTab(){
   return '<div class="bar"><h3 style="margin:0">Sistema Tessera Sanitaria · '+(per.k==='a'?anno:esc(per.lab)+' '+anno)+'</h3><span class="row"><button class="btn pri" data-act="fTsXml"'+(pv.okRows.length?'':' disabled')+'>Prepara il file per il Sistema TS</button><button class="btn" data-act="fTsCsv"'+(pv.okRows.length?'':' disabled')+'>Prospetto CSV</button><button class="btn" data-act="fInvNew"'+(pv.okRows.length?'':' disabled')+'>Segna come inviato</button></span></div>'+
    (pers.length>1?'<div class="ftabs">'+pers.map(p=>'<button class="npchip'+(p.k===per.k?' on':'')+'" data-act="fTsPer" data-k="'+p.k+'">'+esc(p.lab)+' · entro il '+esc(fd(p.dl))+'</button>').join('')+'</div>':'')+
    '<div class="banner warn small"><b>File nel tracciato di Sistema TS</b> (schema <code>730_precompilata.xsd</code>, cifratura con il certificato '+(fTsPub()?'caricato':'<b>non ancora caricato</b>: <a href="#" data-act="fTab" data-t="imp">Impostazioni fiscali</a>')+'). Lo carichi tu sul portale: l’app non si collega a nulla e <b>non posso garantire l’accettazione</b> finché non lo provi (meglio prima con l’ambiente di test). Conta la <b>data del pagamento</b>. Periodicità e scadenza sono impostazioni da confermare (ora: '+esc(fSet().tsPer)+'; questo invio entro il '+esc(fd(per.dl))+').</div>'+
+   ((()=>{const k=fTsPub();return k&&k.to&&k.to<today()?'<div class="banner warn small"><b>Il certificato di cifratura risulta scaduto il '+esc(fd(k.to))+'</b> ('+(fSet().tsCertSrc==='kit'?'è quello del kit di prova del 2016 ':'')+'). Controlla sul sito del Sistema TS qual è il certificato in vigore e caricalo in <a href="#" data-act="fTab" data-t="imp">Impostazioni fiscali</a>: un file cifrato con quello sbagliato verrebbe rifiutato.</div>':''})())+
    (blockers.length?'<div class="banner info small"><b>Per preparare il file ufficiale manca:</b><ul>'+blockers.slice(0,6).map(e=>'<li>'+esc(e)+'</li>').join('')+'</ul></div>':'')+
    (pv.errs.length?'<div class="banner bad small"><b>Da correggere prima dell’esportazione ('+pv.errs.length+')</b><ul>'+pv.errs.slice(0,8).map(e=>'<li>'+esc(e)+'</li>').join('')+(pv.errs.length>8?'<li>…</li>':'')+'</ul>I documenti con errori restano fuori dal prospetto.</div>':'')+
    pv.warns.map(w=>'<div class="banner info small">'+esc(w)+'</div>').join('')+
@@ -5237,7 +5240,9 @@ function fImpTab(){
     (D().fList.length?D().fList.map(x=>'<div class="frow"><span>'+esc(x.nome)+'</span><span><b>'+esc(fEur(x.imp))+'</b> <button class="btn sm" data-act="fListEdit" data-id="'+x.id+'">Modifica</button> <button class="btn sm" data-act="fListDel" data-id="'+x.id+'">Elimina</button></span></div>').join(''):'<p class="mut small">Nessuna prestazione. Con il listino il pagamento si compila da solo.</p>')+'</div>'+
    '<div class="card"><div class="bar"><h3 style="margin:0">Diciture</h3><button class="btn sm" data-act="fSetDic">Modifica</button></div><p class="small mut" style="margin:0">Testi per regime, contributo integrativo e bollo. Bozze da far validare con il commercialista.</p></div>'+
    '<div class="card"><div class="bar"><h3 style="margin:0">Tessera Sanitaria</h3><button class="btn sm" data-act="fSetTs">Modifica</button></div><p class="small mut" style="margin:0 0 8px">Invio '+esc(s.tsPer==='semestrale'?'semestrale':'annuale')+': '+fTsPers(ts.anno).map(p=>(p.k==='a'?'dati '+ts.anno:p.lab)+' entro il <b>'+esc(fd(p.dl))+'</b>').join(' · ')+'. Natura IVA '+esc(s.tsNatF)+' / '+esc(s.tsNatO)+', tipo documento '+esc(s.tsTipoDoc)+'. Da confermare.</p>'+
-    '<div class="frow"><span>Certificato di cifratura</span><b>'+(s.tsCert?'caricato · RSA '+s.tsCertBits+' bit · impronta '+esc(s.tsCertFp||''):'non caricato')+'</b></div><div class="row" style="margin-top:8px"><button class="btn sm" data-act="fTsCert">'+(s.tsCert?'Sostituisci':'Carica il certificato')+'</button>'+(s.tsCert?' <button class="btn sm" data-act="fTsCertDel">Togli</button>':'')+'</div></div>'+
+    '<div class="frow"><span>Certificato di cifratura</span><b>'+(s.tsCert?(s.tsCertSrc==='kit'?'kit di prova SOGEI 2016':'caricato da te')+' · RSA '+s.tsCertBits+' bit · impronta '+esc(s.tsCertFp||''):'non caricato')+'</b></div>'+
+    (()=>{const k=fTsPub();if(!k||!k.to)return '';const exp=k.to<today();return '<div class="frow"><span>Validità</span><b'+(exp?' style="color:var(--bad)"':'')+'>'+(exp?'SCADUTO il ':'fino al ')+esc(fd(k.to))+'</b></div>'})()+
+    '<div class="row" style="margin-top:8px"><button class="btn sm" data-act="fTsCert">'+(s.tsCert?'Sostituisci':'Carica il certificato')+'</button>'+(s.tsCertSrc!=='kit'?' <button class="btn sm" data-act="fTsCertKit">Usa quello del kit di prova</button>':'')+(s.tsCert?' <button class="btn sm" data-act="fTsCertDel">Togli</button>':'')+'</div></div>'+
    '<p class="small mut">L’app prepara documenti e file da caricare a mano; non si collega a nessun servizio. Testi, soglie e aliquote sono bozze modificabili: non sono consulenza fiscale.</p>'}
 function vFis(){
   const anno=S.fanno||(S.fanno=fYear()),t=S.ftab||'pan',s=fSet(),inc=fStudioIncompleto();
@@ -5309,7 +5314,9 @@ function tsParseKey(bytes){
   const big=t=>{let h='';for(let i=t.s;i<t.e;i++)h+=b[i].toString(16).padStart(2,'0');return BigInt('0x'+(h||'0'))};
   const n=big(k[0]),e=big(k[1]),bits=n.toString(2).length;
   if(bits<1024||bits>4096)throw new Error('Dimensione della chiave non prevista ('+bits+' bit).');
-  return {n,e,bits,der:b}}
+  let from='',to='';
+  try{const tbs=derKids(b,top)[0],tk=derKids(b,tbs),vi=tk.findIndex(c=>derIsSpki(b,c))-2;if(vi>=0&&tk[vi].tag===0x30){const tm=derKids(b,tk[vi]).map(c=>{const t=new TextDecoder('latin1').decode(b.subarray(c.s,c.e));const m=c.tag===0x17?/^(\d\d)(\d\d)(\d\d)/.exec(t):/^(\d{4})(\d\d)(\d\d)/.exec(t);if(!m)return '';const y=c.tag===0x17?(Number(m[1])<50?2000:1900)+Number(m[1]):Number(m[1]);return y+'-'+m[2]+'-'+m[3]});from=tm[0]||'';to=tm[1]||''}}catch(e){}
+  return {n,e,bits,der:b,from,to}}
 function modPow(b,e,m){let r=1n;b%=m;while(e>0n){if(e&1n)r=r*b%m;e>>=1n;b=b*b%m}return r}
 function rsaEncB64(pub,text){
   const msg=new TextEncoder().encode(String(text)),k=Math.ceil(pub.bits/8);
@@ -5327,10 +5334,11 @@ A.fTsCert=()=>formModal('Certificato di cifratura del Sistema TS',[{k:'file',l:'
   if(buf.length>20000)throw new Error('Il file è troppo grande per essere un certificato.');
   const pub=tsParseKey(buf),s=fSet();
   let bin='';pub.der.forEach(x=>bin+=String.fromCharCode(x));
-  s.tsCert=btoa(bin);s.tsCertFp=(await sha256(pub.der)).slice(0,16);s.tsCertBits=pub.bits;
+  s.tsCert=btoa(bin);s.tsCertFp=(await sha256(pub.der)).slice(0,16);s.tsCertBits=pub.bits;s.tsCertSrc='utente';
   log('Certificato di cifratura Sistema TS caricato',pub.bits+' bit');await save();render()},
   '<p class="small mut">È il certificato (<code>SanitelCF.cer</code>) che Sistema TS fornisce nel kit tecnico per cifrare i codici fiscali. È pubblico: serve solo a cifrare, non a decifrare. Controlla che l’impronta mostrata dopo il caricamento coincida con quella indicata nel kit.</p>');
-A.fTsCertDel=async()=>{if(!await ask('<p>Togliere il certificato di cifratura? Senza, il file per il Sistema TS non si può preparare.</p>',{ok:'Togli'}))return;const s=fSet();s.tsCert='';s.tsCertFp='';s.tsCertBits=0;log('Certificato Sistema TS tolto','');await save();render()};
+A.fTsCertKit=async()=>{const s=fSet();s.tsCert=TS_KIT_B64;s.tsCertFp='dbc0725fe1afc6a2';s.tsCertBits=1024;s.tsCertSrc='kit';log('Certificato del kit di prova ripristinato','');await save();render()};
+A.fTsCertDel=async()=>{if(!await ask('<p>Togliere il certificato di cifratura? Senza, il file per il Sistema TS non si può preparare.</p>',{ok:'Togli'}))return;const s=fSet();s.tsCert='';s.tsCertFp='';s.tsCertBits=0;s.tsCertSrc='';log('Certificato Sistema TS tolto','');await save();render()};
 
 const TS_NUMOK=/^[A-Za-z0-9_.\/\\-]{1,20}$/;
 function fTsXmlBuild(anno,per){
