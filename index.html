@@ -1128,6 +1128,30 @@ html[data-eff=dark] .lc-d.mx{color:#fff;text-shadow:0 0 3px #000,0 0 3px #000,0 
 .mdl .row{align-items:center}
 .fi-m{flex:1;min-width:0}.mdl .fitem{flex-wrap:wrap}
 
+/* v37 · bottoni principali in terracotta (Mac e telefono) */
+.btn.pri{background:var(--terra);border-color:var(--terra);color:#fff;box-shadow:0 6px 14px -8px rgba(172,84,55,.7),inset 0 1px 0 rgba(255,255,255,.14)}
+.btn.pri:hover{background:var(--terra-dark);border-color:var(--terra-dark)}
+.btn.pri:disabled{opacity:.55}
+
+/* v37 · telefono: stessa palette, più morbida (solo con html.mob) */
+html.mob{--cream:#F4ECDF;--paper:#FCF8EF;--card:#FFFDF9;--line:#E6DAC4}
+html.mob body{background-image:radial-gradient(1100px 520px at 50% -8%,rgba(255,250,240,.7) 0,transparent 70%)}
+html.mob header.top,html.mob body::before{background:linear-gradient(180deg,color-mix(in srgb,var(--green) 86%,#fff),var(--green))}
+html.mob .card,html.mob .ctile,html.mob .crow{border-color:#EADFCA;border-radius:20px;box-shadow:0 1px 2px rgba(90,60,25,.05),0 10px 24px -14px rgba(90,60,25,.30)}
+html.mob .ctile-i{background:var(--pri2);color:var(--green)}
+html.mob .ctile:nth-child(3n+2) .ctile-i{background:#F5E1D2;color:#8F4527}
+html.mob .ctile:nth-child(3n) .ctile-i{background:#F1E5C6;color:#6F5214}
+html.mob .ctile:first-child .ctile-i{background:var(--green);color:#F6EEDC}
+html.mob .ctile b{color:var(--gtx)}
+html.mob .btn{border-radius:13px}
+html.mob .banner{border-radius:16px}
+/* titolo di pagina: filo terracotta che si distende sotto il titolo */
+html.mob #root h1{position:relative;display:block;width:fit-content;max-width:100%;padding-bottom:10px;margin-bottom:10px}
+html.mob #root h1::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:100%;border-radius:3px;background:var(--terra);opacity:.85;transform-origin:left center}
+html.mob #root h1.ttl-go::after{animation:ttlLine .8s .12s cubic-bezier(.22,.8,.24,1) both}
+@keyframes ttlLine{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media(prefers-reduced-motion:reduce){html.mob #root h1.ttl-go::after{animation:none}}
+
 /* tema scuro */
 html[data-eff=dark]{--glass:32,36,26;--glass2:19,21,14;--green:#3B4122;--green-deep:#2A2E17;--green-soft:#7F8A56;--gtx:#CBD39E;--cream:#13150E;--cream-2:#1C1F14;--paper:#1A1D13;--card:#20241A;--hero:#1E2216;--terra:#D27C58;--terra-dark:#E5A07F;--terra-light:#C0724F;--terra-bg:#3A261C;--ink:#EEE7D7;--body:#D3CCBA;--mut:#B5AB96;--line:#363B2B;--sand:#4C5239;--pri2:#2C3220;--ok:#BDD596;--ok2:#27311B;--warn:#EBC57E;--warn2:#3A2F15;--bad:#F3A898;--bad2:#40211B;color-scheme:dark}
 html[data-eff=dark] body{background:var(--cream);color:var(--ink)}
@@ -1195,6 +1219,13 @@ html[data-eff=dark] input[type=checkbox],html[data-eff=dark] input[type=radio]{b
 html[data-eff=dark] input[type=checkbox]:checked,html[data-eff=dark] input[type=radio]:checked{background:#5E6636;border-color:#5E6636}
 html[data-eff=dark] /* telefono: icone delle tessere come quella di Seduta (verde con simbolo chiaro) */
 .ctile-i,html[data-eff=dark] .crow-i{background:var(--green);color:#F1E4CF}
+html[data-eff=dark] .btn.pri{background:#B25A3C;border-color:#B25A3C;color:#fff}
+html[data-eff=dark] .btn.pri:hover{background:#C2684A}
+html[data-eff=dark] body{background-image:none}
+html[data-eff=dark] .ctile:nth-child(3n+2) .ctile-i{background:#40261C;color:#E9A98B}
+html[data-eff=dark] .ctile:nth-child(3n) .ctile-i{background:#3C3016;color:#EBC57E}
+html[data-eff=dark] .ctile:first-child .ctile-i{background:#4E552D;color:#F6EEDC}
+html[data-eff=dark] .card,html[data-eff=dark] .ctile,html[data-eff=dark] .crow{border-color:#2E3322;box-shadow:0 10px 24px -14px rgba(0,0,0,.6)}
 </style></head><body>
 <div id="root"></div><div id="modal"></div><div id="print"></div><div id="toast" role="status" aria-live="polite"></div>
 <noscript>Questa applicazione richiede JavaScript.</noscript>
@@ -5494,6 +5525,16 @@ A.fTsXml=async()=>{
   dl(r.zip,await zipStore([{name:r.name,data:r.bytes}]));
   log('File Sistema TS esportato (zip con XML)',fPerTag(anno,per)+' · '+r.count+' documenti');saveSoon();
   if(r.warnings.length)toast('Attenzione: '+r.warnings[0])};
+
+
+/* ====================== v37 · classe «mob» e animazione del filo sotto il titolo ====================== */
+(()=>{const _r=render;let last='';
+  render=function(){
+    try{document.documentElement.classList.toggle('mob',!!(TOUCH||isComp()))}catch(e){}
+    const x=_r.apply(this,arguments);
+    try{if(document.documentElement.classList.contains('mob')){const v=(S.screen||'')+'|'+(S.view||'')+'|'+(S.pid||'');
+      if(v!==last){last=v;document.querySelectorAll('#root h1').forEach(h=>h.classList.add('ttl-go'))}}}catch(e){}
+    return x}})();
 
 /* ---------- 10. AVVIO ---------- */
 async function selfTest(){
