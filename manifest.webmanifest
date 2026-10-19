@@ -9,7 +9,7 @@
  "id": "./",
  "display": "standalone",
  "orientation": "portrait",
- "background_color": "#F3EBDD",
+ "background_color": "#F5F0E6",
  "theme_color": "#414625",
  "icons": [
   {
@@ -23,12 +23,6 @@
    "sizes": "512x512",
    "type": "image/png",
    "purpose": "any"
-  },
-  {
-   "src": "icon-512.png",
-   "sizes": "512x512",
-   "type": "image/png",
-   "purpose": "maskable"
   }
  ]
 }
