@@ -1298,8 +1298,7 @@ html[data-eff=dark] .card,html[data-eff=dark] .ctile,html[data-eff=dark] .crow{b
   html:root .banner { border-radius:12px; box-shadow:none; }
 
   /* 5. Accesso: piccolo custode accanto al saluto, calendario inline sotto. */
-  html:root .gate.dwarf-login { background:var(--cream); align-items:center; justify-content:center; padding-top:104px; padding-bottom:36px; overflow:visible; }
-  html:root .gate.dwarf-login>.hx-bg { display:none; }
+  html:root .gate.dwarf-login { align-items:center; justify-content:center; padding-top:104px; padding-bottom:36px; overflow:visible; }
   html:root .gate.dwarf-login .lk-wrap { grid-template-columns:minmax(0,1.12fr) minmax(300px,430px); max-width:1080px; gap:44px; align-items:center; }
   html:root .gate.dwarf-login .logo-tile { background:transparent; padding:0; border-radius:0; }
   html:root .gate.dwarf-login .gate-theme { color:var(--gtx); background:var(--card); border:1px solid var(--line); box-shadow:none; }
@@ -1404,6 +1403,49 @@ html[data-eff=dark] .card,html[data-eff=dark] .ctile,html[data-eff=dark] .crow{b
   @media(max-width:760px){
     html:root #app:not(.comp) header.top nav { background:var(--card); border-top:1px solid var(--line); box-shadow:var(--dwarf-shadow); }
     html:root #app:not(.comp) header.top nav button.on { color:var(--dwarf-on-selected); background:var(--gtx); }
+  }
+}
+
+/* ---- revisione 20/10 (2): sfondo di prima sull'accesso, Dwarf piccolo in testata ---- */
+@media screen {
+  /* sfondo organico della schermata d'accesso, con i toni della palette attuale */
+  html:root .gate .hx-bg .orange { fill:#CF9473; }
+  html:root .gate .hx-bg .beige { fill:#E6DBC8; }
+  html:root .gate .hx-bg .green { fill:#5E6638; }
+  html:root .gate.dwarf-login .dwarf-login-heading { justify-content:flex-start; }
+  /* testi dell'accesso leggibili anche sopra le forme */
+  html:root .gate.dwarf-login .lk-hero h1, html:root .gate.dwarf-login .dwarf-login-subtitle { text-shadow:0 1px 14px rgba(var(--glass),.9); }
+  html:root .gate.dwarf-login .lk-st { background:rgba(var(--glass),.82); border-radius:14px; padding:8px 12px; width:fit-content; }
+  /* dashboard senza mascotte: il benvenuto occupa tutta la riga */
+  html:root .hx.dwarf-dashboard { grid-template-columns:minmax(0,1fr); min-height:0; padding:28px 32px 18px; }
+  /* piccolo Dwarf accanto alla scritta DWARF */
+  .dwarf-mark { display:block; width:38px; height:38px; object-fit:contain; flex:none; pointer-events:none; user-select:none; }
+  html:root .gate .logo-tile { display:flex; align-items:center; gap:8px; }
+  html:root .gate .logo-tile .dwarf-mark { width:46px; height:46px; }
+  html:root header.top .brand { gap:10px; }
+  html:root header.top .brand .dwarf-mark + .dwarf-wordmark { margin-left:-2px; }
+  /* testata: niente a capo. Sulle finestre medie si nasconde il ruolo e il menu si compatta */
+  html:root header.top .brand-t, html:root header.top .brand-name, html:root header.top .brand-role, html:root header.top nav button { white-space:nowrap; }
+  html:root .gate .gate-name { white-space:nowrap; }
+  /* telefono e finestre strette: «Archivio» al posto di «Archivio clinico» */
+  @media(max-width:430px){ html:root .bn-x { display:none; } }
+  @media(max-width:380px){ html:root .gate .logo-tile .dwarf-wordmark { display:none; } }
+  html:root .gate .gate-name small, html:root .gate.dwarf-login .dwarf-login-subtitle { color:var(--body); }
+}
+/* testata del Mac: tutte le voci sempre visibili su una riga, senza scorrimento */
+@media screen {
+  html:root #app:not(.comp) header.top .topin { max-width:1480px; flex-wrap:nowrap; }
+  html:root #app:not(.comp) header.top nav { flex-wrap:nowrap; }
+  @media(max-width:1560px){ html:root #app:not(.comp) header.top .brand-role { display:none; } }
+  @media(max-width:1400px) and (min-width:761px){
+    html:root #app:not(.comp) header.top nav button span { display:none; }
+    html:root #app:not(.comp) header.top nav button.on span { display:inline; }
+    html:root #app:not(.comp) header.top nav button { padding:9px 11px; }
+  }
+  @media(max-width:980px) and (min-width:761px){
+    html:root #app:not(.comp) header.top .brand-t { display:none; }
+    html:root #app:not(.comp) header.top nav button { padding:9px 8px; }
+    html:root #app:not(.comp) header.top .topin { gap:8px; }
   }
 }
 
@@ -1630,7 +1672,7 @@ function render(){
   const IC={dash:'M4 13h6V4H4zM14 20h6V11h-6zM4 20h6v-3H4zM14 8h6V4h-6z',pats:'M9 11a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM2.5 20c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6M16 4.3a3.5 3.5 0 010 6.4M18.2 14.3c2 .8 3.3 2.7 3.3 5.7',agenda:'M5 5h14v15H5zM5 10h14M9 3v4M15 3v4',np:'M7 3h10v18H7zM10 8h4M10 12h4M10 16h2',fis:'M12 3v18M16.5 7.5c-1-1-2.5-1.5-4.5-1.5-2.5 0-4 1.2-4 3s1.5 2.6 4 3 4 1.2 4 3-1.5 3-4 3c-2 0-3.6-.6-4.8-1.8',imp:'M12 16V5M7.5 9.5L12 5l4.5 4.5M5 15v4h14v-4',mod:'M4 6l8 6 8-6M4 6v12h16V6M4 6h16',sec:'M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z',set:'M4 7h8.8M17.2 7H20M4 17h2.8M11.2 17H20M15 4.8a2.2 2.2 0 110 4.4 2.2 2.2 0 010-4.4zM9 14.8a2.2 2.2 0 110 4.4 2.2 2.2 0 010-4.4z'};
   const nav=[['dash','Dashboard','Home'],['pats','Pazienti'],['agenda','Agenda'],['np','Note'],['fis','Fiscale'],['imp','Importa'],['mod','Modelli'],['sec','Sicurezza'],['set','Impostazioni','Opzioni']];
   const cur=S.view==='pat'?'pats':S.view,key=S.view+'|'+(S.pid||''),enter=key!==S._k;S._k=key;
-  r.innerHTML='<div id="app"><header class="top"><div class="topin"><a class="brand" href="#" data-act="go" data-v="dash" aria-label="Vai alla dashboard">'+DwarfDesign.wordmarkMarkup()+'<span class="brand-t"><span class="brand-name">Archivio clinico</span><span class="brand-role">Simone Cascone · Psicologo</span></span></a><nav aria-label="Navigazione principale">'+
+  r.innerHTML='<div id="app"><header class="top"><div class="topin"><a class="brand" href="#" data-act="go" data-v="dash" aria-label="Vai alla dashboard">'+DwarfDesign.markMarkup()+DwarfDesign.wordmarkMarkup()+'<span class="brand-t"><span class="brand-name">Archivio clinico</span><span class="brand-role">Simone Cascone · Psicologo</span></span></a><nav aria-label="Navigazione principale">'+
     nav.map(n=>'<button class="'+(cur===n[0]?'on':'')+'" data-act="go" data-v="'+n[0]+'"'+(cur===n[0]?' aria-current="page"':'')+'><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+IC[n[0]]+'"/></svg><span class="nvl">'+n[1]+'</span><span class="nvs" aria-hidden="true">'+(n[2]||n[1])+'</span></button>').join('')+
     '</nav>'+themeBtn('lockb tbtn')+'<button class="lockb" data-act="lock"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 11h12v9H6zM8 11V8a4 4 0 018 0v3"/></svg><span>Blocca</span></button></div></header><main'+(enter?' class="enter"':(S.view==='pat'&&S._tk!==S.tab?' class="tabin"':''))+'>'+vMain()+'</main></div>';
   S._tk=S.tab;decorate();stagger();
@@ -1639,7 +1681,7 @@ function render(){
 function vMain(){switch(S.view){case 'dash':return vDash();case 'pats':return vPats();case 'agenda':return vAgenda();case 'pat':return vPat();case 'sec':return vSec();case 'set':return vSet();case 'mod':return vMod();case 'imp':return vImp()}return ''}
 
 function vError(){return '<div class="center"><div class="card auth"><h1>Funzione non disponibile</h1><p>Questo browser non permette la cifratura o l’archivio locale quando il file è aperto dal disco ('+esc(S.err)+').</p><p><b>Nessun dato è stato salvato.</b> Prova ad aprire il file con un altro browser (Chrome o Safari aggiornato). Se continua a non funzionare, dimmelo: esiste un’alternativa che serve il file da un indirizzo locale.</p></div></div>'}
-const gateWrap=inner=>'<div class="gate'+(inner.includes('class="lk-wrap"')?' dwarf-login':'')+'">'+HEROSVG('hx-bg').replace(/<path class="thread"[\s\S]*?<\/path>/,'')+themeBtn('gate-theme')+'<div class="gate-brand"><span class="logo-tile">'+DwarfDesign.wordmarkMarkup()+'</span><span class="gate-name">Archivio clinico<small>di Simone Cascone</small></span></div>'+inner+'</div>';
+const gateWrap=inner=>'<div class="gate'+(inner.includes('class="lk-wrap"')?' dwarf-login':'')+'">'+HEROSVG('hx-bg').replace(/<path class="thread"[\s\S]*?<\/path>/,'')+themeBtn('gate-theme')+'<div class="gate-brand"><span class="logo-tile">'+DwarfDesign.markMarkup()+DwarfDesign.wordmarkMarkup()+'</span><span class="gate-name"><span>Archivio<span class="bn-x"> clinico</span></span><small>di Simone Cascone</small></span></div>'+inner+'</div>';
 function vSetup(){
   const st=S.setup;
   if(st.step===1)return gateWrap('<div class="card auth lk"><div class="lk-badge">'+lkIc('shield')+'</div><div class="lk-eye">Primo avvio</div><h1>Benvenuto, Simone</h1><p> Scegli una password lunga: meglio una frase di 5-6 parole, con almeno 12 caratteri. I dati saranno cifrati: <b>senza password e chiave di recupero nessuno può recuperarli.</b></p><form data-form="setup1"><label class="fld"><span>Password</span><input type="password" name="pw" minlength="12" required autocomplete="new-password" data-pw="pwh_setup"><small id="pwh_setup">'+esc(pwHint(''))+'</small></label><label class="fld"><span>Ripeti la password</span><input type="password" name="pw2" required autocomplete="new-password"></label><div class="err"></div><button class="btn pri">Continua</button></form><p class="small"><a href="#" data-act="showRestore">Ho già un backup da ripristinare</a></p></div>');
@@ -1651,7 +1693,7 @@ function vLock(){
   const h=new Date().getHours(),sal=h<5?'Buonanotte':h<13?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera',dt=new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});
   const sun=h>=6&&h<18?'M12 16a4 4 0 100-8 4 4 0 000 8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4':'M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z';
   const nw=new Date(),wd=nw.toLocaleDateString('it-IT',{weekday:'short'}).replace('.',''),mo=nw.toLocaleDateString('it-IT',{month:'short'}).replace('.',''),full=nw.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  return gateWrap('<div class="lk-wrap"><div class="lk-hero"><div class="dwarf-login-heading"><div><h1>Bentornato,<br><em>Simone</em></h1><p class="dwarf-login-subtitle">Ogni storia, al suo posto.</p></div>'+dwMascot('login')+'</div><div class="lk-calw"><div class="lk-cal"><button type="button" class="lk-leaf" data-act="loginCal" aria-expanded="false" aria-label="Mostra il calendario del mese" title="Apri il calendario"><span>'+esc(mo)+'</span><b>'+nw.getDate()+'</b></button><div class="lk-when"><div class="lk-sal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+sun+'"/></svg>'+sal+'</div><div class="lk-dt">'+esc(full)+'</div></div></div><div id="lkmc" class="lk-mc" hidden></div></div><div class="lk-st"><span class="lk-s"><i class="lk-dot"></i><b>Archivio cifrato AES-256</b></span><span class="lk-s"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 8.8a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5h.01M3 3l18 18"/></svg><b>Solo offline</b><em>i dati restano su questo computer</em></span></div></div>'+
+  return gateWrap('<div class="lk-wrap"><div class="lk-hero"><div class="dwarf-login-heading"><div><h1>Bentornato,<br><em>Simone</em></h1><p class="dwarf-login-subtitle">Ogni storia, al suo posto.</p></div></div><div class="lk-calw"><div class="lk-cal"><button type="button" class="lk-leaf" data-act="loginCal" aria-expanded="false" aria-label="Mostra il calendario del mese" title="Apri il calendario"><span>'+esc(mo)+'</span><b>'+nw.getDate()+'</b></button><div class="lk-when"><div class="lk-sal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+sun+'"/></svg>'+sal+'</div><div class="lk-dt">'+esc(full)+'</div></div></div><div id="lkmc" class="lk-mc" hidden></div></div><div class="lk-st"><span class="lk-s"><i class="lk-dot"></i><b>Archivio cifrato AES-256</b></span><span class="lk-s"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 8.8a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5h.01M3 3l18 18"/></svg><b>Solo offline</b><em>i dati restano su questo computer</em></span></div></div>'+
   '<div class="card auth lk"><div class="lk-badge">'+lkIc('lock')+'</div><h2 class="lk-t">Riapri l’archivio</h2>'+(S.notice?'<div class="banner warn small">'+esc(S.notice)+'</div>':'')+
   '<form data-form="unlock"><label class="fld"><span>Password</span><div class="pwrow"><span class="pwi">'+lkIc('lock')+'</span><input type="password" name="pw" required autofocus autocomplete="current-password" placeholder="La tua password"><button type="button" class="eyeb" data-act="togglePw" aria-label="Mostra o nascondi la password">'+lkIc('eye')+'</button></div></label><div class="err"></div><button class="btn pri lk-go"><span>Entra nell’archivio</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>'+
   '<p class="small lk-links"><a href="#" data-act="showRecover">Password dimenticata? Usa la chiave di recupero</a><a href="#" data-act="showRestore">Ripristina da un backup</a></p></div></div>')
@@ -1666,7 +1708,7 @@ function vDash(){
   const fl=P.filter(p=>p.stato!=='concluso'&&itemFlags(p).length);
   const risk=fl.length?'<div class="banner bad"><b>Item 9 maggiore di 0</b> nell’ultima rilevazione di: '+fl.map(pLink).join(', ')+'. Valuta secondo il tuo protocollo clinico. L’assenza di un avviso non significa assenza di rischio.</div>':'';
   const hr=new Date().getHours(),sal=hr<13?'Buongiorno':hr<18?'Buon pomeriggio':'Buonasera',dt=new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});
-  const hero='<section class="hx dwarf-dashboard" aria-label="Benvenuto">'+dwMascot('dashboard')+'<div class="hx-text"><div class="hx-id"><div class="eyebrow">'+esc(dt)+'</div></div><h1 class="hx-t hx-t1">'+sal+', Simone</h1><div class="hx-rule"></div><p class="hx-desc hx-t hx-t3">'+(inC.length?inC.length+(inC.length===1?' paziente in carico.':' pazienti in carico.')+' Ecco cosa c’è da guardare oggi.':'Il tuo archivio è pronto. Comincia aggiungendo il primo paziente.')+'</p><div class="hx-cta hx-t hx-t4"><button class="btn pri" data-act="newPat">+ Nuovo paziente</button><button class="btn" data-act="go" data-v="agenda">Apri agenda</button></div></div></section>';
+  const hero='<section class="hx dwarf-dashboard" aria-label="Benvenuto"><div class="hx-text"><div class="hx-id"><div class="eyebrow">'+esc(dt)+'</div></div><h1 class="hx-t hx-t1">'+sal+', Simone</h1><div class="hx-rule"></div><p class="hx-desc hx-t hx-t3">'+(inC.length?inC.length+(inC.length===1?' paziente in carico.':' pazienti in carico.')+' Ecco cosa c’è da guardare oggi.':'Il tuo archivio è pronto. Comincia aggiungendo il primo paziente.')+'</p><div class="hx-cta hx-t hx-t4"><button class="btn pri" data-act="newPat">+ Nuovo paziente</button><button class="btn" data-act="go" data-v="agenda">Apri agenda</button></div></div></section>';
   return hero+backupBanner()+risk+rev+
   '<div class="grid tiles">'+tile('g',ICON.pat,inC.length,'pazienti in carico')+tile('t',ICON.arc,P.length,'pazienti in archivio')+tile('o',ICON.cal,D().sessions.filter(s=>s.data.slice(0,7)===today().slice(0,7)&&pat(s.pid)&&!pat(s.pid).deletedAt).length,'sedute questo mese')+'</div>'+
   '<div class="dwarf-dashboard-columns">'+apptTodayHTML()+calHTML()+'</div>'+'<div class="card"><h3>Ultime sedute</h3>'+(last.length?'<table><tbody>'+last.map(s=>'<tr class="click" tabindex="0" data-act="open" data-id="'+s.pid+'"><td>'+fd(s.data)+'</td><td>'+esc(nm(pat(s.pid)))+'</td><td>'+esc(s.tipo)+'</td></tr>').join('')+'</tbody></table>':
@@ -4448,7 +4490,7 @@ function renderComp(){
   const v=S.view,pend=OUT().filter(x=>!x.batch).length,enter=v!==S._k;S._k=v;
   const NAV=[['cnew','Nuovo',CI.plus],['cout','In uscita',CI.tray,pend],['cexp','Esporta',CI.up],['cset','Impostazioni',CI.set]];
   if(enter){try{window.scrollTo(0,0)}catch(e){}}
-  r.innerHTML='<div id="app" class="comp"><header class="top ctop"><div class="topin"><a class="brand" href="#" data-act="cgo" data-v="cnew" aria-label="Vai a Nuovo">'+DwarfDesign.wordmarkMarkup()+'<span class="brand-t"><span class="brand-name">Archivio clinico</span><span class="brand-role">Raccolta · telefono</span></span></a>'+
+  r.innerHTML='<div id="app" class="comp"><header class="top ctop"><div class="topin"><a class="brand" href="#" data-act="cgo" data-v="cnew" aria-label="Vai a Nuovo">'+DwarfDesign.wordmarkMarkup()+'<span class="brand-t"><span class="brand-name">Archivio<span class="bn-x"> clinico</span></span><span class="brand-role">Raccolta · telefono</span></span></a>'+
    '<button class="lockb ic'+(v==='cag'?' on':'')+'" data-act="cgo" data-v="cag" aria-label="Agenda">'+svgI(CI.cal)+'</button>'+themeBtn('lockb tbtn')+
    '<button class="lockb ic" data-act="lock" aria-label="Blocca">'+svgI(CI.lock)+'</button></div></header>'+
    '<main class="cmain'+(enter?' enter':'')+'">'+compView(v)+'</main>'+
@@ -5731,7 +5773,9 @@ const DwarfDesign=Object.freeze({
     if(role!=='login'&&role!=='dashboard')throw new TypeError('Ruolo DWARF non valido');
     /* decorativa: le informazioni utili sono nel testo accanto */
     return '<img class="dwarf-mascot dwarf-mascot--'+role+(anim===false?'':' dwarf-appear')+'" src="'+DW_IMG+'" width="720" height="720" alt="" aria-hidden="true" decoding="async">'},
-  wordmarkMarkup(){return '<span class="dwarf-wordmark" aria-hidden="true">DWARF</span>'}});
+  wordmarkMarkup(){return '<span class="dwarf-wordmark" aria-hidden="true">DWARF</span>'},
+  /* piccolo Dwarf accanto alla scritta, statico (si ridisegna con la testata: niente dissolvenza) */
+  markMarkup(){return '<img class="dwarf-mark" src="'+DW_IMG+'" width="720" height="720" alt="" aria-hidden="true" decoding="async">'}});
 /* la dissolvenza parte una sola volta per ingresso nella schermata, non a ogni aggiornamento */
 const DW_SEEN={login:0,dashboard:0};
 function dwMascot(role){const a=!DW_SEEN[role];DW_SEEN[role]=1;return DwarfDesign.mascotMarkup(role,a)}
