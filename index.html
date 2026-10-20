@@ -1184,6 +1184,25 @@ div.pcm{cursor:default}
 .fogimg img{display:block;width:100%;height:auto;max-height:60vh;object-fit:contain}
 .fogok{color:var(--ok);font-weight:700}.fogto{color:var(--warn);font-weight:700}
 
+/* v41 · schermata «Nuovo» del telefono: quattro voci grandi e gruppi a elenco */
+.nqs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 4px}
+.nq{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px;border-radius:20px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;text-align:left;min-height:108px;cursor:pointer;box-shadow:0 8px 20px -14px rgba(90,60,25,.35);-webkit-tap-highlight-color:transparent;transition:transform .2s}
+.nq:active{transform:scale(.97)}
+.nq b{font:600 16px/1.2 var(--f-d);color:var(--gtx)}.nq small{font-size:12px;color:var(--mut);line-height:1.3}
+.nq .ctile-i{margin:0}
+html:root .nqs .nq:first-child .ctile-i{background:var(--green);color:#F6EEDC}
+html:root .nqs .nq.cam .ctile-i{background:var(--terra-bg);color:var(--terra-dark)}
+.ngr{margin:20px 0 0}.ngr h3{font:600 12px/1 var(--f-b);letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin:0 0 8px 4px}
+.nls{border:1px solid var(--line);border-radius:18px;background:var(--card);overflow:hidden}
+.nr{display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:10px 14px;border:0;border-bottom:1px solid var(--line);background:none;font:inherit;text-align:left;color:var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.nr:last-child{border-bottom:0}.nr:active{background:var(--pri2)}
+.nr i{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:var(--pri2);color:var(--green)}
+.nr i svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ngr.g1 .nr i{background:var(--terra-bg);color:var(--terra-dark)}
+.ngr.g2 .nr i{background:#F1E5C6;color:#6F5214}
+.nrt{flex:1;min-width:0;border:0;background:none;padding:0}.nrt b{display:block;font:600 15px/1.25 var(--f-d);color:var(--gtx)}.nrt small{display:block;font-size:12px;color:var(--mut);line-height:1.35}
+.nrc{flex:none;color:var(--mut)}.nrc svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
 /* tema scuro */
 html[data-eff=dark]{--glass:32,36,26;--glass2:19,21,14;--green:#3B4122;--green-deep:#2A2E17;--green-soft:#7F8A56;--gtx:#CBD39E;--cream:#13150E;--cream-2:#1C1F14;--paper:#1A1D13;--card:#20241A;--hero:#1E2216;--terra:#D27C58;--terra-dark:#E5A07F;--terra-light:#C0724F;--terra-bg:#3A261C;--ink:#EEE7D7;--body:#D3CCBA;--mut:#B5AB96;--line:#363B2B;--sand:#4C5239;--pri2:#2C3220;--ok:#BDD596;--ok2:#27311B;--warn:#EBC57E;--warn2:#3A2F15;--bad:#F3A898;--bad2:#40211B;color-scheme:dark}
 html[data-eff=dark] body{background:var(--cream);color:var(--ink)}
@@ -1263,6 +1282,10 @@ html[data-eff=dark] .badge.psb{background:#38301A;color:#E3C989;border-color:#58
 html[data-eff=dark] .pcv.pp{border-left-color:#74833F}
 html[data-eff=dark] .pcv.pf{border-left-color:#8A4F33}
 html[data-eff=dark] .pcv.px{border-left-color:#86703A}
+html[data-eff=dark] .ngr.g2 .nr i{background:#3C3016;color:#EBC57E}
+html[data-eff=dark] .nqs .nq:first-child .ctile-i{background:#4E552D;color:#F6EEDC}
+html[data-eff=dark] .nr i{background:#2F3622;color:#BDD596}
+html[data-eff=dark] .nqs .nq.cam .ctile-i{background:#40261C;color:#E9A98B}
 /* DWARF: tema grafico, dopo chiaro e scuro */
 /* DWARF / Archivio clinico — consegna 20 ottobre 2026.
  * Caricare DOPO tutti gli stili attuali, incluso il tema scuro.
@@ -6385,6 +6408,25 @@ impApply=async function(it,made){
   const vals={};Object.keys(R.vals).forEach(n=>{const s=ins.sub.find(x=>lc(x.nome)===lc(n));if(s)vals[s.id]=R.vals[n]});
   const rec={id:uid(),pid:R.pid,instrId:ins.id,data:R.data,epId:'',docId:'',vals,nota:R.nota||'Dal telefono'};if(R.extra&&Object.keys(R.extra).length)rec.extra=R.extra;
   D().tests.push(rec);log('Risultato importato dal telefono '+ins.nome,'',R.pid);return 'Risultato aggiunto in Test e scale'};
+
+/* ====================================================================
+   v41 · Telefono: schermata «Nuovo» riorganizzata (proposta B)
+   - in alto, in grande: Seduta, Appuntamento, Pagamento, Da foglio;
+   - sotto, gruppi a elenco: Paziente, Documenti, Calendario e personale (voci nuove → «Altro»).
+   ==================================================================== */
+const NEW_TOP=['seduta','appuntamento','pagamento'];
+const NEW_GRP=[['Paziente',['nuovo','nota','modifica','episodio','diagnosi']],['Documenti',['documento','consenso','relazione']],['Calendario e personale',['impegno','formazione','notap']]];
+vCNew=function(){
+  const n=OUT().filter(x=>!x.batch).length,has=k=>!!CT[k]&&CT_ORDER.includes(k);
+  const big=k=>'<button class="nq" data-act="cnewT" data-t="'+k+'"><span class="ctile-i">'+svgI(CT[k].ic)+'</span><b>'+esc(CT[k].l)+'</b><small>'+esc(CT[k].s)+'</small></button>';
+  const row=k=>'<button class="nr" data-act="cnewT" data-t="'+k+'"><i>'+svgI(CT[k].ic)+'</i><span class="nrt"><b>'+esc(CT[k].l)+'</b><small>'+esc(CT[k].s)+'</small></span><span class="nrc">'+svgI(CI.chev)+'</span></button>';
+  const used=new Set(NEW_TOP.concat(...NEW_GRP.map(g=>g[1]))),rest=CT_ORDER.filter(k=>CT[k]&&!used.has(k));
+  const groups=NEW_GRP.map(g=>[g[0],g[1].filter(has)]).concat(rest.length?[['Altro',rest]]:[]).filter(g=>g[1].length);
+  let risk='';try{risk=compRiskHTML()}catch(e){}
+  return '<h1>Nuovo</h1><p class="small mut">Scegli cosa registrare. Resta cifrato su questo telefono finché non lo esporti verso il Mac.</p>'+risk+
+   '<div class="nqs">'+NEW_TOP.filter(has).map(big).join('')+'<button class="nq cam" data-act="cgo" data-v="cfog"><span class="ctile-i">'+svgI(FIC.cam)+'</span><b>Da foglio</b><small>Foto di appunti o di un test</small></button></div>'+
+   groups.map((g,i)=>'<div class="ngr g'+i+'"><h3>'+esc(g[0])+'</h3><div class="nls">'+g[1].map(row).join('')+'</div></div>').join('')+
+   (n?'<button class="cpend" data-act="cgo" data-v="cout"><b>'+n+(n===1?' voce':' voci')+'</b> in attesa di esportazione<span>'+svgI(CI.chev)+'</span></button>':'')};
 
 /* ====================================================================
    DWARF · identità grafica (20/10/2026)
