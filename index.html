@@ -1172,6 +1172,18 @@ div.pcm{cursor:default}
 .pcx{flex:none;width:44px;height:44px}
 .pcv .pcm b{min-width:0;flex:none;padding-right:2px}
 
+/* v40 · «Da foglio» sul telefono */
+.cfogb{display:flex;align-items:center;gap:14px;width:100%;margin:6px 0 4px;padding:14px 16px;border-radius:20px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-align:left;cursor:pointer;font:inherit}
+.cfogb>span:nth-child(2){flex:1;display:flex;flex-direction:column;gap:2px}.cfogb b{font:600 16px/1.2 var(--f-d);color:var(--gtx)}.cfogb small{color:var(--mut);font-size:12.5px;line-height:1.35}
+.cfogb .ctile-i{flex:none;margin:0;background:var(--terra-bg);color:var(--terra-dark)}
+.cfogc{flex:none;color:var(--mut)}.cfogc svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8}
+.fogcats{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 14px}
+.fogcats .npchip{min-height:40px}
+.fogcats .npchip.add{border-style:dashed}
+.fogimg{margin:8px 0 12px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--paper)}
+.fogimg img{display:block;width:100%;height:auto;max-height:60vh;object-fit:contain}
+.fogok{color:var(--ok);font-weight:700}.fogto{color:var(--warn);font-weight:700}
+
 /* tema scuro */
 html[data-eff=dark]{--glass:32,36,26;--glass2:19,21,14;--green:#3B4122;--green-deep:#2A2E17;--green-soft:#7F8A56;--gtx:#CBD39E;--cream:#13150E;--cream-2:#1C1F14;--paper:#1A1D13;--card:#20241A;--hero:#1E2216;--terra:#D27C58;--terra-dark:#E5A07F;--terra-light:#C0724F;--terra-bg:#3A261C;--ink:#EEE7D7;--body:#D3CCBA;--mut:#B5AB96;--line:#363B2B;--sand:#4C5239;--pri2:#2C3220;--ok:#BDD596;--ok2:#27311B;--warn:#EBC57E;--warn2:#3A2F15;--bad:#F3A898;--bad2:#40211B;color-scheme:dark}
 html[data-eff=dark] body{background:var(--cream);color:var(--ink)}
@@ -6100,6 +6112,228 @@ const _vCExp39=vCExp;
 vCExp=function(){return _vCExp39.apply(this,arguments).replace('Dopo l’importazione il Mac ti dà una ricevuta: aprila qui in Impostazioni e il telefono cancella da solo le voci.','Le voci esportate restano in «In uscita» finché non le elimini tu; appuntamenti e impegni restano nel calendario.')};
 const _vCSet39=vCSet;
 vCSet=function(){return _vCSet39.apply(this,arguments).replace('<h3>Svuota il telefono</h3><p class="small mut">Dopo aver importato sul Mac, apri la ricevuta che il Mac ti ha dato: il telefono cancella da solo le voci importate.</p>','<h3>Voci esportate</h3><p class="small mut">Le elimini tu quando vuoi, senza aspettare il Mac. La ricevuta del Mac è facoltativa: segna soltanto quali voci sono arrivate. Appuntamenti e impegni restano nel calendario finché non li elimini da lì.</p>').replace('>Apri la ricevuta</button>','>Apri una ricevuta</button>').replace('class="btn pri" data-act="crcPick"','class="btn" data-act="crcPick"')};
+
+/* ====================================================================
+   v40 · Telefono: «Da foglio» — foto di appunti e di test, in cartelle locali, con trascrizione
+   - le foto restano cifrate nell'app (non nella libreria Foto, quindi non vanno su iCloud) e non si esportano;
+   - il riconoscimento del testo è quello di iPhone («Scansiona testo» nei campi di testo), fatto sul telefono;
+   - appunti → nota, seduta o nota personale; test → «Risultato di un test» (strumenti e scale del Mac),
+     esportato come gli altri e importato dal Mac nei Test e scale del paziente.
+   ==================================================================== */
+const FOG=()=>Array.isArray(D().fogli)?D().fogli:(D().fogli=[]);
+const FCAT=()=>Array.isArray(D().fcat)?D().fcat:(D().fcat=[]);
+const _mig40=migrate;
+migrate=function(d){const r=_mig40.apply(this,arguments);if(r){if(!Array.isArray(r.fogli))r.fogli=[];if(!Array.isArray(r.fcat))r.fcat=[]}return r};
+const FIC={cam:'M4 8h4l2-3h4l2 3h4v11H4zM12 17a3.5 3.5 0 100-7 3.5 3.5 0 000 7z',dir:'M3 6h6l2 2h10v11H3z',test:'M5 20V10M12 20V4M19 20v-7',note:'M6 4h9l3 3v13H6zM9 11h6M9 15h6'};
+const fogCatName=id=>{const c=FCAT().find(x=>x.id===id);return c?c.nome:''};
+
+/* catalogo di strumenti e scale: quelli del Mac (con l'elenco per il telefono) oppure i modelli dell'app */
+function ftCatalog(){
+  const P=PLI(),mac=Array.isArray(P.ins)&&P.ins.length;
+  const ins=mac?P.ins:INSTR_PRESET.filter(p=>!/^Strumento vuoto/.test(p[0])).map(p=>{let sub=[];try{sub=parseSubL(p[4]).map((s,i)=>Object.assign({id:'s'+i},s))}catch(e){}
+    return {id:'',nome:p[0],versione:'',sub:sub.length?sub:[{id:'s0',nome:'Punteggio totale',tipo:'grezzo'}],campi:[]}});
+  const sc=Array.isArray(P.sc)&&P.sc.length?P.sc:Object.keys(SD0).map(k=>({nome:k,n:SD0[k].n,min:SD0[k].min,max:SD0[k].max}));
+  return {ins,sc,mac:!!mac}}
+
+/* ---------- vista «Da foglio» ---------- */
+COMP_V.push('cfog');
+const _cv40=compView;
+compView=function(v){return v==='cfog'?vCFog():_cv40.apply(this,arguments)};
+const _vCNew40=vCNew;
+vCNew=function(){return _vCNew40.apply(this,arguments).replace('<div class="ctiles">','<button class="cfogb" data-act="cgo" data-v="cfog"><span class="ctile-i">'+svgI(FIC.cam)+'</span><span><b>Da foglio</b><small>Fotografa appunti o un test: li trascrivi con «Scansiona testo» di iPhone</small></span><span class="cfogc">'+svgI(CI.chev)+'</span></button><div class="ctiles">')};
+function vCFog(){
+  const f=S.ffc||'',L=FOG().filter(x=>!f||(f==='-'?!x.cat:x.cat===f)).sort((a,b)=>(b.t||'').localeCompare(a.t||'')),cats=FCAT();
+  let h='<h1>Da foglio</h1><p class="small mut">Le foto restano <b>cifrate in questa app</b>: non finiscono nella libreria Foto né su iCloud e non si esportano. Le trascrivi tu, anche con «Scansiona testo» di iPhone; la trascrizione si esporta come le altre voci.</p>'+
+   '<div class="pcadd"><button class="btn pri" data-act="fogNew" data-k="app">+ Foto di appunti</button><button class="btn" data-act="fogNew" data-k="test">+ Foto di un test</button></div>'+
+   '<div class="fogcats"><button class="npchip'+(!f?' on':'')+'" data-act="fogCat" data-c="">Tutte · '+FOG().length+'</button>'+cats.map(c=>'<button class="npchip'+(f===c.id?' on':'')+'" data-act="fogCat" data-c="'+c.id+'">'+esc(c.nome)+' · '+FOG().filter(x=>x.cat===c.id).length+'</button>').join('')+
+   (FOG().some(x=>!x.cat)?'<button class="npchip'+(f==='-'?' on':'')+'" data-act="fogCat" data-c="-">Senza cartella</button>':'')+'<button class="npchip add" data-act="fogCatNew">+ Cartella</button>'+(f&&f!=='-'?'<button class="npchip add" data-act="fogCatEdit" data-c="'+f+'">Rinomina / elimina</button>':'')+'</div>';
+  if(!L.length)return h+'<div class="card cempty"><p><b>Nessuna foto'+(f?' in questa cartella':'')+'.</b></p><p class="small mut">Scatta la foto dall’app: «Scatta foto» non la salva nella libreria di iPhone.</p></div>';
+  return h+'<div class="clist">'+L.map(x=>'<div class="crow"><button class="crow-m" data-act="fogOpen" data-id="'+x.id+'"><span class="crow-i">'+svgI(x.k==='test'?FIC.test:FIC.note)+'</span><span class="crow-t"><b>'+esc(x.titolo||(x.k==='test'?'Test':'Appunti'))+'</b><small>'+esc(fd(x.data)+(x.cat?' · '+fogCatName(x.cat):'')+' · ')+(x.stato==='fatto'?'<span class="fogok">trascritto</span>':'<span class="fogto">da trascrivere</span>')+'</small></span></button>'+
+    '<button class="crow-x" data-act="fogDel" data-id="'+x.id+'" aria-label="Elimina">'+svgI(CI.del)+'</button></div>').join('')+'</div>'}
+A.fogCat=d=>{S.ffc=d.c||'';render()};
+const fogCatOpts=()=>[['','— nessuna —']].concat(FCAT().map(c=>[c.id,c.nome]));
+A.fogCatNew=()=>formModal('Nuova cartella',[{k:'nome',l:'Nome della cartella',req:1,h:'Per esempio: Supervisione, Test da correggere, Appunti di ottobre.'}],{},async o=>{
+  const n=String(o.nome).trim().slice(0,40);if(FCAT().some(c=>c.nome.toLowerCase()===n.toLowerCase()))throw new Error('Esiste già una cartella con questo nome.');
+  const c={id:uid(),nome:n};FCAT().push(c);S.ffc=c.id;await save();render()});
+A.fogCatEdit=d=>{const c=FCAT().find(x=>x.id===d.c);if(!c)return;
+  formModal('Cartella «'+c.nome+'»',[{k:'nome',l:'Nome',req:1},{k:'del',l:'Eliminare la cartella?',t:'select',o:[['0','No, solo rinominare'],['1','Sì: le foto restano, senza cartella']]}],{nome:c.nome,del:'0'},async o=>{
+    if(o.del==='1'){FOG().forEach(x=>{if(x.cat===c.id)x.cat=''});D().fcat=FCAT().filter(x=>x.id!==c.id);S.ffc=''}else c.nome=String(o.nome).trim().slice(0,40);await save();render()})};
+A.fogNew=d=>{const k=d.k==='test'?'test':'app';
+  formModal(k==='test'?'Foto di un test':'Foto di appunti',[{k:'foto',l:'Foto del foglio',t:'file',accept:'image/*',req:1,h:'Scegli «Scatta foto»: la foto resta solo qui, cifrata.'},{k:'titolo',l:'Titolo (facoltativo)'},{k:'cat',l:'Cartella',t:'select',o:fogCatOpts()},DTF('data','Data')],{cat:S.ffc&&S.ffc!=='-'?S.ffc:'',data:today()},async o=>{
+    if(!o.foto)throw new Error('Scegli la foto.');
+    const ph=await photoStore(o.foto);
+    const it={id:uid(),k,t:new Date().toISOString(),data:o.data||today(),titolo:String(o.titolo||'').trim().slice(0,80),cat:o.cat||'',stato:'da',ph,dest:''};
+    FOG().push(it);log(k==='test'?'Foto di un test aggiunta':'Foto di appunti aggiunta','');await save();render();setTimeout(()=>A.fogOpen({id:it.id}),60)})};
+A.fogOpen=async d=>{
+  const it=FOG().find(x=>x.id===d.id);if(!it)return;const p=await idbGet('docs',it.ph.id);
+  if(!p){toast('Manca la foto: eliminala.');return}
+  const buf=await decB(S.key,p),url=URL.createObjectURL(new Blob([buf],{type:it.ph.mime||'image/jpeg'}));
+  modal('<h3>'+esc(it.titolo||(it.k==='test'?'Test':'Appunti'))+'</h3><p class="small mut">'+esc(fd(it.data)+(it.cat?' · '+fogCatName(it.cat):''))+' · '+(it.stato==='fatto'?'trascritto':'da trascrivere')+'</p><div class="fogimg"><img src="'+url+'" alt="Foto del foglio"></div>'+
+   '<div class="pcadd"><button class="btn pri" data-act="'+(it.k==='test'?'fogTest':'fogTxt')+'" data-id="'+it.id+'">'+(it.k==='test'?'Trascrivi il test':'Trascrivi gli appunti')+'</button><button class="btn" data-act="fogMove" data-id="'+it.id+'">Cartella e titolo</button>'+
+   '<button class="btn" data-act="fogDone" data-id="'+it.id+'">'+(it.stato==='fatto'?'Segna da trascrivere':'Segna trascritto')+'</button></div><div class="row end"><button class="btn" data-act="close">Chiudi</button></div>');
+  VIEWURL=url};
+A.fogMove=d=>{const it=FOG().find(x=>x.id===d.id);if(!it)return;
+  formModal('Cartella e titolo',[{k:'titolo',l:'Titolo'},{k:'cat',l:'Cartella',t:'select',o:fogCatOpts()},{k:'data',l:'Data',t:'date',req:1}],it,async o=>{it.titolo=String(o.titolo||'').trim().slice(0,80);it.cat=o.cat||'';it.data=o.data;await save();render()})};
+A.fogDone=async d=>{const it=FOG().find(x=>x.id===d.id);if(!it)return;it.stato=it.stato==='fatto'?'da':'fatto';await save();closeModal();render()};
+A.fogDel=async d=>{const it=FOG().find(x=>x.id===d.id);if(!it)return;
+  if(!await ask('<p>Eliminare la foto «'+esc(it.titolo||fd(it.data))+'»?</p>'+(it.stato==='fatto'?'':'<p class="small"><b>Non è ancora trascritta.</b></p>')+'<p class="small">Le trascrizioni già create restano.</p>',{ok:'Elimina'}))return;
+  try{await idbDel('docs',it.ph.id)}catch(e){}D().fogli=FOG().filter(x=>x.id!==it.id);log('Foto da foglio eliminata','');await save();render()};
+const fogMark=async(id,outId)=>{const it=FOG().find(x=>x.id===id);if(it){it.stato='fatto';if(outId)it.dest=outId;await save()}};
+
+/* ---------- appunti: dal testo riconosciuto alla voce da esportare ---------- */
+function fogGuess(txt){
+  const t=String(txt||''),o={};let m;
+  if(m=/\bPZ[-\s]?(\d{1,6})\b/i.exec(t))o.pz='PZ-'+String(+m[1]).padStart(4,'0');
+  if(m=/\b(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})\b/.exec(t)){let y=+m[3];if(y<100)y+=2000;const dd=okDate(y,+m[2],+m[1]);if(dd)o.data=dd}
+  else if(m=/\b(\d{4})-(\d{2})-(\d{2})\b/.exec(t)){const dd=okDate(+m[1],+m[2],+m[3]);if(dd)o.data=dd}
+  return o}
+const OCR_H='Tocca il campo e scegli «Scansiona testo» (icona sopra la tastiera, oppure tieni premuto nel campo): inquadra il foglio e il testo entra qui. Poi correggi a mano.';
+A.fogTxt=d=>{const it=FOG().find(x=>x.id===d.id);if(!it)return;
+  formModal('Trascrivi gli appunti',[{k:'testo',l:'Testo del foglio',t:'textarea',r:10,req:1,h:OCR_H},
+    {k:'dest',l:'Diventa',t:'select',o:[['nota','Nota per la scheda del paziente'],['seduta','Nota clinica di una seduta'],['notap','Nota personale (fuori dalla cartella)']]},
+    {k:'pz',l:'Paziente',list:'pzl',h:'Codice PZ-0001. Se lo lasci vuoto e il codice è scritto nel foglio, lo trovo io. Per la nota personale è facoltativo.'},
+    {k:'data',l:'Data',t:'date',h:'Se nel foglio c’è una data (gg/mm/aaaa) e la lasci com’è, uso quella.'},{k:'durata',l:'Durata della seduta (minuti)',t:'number',min:5,max:300}],
+   {data:it.data,dest:'nota',durata:50},async o=>{
+    const g=fogGuess(o.testo),pz=o.pz||g.pz||'',data=(o.data===it.data&&g.data)?g.data:(o.data||g.data||today());
+    if(o.dest!=='notap'&&!pz)throw new Error('Scrivi il codice del paziente (PZ-0001) oppure scrivilo nel testo.');
+    const before=OUT().length;
+    if(o.dest==='nota')await ctSave('nota',{pz,nota:o.testo},null);
+    else if(o.dest==='seduta')await ctSave('seduta',{pz,data,durata:o.durata||50,nota:o.testo},null);
+    else await ctSave('notap',{pz,data,titolo:it.titolo||'',nota:o.testo},null);
+    const made=OUT().length>before?OUT()[OUT().length-1]:null;await fogMark(it.id,made&&made.id);render()},
+   '<datalist id="pzl">'+pzOptions()+'</datalist>')};
+
+/* ---------- test: strumento o scala, punteggi, compilazione dal testo riconosciuto ---------- */
+A.fogTest=d=>{const it=FOG().find(x=>x.id===d.id);if(!it)return;const C=ftCatalog();
+  const opts=C.ins.map((x,i)=>['i'+i,x.nome+(x.versione?' '+x.versione:'')]).concat(C.sc.map((x,i)=>['s'+i,x.nome+' (scala a item)'])).sort((a,b)=>a[1].localeCompare(b[1],'it'));
+  formModal('Trascrivi il test',[{k:'w',l:'Strumento o scala',t:'select',o:opts,req:1,h:C.mac?'Sono gli strumenti e le scale del tuo Mac.':'Sono i modelli dell’app. Per avere anche gli strumenti che hai creato sul Mac, carica di nuovo l’Elenco dal Mac.'},
+    Object.assign({},PZF,{h:'Codice PZ-0001: il risultato va nella scheda di questo paziente.'}),{k:'data',l:'Data della somministrazione',t:'date',req:1}],{data:it.data,w:opts[0]&&opts[0][0]},async o=>{
+    const pz=normPz(o.pz);if(!/^PZ-\d+$/.test(pz))throw new Error('Per un test serve il codice del paziente (PZ-0001).');
+    setTimeout(()=>ftForm({w:o.w,pz,data:o.data,sheet:it.id}),40)},'<datalist id="pzl">'+pzOptions()+'</datalist>')};
+function ftDef(w,v){const C=ftCatalog();
+  if(v&&v.kind){if(v.kind==='sc'){const s=C.sc.find(x=>x.nome===v.nome)||{nome:v.nome,n:(v.items||[]).length||1,min:0,max:999};return {kind:'sc',d:s}}
+    const i=C.ins.find(x=>(v.iid&&x.id===v.iid)||(x.nome===v.nome&&(x.versione||'')===(v.versione||'')))||{id:v.iid||'',nome:v.nome,versione:v.versione||'',sub:Object.keys(v.vals||{}).map((n,k)=>({id:'s'+k,nome:n})),campi:Object.keys(v.campi||{})};return {kind:'ins',d:i}}
+  return w&&w[0]==='s'?{kind:'sc',d:C.sc[+w.slice(1)]}:{kind:'ins',d:C.ins[+String(w||'i0').slice(1)]}}
+function ftForm(ctx,it){
+  const v=it?it.v:{},F=ftDef(ctx.w,v),d=F.d;if(!d){toast('Strumento non trovato.');return}
+  let fl,vals={};
+  if(F.kind==='ins'){
+    fl=d.sub.map((s,i)=>({k:'v'+i,l:s.nome+(s.tipo&&s.tipo!=='grezzo'?' · '+s.tipo:'')+(s.min!=null?' ('+s.min+'–'+s.max+')':'')}));
+    (d.campi||[]).forEach((c,i)=>fl.push({k:'c'+i,l:c}));
+    d.sub.forEach((s,i)=>{const x=(v.vals||{})[s.nome];if(x!=null)vals['v'+i]=String(x)});(d.campi||[]).forEach((c,i)=>{const x=(v.campi||{})[c];if(x)vals['c'+i]=x});
+  }else{
+    fl=[{k:'punti',l:'Punteggio totale ('+(d.n*d.min)+'–'+(d.n*d.max)+')',h:'Si calcola da solo se scrivi tutti gli item.'},{k:'items',l:'Risposte ai '+d.n+' item (facoltative)',h:'In ordine, separate da spazio o virgola: '+d.min+'–'+d.max+' per ciascuna.'}];
+    if(v.punti!=null)vals.punti=String(v.punti);if(v.items)vals.items=v.items.join(' ');
+  }
+  fl.push({k:'nota',l:'Nota (facoltativa)'},{k:'ocr',l:'Testo riconosciuto dal foglio (facoltativo)',t:'textarea',r:5,h:OCR_H+' Poi premi «Compila dai dati riconosciuti».'});
+  vals.nota=v.nota||'';
+  S.ftCur={kind:F.kind,names:F.kind==='ins'?d.sub.map(s=>s.nome):[],n:d.n||0};
+  formModal((it?'Modifica · ':'')+d.nome+(d.versione?' '+d.versione:''),fl,vals,async o=>{
+    const rec={kind:F.kind,nome:d.nome,versione:d.versione||'',iid:d.id||'',data:it?v.data:ctx.data,nota:String(o.nota||'').trim(),sheet:ctx.sheet||v.sheet||''};
+    if(F.kind==='ins'){rec.vals={};rec.campi={};
+      d.sub.forEach((s,i)=>{const t=String(o['v'+i]||'').trim();if(t==='')return;const x=num(t);if(!isFinite(x))throw new Error(s.nome+': scrivi un numero.');if(s.min!=null&&(x<s.min||x>s.max))throw new Error(s.nome+': il valore deve essere tra '+s.min+' e '+s.max+'.');rec.vals[s.nome]=x});
+      if(!Object.keys(rec.vals).length)throw new Error('Inserisci almeno un punteggio.');
+      (d.campi||[]).forEach((c,i)=>{const t=String(o['c'+i]||'').trim();if(t)rec.campi[c]=t.slice(0,200)});
+    }else{
+      const its=String(o.items||'').trim()?String(o.items).trim().split(/[\s,;]+/).map(Number):null;
+      if(its){if(its.length!==d.n)throw new Error('Gli item sono '+d.n+': ne hai scritti '+its.length+'.');const bad=its.findIndex(x=>!Number.isInteger(x)||x<d.min||x>d.max);if(bad>=0)throw new Error('Item '+(bad+1)+': risposta non valida ('+d.min+'–'+d.max+').');rec.items=its}
+      let p=String(o.punti||'').trim()===''?null:num(o.punti);
+      if(p==null&&its)p=its.reduce((a,b)=>a+b,0);
+      if(p==null||!isFinite(p)||p<d.n*d.min||p>d.n*d.max)throw new Error('Il punteggio totale deve essere tra '+(d.n*d.min)+' e '+(d.n*d.max)+'.');rec.punti=p}
+    const before=OUT().length;
+    await ctSave('risultato',Object.assign({pz:it?it.pz:ctx.pz},rec),it?it.id:null);
+    if(!it&&ctx.sheet){const made=OUT().length>before?OUT()[OUT().length-1]:null;await fogMark(ctx.sheet,made&&made.id)}
+    render()},'<button type="button" class="btn" data-act="ftAuto">Compila dai dati riconosciuti</button>')}
+/* compila i punteggi dal testo riconosciuto: cerca il nome di ogni sottoscala seguito da un numero,
+   altrimenti usa i numeri nell'ordine in cui compaiono */
+const ftNorm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9.,\- ]+/g,' ').replace(/\s+/g,' ').trim();
+function ftFill(txt,cur){
+  const T=ftNorm(txt),nums=(String(txt||'').match(/-?\d+(?:[.,]\d+)?/g)||[]),out={};
+  if(cur.kind==='ins'){
+    let used=0;cur.names.forEach((n,i)=>{const k=ftNorm(n),pos=T.indexOf(k);if(pos<0)return;const m=/-?\d+(?:[.,]\d+)?/.exec(T.slice(pos+k.length));if(m){out['v'+i]=m[0].replace(',','.');used++}});
+    if(!used&&nums.length>=cur.names.length)cur.names.forEach((n,i)=>{out['v'+i]=nums[i].replace(',','.')});
+  }else{
+    const ints=nums.filter(x=>/^\d+$/.test(x));
+    if(cur.n&&ints.length>=cur.n)out.items=ints.slice(0,cur.n).join(' ');else if(ints.length===1)out.punti=ints[0];
+  }
+  return out}
+A.ftAuto=()=>{const t=$('#f_ocr'),cur=S.ftCur;if(!t||!cur)return;
+  if(!t.value.trim()){toast('Prima porta il testo nel campo «Testo riconosciuto» con Scansiona testo.');return}
+  const o=ftFill(t.value,cur),ks=Object.keys(o);ks.forEach(k=>{const e=$('#f_'+k);if(e)e.value=o[k]});
+  toast(ks.length?'Compilati '+ks.length+(ks.length===1?' campo':' campi')+': controllali prima di salvare.':'Non ho trovato punteggi nel testo: scrivili a mano.')};
+
+/* tipo esportato «Risultato di un test» */
+CT.risultato={l:'Risultato di un test',s:'Punteggi di uno strumento o di una scala',ic:FIC.test,pz:1,f:()=>[],
+  name:(v,z)=>'RISULTATO_'+z+'_'+v.data+'_'+fz(v.nome+(v.versione?' '+v.versione:'')),
+  text:v=>{const L=[(v.kind==='sc'?'Scala: ':'Strumento: ')+v.nome];if(v.versione)L.push('Versione: '+v.versione);if(v.iid)L.push('Codice strumento: '+v.iid);L.push('Data: '+v.data);
+    if(v.kind==='sc'){L.push('Totale: '+v.punti);if(v.items)L.push('Item: '+v.items.join(' '))}
+    else{Object.keys(v.vals||{}).forEach(k=>L.push('Punteggio · '+k+': '+v.vals[k]));Object.keys(v.campi||{}).forEach(k=>L.push('Campo · '+k+': '+oneL(v.campi[k])))}
+    if(v.nota)L.push('Nota: '+oneL(v.nota));return L.join('\n')},
+  chk:v=>!v.nome?'Manca lo strumento.':!/^\d{4}-\d{2}-\d{2}$/.test(v.data||'')?'Data non valida.':'',
+  sum:v=>fd(v.data)+' · '+v.nome+(v.kind==='sc'?' · totale '+v.punti:' · '+Object.keys(v.vals||{}).length+' punteggi')};
+const _ctOpen40=ctOpen;
+ctOpen=function(type,it){if(type==='risultato'&&it){ftForm({},it);return}return _ctOpen40.apply(this,arguments)};
+
+/* ---------- Mac → telefono: l'elenco porta anche strumenti e scale (solo nomi e punteggi previsti) ---------- */
+const _plPay40=plistPayload;
+plistPayload=function(){const r=_plPay40.apply(this,arguments);
+  r.ins=D().instr.map(i=>({id:i.id,nome:i.nome,versione:i.versione||'',sub:(i.sub||[]).map(s=>({id:s.id,nome:s.nome,tipo:s.tipo||'',min:s.min,max:s.max})),campi:(i.campi||[]).slice(0,20)})).slice(0,300);
+  r.sc=Object.keys(SD).map(k=>({nome:k,n:SD[k].n,min:SD[k].min,max:SD[k].max})).slice(0,300);return r};
+const _plApply40=plApply;
+plApply=async function(p){await _plApply40.apply(this,arguments);
+  const s=x=>String(x==null?'':x).slice(0,80),n=x=>x==null||x===''||!isFinite(+x)?undefined:+x;
+  D().plist.ins=(Array.isArray(p&&p.ins)?p.ins:[]).slice(0,300).map(i=>({id:s(i.id),nome:s(i.nome),versione:s(i.versione),sub:(Array.isArray(i.sub)?i.sub:[]).slice(0,80).map(x=>({id:s(x.id),nome:s(x.nome),tipo:s(x.tipo),min:n(x.min),max:n(x.max)})).filter(x=>x.nome),campi:(Array.isArray(i.campi)?i.campi:[]).slice(0,20).map(s)})).filter(i=>i.nome&&i.sub.length);
+  D().plist.sc=(Array.isArray(p&&p.sc)?p.sc:[]).slice(0,300).map(x=>({nome:s(x.nome),n:+x.n||0,min:+x.min||0,max:+x.max||0})).filter(x=>x.nome&&x.n>0&&x.max>x.min);
+  await save();render()};
+
+/* ---------- Mac: importare «Risultato di un test» nei Test e scale del paziente ---------- */
+IMP_T.push(['risultato','Risultato di un test',['risultato','risultati'],1]);
+function rsParse(t){const o={vals:{},campi:{}};String(t||'').split(/\r?\n/).forEach(l=>{let m;
+  if(m=/^Punteggio · (.+?):\s*(.+)$/.exec(l))o.vals[m[1].trim()]=m[2].trim();
+  else if(m=/^Campo · (.+?):\s*(.+)$/.exec(l))o.campi[m[1].trim()]=m[2].trim();
+  else if(m=/^(Strumento|Scala|Versione|Codice strumento|Totale|Item|Nota|Data):\s*(.*)$/.exec(l))o[m[1]]=m[2].trim()});return o}
+const presetSubs=p=>{let sub=[];try{sub=parseSubL(p[4])}catch(e){}return (sub.length?sub:[{nome:'Punteggio totale',tipo:'grezzo'}]).map((s,i)=>Object.assign({id:'s'+i},s))};
+const lc=s=>String(s||'').trim().toLowerCase();
+const _plan40=impPlan;
+impPlan=function(it,all){
+  if(it.type!=='risultato')return _plan40.apply(this,arguments);
+  const P={st:'ok',skip:false,sum:'',notes:[]},fail=m=>{P.st='err';P.sum=m;return P};
+  const p=it.cod?act().find(x=>x.cod===it.cod):null;if(!p)return fail(it.cod?'Il paziente '+it.cod+' non è in questo archivio.':'Manca il codice del paziente nel nome del file (PZ-0001).');
+  const r=rsParse(it.text),date=r.Data&&/^\d{4}-\d{2}-\d{2}$/.test(r.Data)?r.Data:it.dates[0];if(!date)return fail('Manca la data della somministrazione.');
+  P.who=nm(p);
+  try{const s=pkSeenAt(it.f);if(s){P.skip=true;P.notes.push('Già importato dal telefono il '+fd(s)+'.')}}catch(e){}
+  if(r.Scala){
+    const d=SD[r.Scala];if(!d)return fail('La scala «'+r.Scala+'» non è definita su questo Mac: aggiungila in Impostazioni › Scale, poi riprova.');
+    const items=r.Item?r.Item.split(/[\s,;]+/).filter(Boolean).map(Number):null;let pt=r.Totale===''||r.Totale==null?null:num(r.Totale);
+    if(items){if(items.length!==d.n)return fail('La scala ha '+d.n+' item, nel file ce ne sono '+items.length+'.');const ok=v=>d.opts&&d.opts.length?d.opts.some(x=>x.v===v):(Number.isInteger(v)&&v>=d.min&&v<=d.max);const bad=items.findIndex(v=>!ok(v));if(bad>=0)return fail('Item '+(bad+1)+': risposta non valida.');pt=scTot(d,items)}
+    if(pt==null||!isFinite(pt)||pt<d.n*d.min||pt>d.n*d.max)return fail('Il totale deve essere tra '+(d.n*d.min)+' e '+(d.n*d.max)+'.');
+    if(D().scales.some(x=>x.pid===p.id&&x.scala===r.Scala&&x.data===date&&x.punti===pt)){P.skip=true;P.notes.push('Rilevazione già presente.')}
+    P.rec={kind:'sc',pid:p.id,scala:r.Scala,data:date,punti:pt,items,nota:r.Nota||''};
+    P.sum='Scala '+r.Scala+' del '+fd(date)+' · totale '+pt+' → Test e scale di '+nm(p);
+  }else if(r.Strumento){
+    let ins=(r['Codice strumento']&&D().instr.find(i=>i.id===r['Codice strumento']))||D().instr.find(i=>lc(i.nome)===lc(r.Strumento)&&lc(i.versione)===lc(r.Versione))||D().instr.find(i=>lc(i.nome)===lc(r.Strumento));
+    let pre=null;if(!ins){pre=INSTR_PRESET.find(x=>lc(x[0])===lc(r.Strumento));if(!pre)return fail('Lo strumento «'+r.Strumento+'» non è su questo Mac: aggiungilo in Impostazioni › Strumenti psicometrici, poi riprova.');P.notes.push('Lo strumento «'+pre[0]+'» non c’è ancora: lo aggiungo dal modello dell’app.')}
+    const subs=ins?ins.sub:presetSubs(pre),vals={};
+    for(const k of Object.keys(r.vals)){const s=subs.find(x=>lc(x.nome)===lc(k));if(!s){P.notes.push('Punteggio «'+k+'» non previsto dallo strumento: non viene importato.');continue}
+      const x=num(r.vals[k]);if(!isFinite(x))return fail(k+': valore non numerico.');if(s.min!=null&&(x<s.min||x>s.max))return fail(k+': il valore deve essere tra '+s.min+' e '+s.max+'.');vals[s.nome]=x}
+    if(!Object.keys(vals).length)return fail('Nel file non ci sono punteggi riconoscibili per questo strumento.');
+    if(ins&&D().tests.some(t=>t.pid===p.id&&t.instrId===ins.id&&t.data===date)){P.skip=true;P.notes.push('Esiste già un risultato di questo strumento in questa data.')}
+    P.rec={kind:'ins',pid:p.id,insId:ins?ins.id:'',pre:pre?pre[0]:'',vals,extra:r.campi,data:date,nota:r.Nota||''};
+    P.sum=(ins?ins.nome:pre[0])+' del '+fd(date)+' · '+Object.keys(vals).length+(Object.keys(vals).length===1?' punteggio':' punteggi')+' → Test e scale di '+nm(p);
+  }else return fail('Il file non indica né lo strumento né la scala.');
+  if(P.notes.length&&P.st==='ok')P.st='warn';return P};
+const _apply40=impApply;
+impApply=async function(it,made){
+  if(it.type!=='risultato')return _apply40.apply(this,arguments);
+  const R=it.pl.rec;
+  if(R.kind==='sc'){const rec={id:uid(),pid:R.pid,scala:R.scala,data:R.data,punti:R.punti,nota:R.nota||'Dal telefono'};if(R.items)rec.items=R.items;D().scales.push(rec);log('Rilevazione importata dal telefono '+R.scala,'',R.pid);return 'Rilevazione aggiunta in Test e scale'}
+  let ins=R.insId?D().instr.find(i=>i.id===R.insId):null;
+  if(!ins&&R.pre){ins=D().instr.find(i=>lc(i.nome)===lc(R.pre));
+    if(!ins){const p=INSTR_PRESET.find(x=>x[0]===R.pre);ins={id:uid(),nome:p[0],versione:'',autore:'',ambito:p[1],modalita:p[2],eta:p[3],sub:presetSubs(p),campi:[],note:''};D().instr.push(ins);log('Strumento aggiunto da modello',p[0])}}
+  if(!ins)throw new Error('Strumento non trovato.');
+  const vals={};Object.keys(R.vals).forEach(n=>{const s=ins.sub.find(x=>lc(x.nome)===lc(n));if(s)vals[s.id]=R.vals[n]});
+  const rec={id:uid(),pid:R.pid,instrId:ins.id,data:R.data,epId:'',docId:'',vals,nota:R.nota||'Dal telefono'};if(R.extra&&Object.keys(R.extra).length)rec.extra=R.extra;
+  D().tests.push(rec);log('Risultato importato dal telefono '+ins.nome,'',R.pid);return 'Risultato aggiunto in Test e scale'};
 
 /* ====================================================================
    DWARF · identità grafica (20/10/2026)
