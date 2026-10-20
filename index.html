@@ -5977,8 +5977,9 @@ CT_ORDER.splice(CT_ORDER.indexOf('formazione')+1,0,'impegno');
 function phoneDayMap(){
   const m={},pts={},inc=(k,i)=>{(m[k]=m[k]||[0,0,0])[i]++};
   const addP=(dt,who)=>{if(/^\d{4}-\d{2}-\d{2}$/.test(dt||''))(pts[dt]=pts[dt]||new Set()).add(String(who||'?'))};
-  OUT().forEach(i=>{const v=i.v||{};
-    if(i.type==='appuntamento'||i.type==='seduta')addP(v.data,i.pz);
+  OUT().forEach(i=>{if(i.type==='seduta')addP((i.v||{}).data,i.pz)});
+  calSrc().forEach(i=>{const v=i.v||{};
+    if(i.type==='appuntamento')addP(v.data,i.pz);
     if(i.type==='formazione')spanDays(v.data,v.dataFine,k=>inc(k,1));
     if(i.type==='impegno')spanDays(v.data,v.dataFine,k=>inc(k,2))});
   PLI().ag.forEach(a=>addP(a.d,a.c));
@@ -6020,9 +6021,9 @@ function pcItems(k){
   const L=[];
   PLI().ag.forEach(a=>{if(a.d===k)L.push({o:a.o,t:a.c+' · '+a.i,s:(a.u||50)+' min · dal Mac',c:'pp'})});
   (PLI().ev||[]).forEach(e=>{let hit=false;spanDays(e.d,e.f,x=>{if(x===k)hit=true});if(hit)L.push({o:e.o?e.o+(e.e?'–'+e.e:''):'',t:e.t,s:(e.k==='pers'?'impegno personale':'formazione')+' · dal Mac',c:e.k==='pers'?'px':'pf'})});
-  OUT().forEach(i=>{const v=i.v||{},P=PCAT[i.type];if(!P)return;let hit=false;
+  calSrc().forEach(i=>{const v=i.v||{},P=PCAT[i.type];if(!P)return;let hit=false;
     if(i.type==='appuntamento')hit=v.data===k;else spanDays(v.data,v.dataFine,x=>{if(x===k)hit=true});
-    if(hit)L.push({o:i.type==='appuntamento'?(v.ora||''):oraTxt(v),t:i.type==='appuntamento'?pzLabel(i.pz):v.titolo,s:P[0]+(i.type==='appuntamento'?' · '+(v.durata||50)+' min':'')+(i.batch?' · già esportato':' · su questo telefono'),c:P[1],id:i.batch?'':i.id,del:i.id})});
+    if(hit)L.push({o:i.type==='appuntamento'?(v.ora||''):oraTxt(v),t:i.type==='appuntamento'?pzLabel(i.pz):v.titolo,s:P[0]+(i.type==='appuntamento'?' · '+(v.durata||50)+' min':'')+(i.batch||i.kept?' · già esportato':' · su questo telefono'),c:P[1],id:i.batch||i.kept?'':i.id,del:i.id})});
   return L.sort((a,b)=>(a.o||'~').localeCompare(b.o||'~'))}
 vCAg=function(){
   const now=new Date(),off=S.pcm||0,d=new Date(now.getFullYear(),now.getMonth()+off,1),cm=d.getFullYear()+'-'+p2(d.getMonth()+1);
@@ -6044,10 +6045,61 @@ A.pcNew=d=>{const T=CT[d.t];if(!T)return;const dt=S.pcd||today();
 
 /* eliminare un impegno dal calendario del telefono */
 A.pcDel=async d=>{
-  const it=OUT().find(x=>x.id===d.id);if(!it)return;const T=CT[it.type],v=it.v||{};
+  const it=OUT().find(x=>x.id===d.id)||PCK().find(x=>x.id===d.id);if(!it)return;const T=CT[it.type],v=it.v||{};
   const what=esc((T?T.l:'Voce')+(v.titolo?' «'+v.titolo+'»':'')+' del '+fd(v.data));
-  if(!await ask('<p>Eliminare '+what+'?</p>'+(it.batch?'<p class="small">È già stato esportato: se l’hai importato sul Mac, lì resta e va eliminato anche sul Mac.</p>':'<p class="small"><b>Non è ancora stato esportato</b>: non arriverà sul Mac.</p>'),{ok:'Elimina'}))return;
-  await ctDrop(x=>x.id===it.id);toast('Eliminato dal telefono');render()};
+  if(!await ask('<p>Eliminare '+what+'?</p>'+(it.batch||it.kept?'<p class="small">È già stato esportato: se l’hai importato sul Mac, lì resta e va eliminato anche sul Mac.</p>':'<p class="small"><b>Non è ancora stato esportato</b>: non arriverà sul Mac.</p>'),{ok:'Elimina'}))return;
+  D().pcal=PCK().filter(x=>x.id!==it.id);await ctDrop(x=>x.id===it.id,{cal:false});await save();toast('Eliminato dal calendario del telefono');render()};
+
+/* ====================================================================
+   v39 · Esportate e calendario: decide l'utente
+   - le voci esportate restano nella lista finché non le elimini tu (anche senza ricevuta del Mac);
+   - la ricevuta del Mac, se la apri, segna soltanto quali voci sono arrivate;
+   - appuntamenti, formazione e impegni esportati restano nel calendario del telefono finché non li
+     elimini dal calendario, anche se li togli dalla lista delle esportate.
+   ==================================================================== */
+const CAL_TYPES=['appuntamento','formazione','impegno'];
+const PCK=()=>Array.isArray(D().pcal)?D().pcal:(D().pcal=[]);
+/* voci del calendario del telefono: quelle ancora in uscita + quelle conservate dopo l'esportazione,
+   senza doppioni con l'elenco arrivato dal Mac */
+function calSrc(){
+  const P=PLI(),ag=new Set(P.ag.map(a=>a.d+'|'+(a.o||'')+'|'+a.c)),ev=new Set((P.ev||[]).map(e=>e.d+'|'+(e.k==='pers'?'impegno':'formazione')+'|'+e.t));
+  const dup=i=>{const v=i.v||{};return i.type==='appuntamento'?ag.has(v.data+'|'+(v.ora||'')+'|'+i.pz):ev.has(v.data+'|'+i.type+'|'+String(v.titolo||'').slice(0,80))};
+  const out=OUT().filter(i=>CAL_TYPES.includes(i.type)&&!(i.batch&&dup(i))),ids=new Set(out.map(i=>i.id));
+  return out.concat(PCK().filter(i=>!ids.has(i.id)&&!dup(i)))}
+const _mig39=migrate;
+migrate=function(d){const r=_mig39.apply(this,arguments);if(r&&!Array.isArray(r.pcal))r.pcal=[];return r};
+/* togliere voci dalla lista: gli impegni già esportati passano nel calendario conservato */
+const _drop39=ctDrop;
+ctDrop=async function(pred,opt){
+  if(!(opt&&opt.cal===false)){const keep=OUT().filter(x=>pred(x)&&x.batch&&CAL_TYPES.includes(x.type));
+    keep.forEach(x=>{if(!PCK().some(y=>y.id===x.id))PCK().push({id:x.id,type:x.type,v:Object.assign({},x.v),pz:x.pz||'',kept:today()})})}
+  return _drop39.apply(this,arguments)};
+/* ricevuta del Mac: segna come arrivate, non cancella */
+A.crcPick=()=>formModal('Ricevuta del Mac',[{k:'file',l:'File RICEVUTA_….acrc',t:'file',req:1,accept:'.acrc'}],{},async o=>{
+  let r;try{r=JSON.parse(await o.file.text())}catch(e){throw new Error('Questo file non è una ricevuta.')}
+  if(!r||r.fmt!=='acrc'||!Array.isArray(r.ids))throw new Error('Questo file non è una ricevuta.');
+  const ids=new Set(r.ids.map(String));let n=0;OUT().forEach(x=>{if(ids.has(x.id)&&!x.rcv){x.rcv=today();n++}});
+  await save();render();toast(n?n+(n===1?' voce segnata come arrivata sul Mac':' voci segnate come arrivate sul Mac')+'. Le elimini tu quando vuoi.':'Nessuna voce nuova in questa ricevuta.')});
+A.cclear=async()=>{
+  const n=OUT().filter(x=>x.batch).length;if(!n){toast('Non ci sono voci già esportate.');return}
+  const c=OUT().filter(x=>x.batch&&CAL_TYPES.includes(x.type)).length;
+  if(!await ask('<p>Eliminare dalla lista le <b>'+n+'</b> voci già esportate?</p>'+(c?'<p class="small">Appuntamenti e impegni ('+c+') restano nel calendario del telefono.</p>':'')+'<p class="small">Se il pacchetto non è ancora arrivato sul Mac, conservalo finché non l’hai importato.</p>',{ok:'Elimina dalla lista'}))return;
+  await ctDrop(x=>!!x.batch);render();toast('Voci esportate eliminate dalla lista')};
+A.cdel=async d=>{
+  const it=OUT().find(x=>x.id===d.id);if(!it)return;const cal=CAL_TYPES.includes(it.type);
+  if(!await ask('<p>Eliminare questa voce dalla lista?'+(it.batch?'':' <b>Non è ancora stata esportata.</b>')+'</p>'+(it.batch&&cal?'<p class="small">Resta nel calendario del telefono: da lì la elimini quando vuoi.</p>':''),{ok:'Elimina'}))return;
+  await ctDrop(x=>x.id===it.id);render()};
+const _crow39=crowHTML;
+crowHTML=function(it){const h=_crow39.apply(this,arguments);return it&&it.rcv?h.replace('</small></span></button>',' · arrivata sul Mac</small></span></button>'):h};
+const _vCOut39=vCOut;
+vCOut=function(){
+  const n=OUT().filter(x=>x.batch).length;
+  return _vCOut39.apply(this,arguments).replace('Esportate, in attesa del Mac · ','Esportate · ')
+    .replace(/<p class="small mut">Restano sul telefono finché[^<]*<\/p>/,'<p class="small mut">Restano qui finché non le elimini tu (una per una con il cestino, oppure tutte insieme). Appuntamenti e impegni restano comunque nel calendario.</p>'+(n?'<button class="btn" data-act="cclear">Elimina le '+n+' esportate</button>':''))};
+const _vCExp39=vCExp;
+vCExp=function(){return _vCExp39.apply(this,arguments).replace('Dopo l’importazione il Mac ti dà una ricevuta: aprila qui in Impostazioni e il telefono cancella da solo le voci.','Le voci esportate restano in «In uscita» finché non le elimini tu; appuntamenti e impegni restano nel calendario.')};
+const _vCSet39=vCSet;
+vCSet=function(){return _vCSet39.apply(this,arguments).replace('<h3>Svuota il telefono</h3><p class="small mut">Dopo aver importato sul Mac, apri la ricevuta che il Mac ti ha dato: il telefono cancella da solo le voci importate.</p>','<h3>Voci esportate</h3><p class="small mut">Le elimini tu quando vuoi, senza aspettare il Mac. La ricevuta del Mac è facoltativa: segna soltanto quali voci sono arrivate. Appuntamenti e impegni restano nel calendario finché non li elimini da lì.</p>').replace('>Apri la ricevuta</button>','>Apri una ricevuta</button>').replace('class="btn pri" data-act="crcPick"','class="btn" data-act="crcPick"')};
 
 /* ====================================================================
    DWARF · identità grafica (20/10/2026)
