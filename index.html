@@ -1203,6 +1203,30 @@ html:root .nqs .nq.cam .ctile-i{background:var(--terra-bg);color:var(--terra-dar
 .nrt{flex:1;min-width:0;border:0;background:none;padding:0}.nrt b{display:block;font:600 15px/1.25 var(--f-d);color:var(--gtx)}.nrt small{display:block;font-size:12px;color:var(--mut);line-height:1.35}
 .nrc{flex:none;color:var(--mut)}.nrc svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
+/* ---- v42 · Leggi dal foglio ---- */
+.fvleg{display:flex;flex-direction:column;gap:4px;margin:6px 0 8px;font-size:13px;font-weight:600}
+.fvleg .fvA{color:var(--green-deep,#454B29)}.fvleg .fvB{color:var(--terra-dark,#8A3F22)}
+.fvbox{overflow:auto;max-height:62vh;border:1px solid var(--line);border-radius:14px;background:var(--paper);margin:6px 0 10px;-webkit-overflow-scrolling:touch}
+.fvin{position:relative;width:100%}
+.fvin img{display:block;width:100%;height:100%;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.fvin svg{position:absolute;left:0;top:0;width:100%;height:100%;touch-action:none}
+.fvin svg .fvh{cursor:grab;touch-action:none}
+.fvmsg{border-radius:14px;padding:10px 14px;margin:8px 0 12px;border:1px solid var(--line);border-left-width:5px;font-size:13px}
+.fvmsg.okk{background:var(--ok2);border-left-color:var(--green)}.fvmsg.warn{background:var(--warn2);border-left-color:#C9953A}
+.fvmsg>div{margin-top:3px}.fvmsg .no{color:var(--bad);font-weight:600}.fvmsg .ok{color:var(--green-deep,#454B29)}
+.fvwrap{overflow-x:auto;margin:4px 0 10px}
+.fvt{width:100%;border-collapse:collapse}
+.fvt th{font-size:12px;text-align:left;color:var(--mut);padding:4px 6px;font-weight:600}
+.fvt td{padding:5px 6px;border-top:1px solid var(--line);vertical-align:middle}
+.fvt tr.fvsup td{background:rgba(0,0,0,.025)}
+.fvn b{display:inline-block;min-width:26px}.fvn small{display:block;color:var(--mut);font-size:12px;line-height:1.2}
+.fvc{display:flex;flex-direction:column;gap:3px;align-items:flex-start}
+.fvc img{max-width:150px;width:100%;height:auto;border-radius:6px;border:1px solid var(--line);background:#fff}
+.fvi{width:76px;font:600 17px/1.2 var(--f-d,inherit);padding:6px 8px;border:2px solid var(--line);border-radius:10px;text-align:center;background:var(--card);color:var(--ink)}
+.fvi.dubbio{border-color:#D08A2A;background:var(--warn2)}.fvi.manca{border-color:var(--bad);background:var(--bad2)}
+.fvk{display:inline-block;padding:0 7px;border-radius:7px;border:2px solid var(--line);font-weight:600}.fvk.dubbio{border-color:#D08A2A}.fvk.manca{border-color:var(--bad)}
+@media(max-width:620px){.fvc img{max-width:112px}.fvi{width:64px}.fvt td,.fvt th{padding:4px 3px}}
+
 /* tema scuro */
 html[data-eff=dark]{--glass:32,36,26;--glass2:19,21,14;--green:#3B4122;--green-deep:#2A2E17;--green-soft:#7F8A56;--gtx:#CBD39E;--cream:#13150E;--cream-2:#1C1F14;--paper:#1A1D13;--card:#20241A;--hero:#1E2216;--terra:#D27C58;--terra-dark:#E5A07F;--terra-light:#C0724F;--terra-bg:#3A261C;--ink:#EEE7D7;--body:#D3CCBA;--mut:#B5AB96;--line:#363B2B;--sand:#4C5239;--pri2:#2C3220;--ok:#BDD596;--ok2:#27311B;--warn:#EBC57E;--warn2:#3A2F15;--bad:#F3A898;--bad2:#40211B;color-scheme:dark}
 html[data-eff=dark] body{background:var(--cream);color:var(--ink)}
@@ -6307,20 +6331,22 @@ function ftFillProf(txt,cur,prof){
         while((m=re.exec(L))){const at=m.index+m[1].length;
           if(allKeys.some(k2=>k2.length>k.length&&k2.startsWith(k)&&L.startsWith(k2,at)))continue;
           const nums=(L.slice(at+k.length).match(/-?\d+(?:[.,]\d+)?/g)||[]).map(x=>x.replace(',','.'));
+          if(pick==='last'&&nums.length<2)continue; /* una riga con un solo numero può essere il solo grezzo: meglio lasciare vuoto che prendere il numero sbagliato */
           const v=pick==='last'?nums[nums.length-1]:nums[pick-1];
           if(v!=null&&ok(s,num(v))){out['v'+i]=v;break outer}}}}});
   return out}
 function ftFill(txt,cur){
   const T=ftNorm(txt),nums=(String(txt||'').match(/-?\d+(?:[.,]\d+)?/g)||[]),out={};
   const pn=cur.kind==='ins'?ftProfName(cur.nome):'';
-  if(pn){const o=ftFillProf(txt,cur,FT_COMP[pn]);if(Object.keys(o).length)return o}
+  if(pn){const o=ftFillProf(txt,cur,FT_COMP[pn]);if(Object.keys(o).length||/^WISC|^WAIS|^WPPSI/i.test(cur.nome||''))return o}
   if(cur.kind==='ins'){
     /* per ogni sottoscala: nome intero, sigla tra parentesi (ICV) o sigla iniziale (Hs, A-dep, RCd, VRIN) */
     const keys=n=>{const k=[ftNorm(n)],m=/\(([A-Za-z][A-Za-z0-9-]{1,7})\)/.exec(n),f=/^([A-Za-z][A-Za-z0-9-]{0,7})\s/.exec(n+' ');
       if(m)k.push(ftNorm(m[1]));if(f&&/[A-Z]/.test(f[1])&&f[1]!==n.trim())k.push(ftNorm(f[1]));if(ftNorm(n).replace(/\s*\d+\s*/g,' ').trim()!==k[0])k.push(ftNorm(n.replace(/\(\d+\)/g,' ')));return k.filter(Boolean)};
+    const sbi=n=>(cur.subs||[]).find(x=>x.nome===n),inR=(n,v)=>{const x=sbi(n);return !x||x.min==null||(isFinite(+v)&&+v>=x.min&&+v<=x.max)};
     const find=k=>{const re=new RegExp('(^|[^a-z0-9])'+k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'(?![a-z0-9])\\s*[:=]?\\s*(-?\\d+(?:[.,]\\d+)?)');const m=re.exec(T);return m?m[2]:null};
-    let used=0;cur.names.forEach((n,i)=>{for(const k of keys(n)){const v=find(k);if(v!=null){out['v'+i]=v.replace(',','.');used++;break}}});
-    if(!used&&nums.length>=cur.names.length)cur.names.forEach((n,i)=>{out['v'+i]=nums[i].replace(',','.')});
+    let used=0;cur.names.forEach((n,i)=>{for(const k of keys(n)){const v=find(k);if(v!=null&&inR(n,v.replace(',','.'))){out['v'+i]=v.replace(',','.');used++;break}}});
+    if(!used&&nums.length>=cur.names.length)cur.names.forEach((n,i)=>{const v=nums[i].replace(',','.');if(inR(n,v))out['v'+i]=v});
   }else{
     const ints=nums.filter(x=>/^\d+$/.test(x));
     if(cur.n&&ints.length>=cur.n)out.items=ints.slice(0,cur.n).join(' ');else if(ints.length===1)out.punti=ints[0];
@@ -6427,6 +6453,416 @@ vCNew=function(){
    '<div class="nqs">'+NEW_TOP.filter(has).map(big).join('')+'<button class="nq cam" data-act="cgo" data-v="cfog"><span class="ctile-i">'+svgI(FIC.cam)+'</span><b>Da foglio</b><small>Foto di appunti o di un test</small></button></div>'+
    groups.map((g,i)=>'<div class="ngr g'+i+'"><h3>'+esc(g[0])+'</h3><div class="nls">'+g[1].map(row).join('')+'</div></div>').join('')+
    (n?'<button class="cpend" data-act="cgo" data-v="cout"><b>'+n+(n===1?' voce':' voci')+'</b> in attesa di esportazione<span>'+svgI(CI.chev)+'</span></button>':'')};
+
+/* ====================================================================
+   v42 · «Leggi dal foglio»: lettura dei punteggi del protocollo WISC-IV dalla foto (o dal PDF scansionato)
+   - tutto sul dispositivo: nessuna rete, nessun servizio esterno; il riconoscimento è solo un suggerimento da controllare;
+   - foto → ricerca automatica delle due tabelle (angoli regolabili) → raddrizzamento → cifre scritte a mano → somme controllate;
+   - schermata di revisione con il ritaglio della foto accanto a ogni numero; si salva «Risultato di un test»;
+   - PDF scansionati: si legge la foto contenuta nel PDF (JPEG), non il testo.
+   Rete neurale incorporata (int8): addestrata su cifre sintetiche e cifre di esempio; vedi sorgenti/tools/.
+   ==================================================================== */
+/* ---------- lettura del foglio: visione (tutto sul dispositivo, nessuna rete) ----------
+   Dalla foto di un protocollo di notazione: raddrizza le tabelle (4 angoli indicati dall'utente),
+   toglie righe e caselle nere stampate, isola le cifre scritte a mano, le legge con una piccola rete
+   neurale incorporata (più le cifre già confermate dall'utente) e controlla le somme. */
+const FV_S=3;
+/* geometria delle due tabelle del protocollo WISC-IV Giunti O.S. (misure sul foglio raddrizzato) */
+const FV_A={W:540,H:480,HDR:26.5,RH:28.4,PX0:301,PW:47.6,GX0:250,GX1:300,
+  rows:['DC','SO','MC','CI','CR','VC','LN','RM','CO','RS','CF','CA','IN','RA','RP'],
+  col:{DC:1,SO:0,MC:2,CI:1,CR:3,VC:0,LN:2,RM:1,CO:0,RS:3,CF:1,CA:3,IN:0,RA:2,RP:0},supp:{CF:1,CA:1,IN:1,RA:1,RP:1}};
+const FV_B={W:540,H:260,ys:[53,94,132,172,211,260],xs:{sum:[172,265],idx:[265,357]},names:['CV','RP','ML','VE','QI']};
+
+/* ---- immagine ---- */
+function fvGray(rgba,n){const g=new Uint8Array(n);for(let i=0,j=0;i<n;i++,j+=4)g[i]=(rgba[j]*77+rgba[j+1]*150+rgba[j+2]*29)>>8;return g}
+function fvSolve(A,b){const n=b.length;for(let i=0;i<n;i++){let p=i;for(let r=i+1;r<n;r++)if(Math.abs(A[r][i])>Math.abs(A[p][i]))p=r;[A[i],A[p]]=[A[p],A[i]];[b[i],b[p]]=[b[p],b[i]];
+  for(let r=i+1;r<n;r++){const f=A[r][i]/A[i][i];for(let c=i;c<n;c++)A[r][c]-=f*A[i][c];b[r]-=f*b[i]}}
+  const x=new Array(n).fill(0);for(let i=n-1;i>=0;i--){let s=b[i];for(let c=i+1;c<n;c++)s-=A[i][c]*x[c];x[i]=s/A[i][i]}return x}
+/* omografia: dal rettangolo di arrivo (0,0)-(w,h) ai 4 angoli della foto (alto-sx, alto-dx, basso-dx, basso-sx) */
+function fvHomog(quad,w,h){const d=[[0,0],[w,0],[w,h],[0,h]],A=[],b=[];
+  for(let i=0;i<4;i++){const [x,y]=d[i],[u,v]=quad[i];A.push([x,y,1,0,0,0,-u*x,-u*y]);b.push(u);A.push([0,0,0,x,y,1,-v*x,-v*y]);b.push(v)}
+  const s=fvSolve(A,b);return [s[0],s[1],s[2],s[3],s[4],s[5],s[6],s[7],1]}
+function fvWarp(g,gw,gh,quad,W,H,s){const w=Math.round(W*s),h=Math.round(H*s),Hm=fvHomog(quad,w,h),o=new Uint8Array(w*h);
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const z=Hm[6]*x+Hm[7]*y+1,u=(Hm[0]*x+Hm[1]*y+Hm[2])/z,v=(Hm[3]*x+Hm[4]*y+Hm[5])/z;
+    if(u<0||v<0||u>=gw-1||v>=gh-1){o[y*w+x]=255;continue}
+    const x0=u|0,y0=v|0,fx=u-x0,fy=v-y0,i=y0*gw+x0;
+    o[y*w+x]=(g[i]*(1-fx)*(1-fy)+g[i+1]*fx*(1-fy)+g[i+gw]*(1-fx)*fy+g[i+gw+1]*fx*fy)+0.5|0}
+  return {g:o,w,h}}
+function fvPct(g,p){const hist=new Uint32Array(256);for(let i=0;i<g.length;i++)hist[g[i]]++;let acc=0,t=g.length*p;for(let v=0;v<256;v++){acc+=hist[v];if(acc>=t)return v}return 255}
+
+/* ---- morfologia binaria (finestre rettangolari, bordo: 1 per l'erosione, 0 per la dilatazione) ---- */
+function fvRun(m,w,h,k,horiz,erode){const o=new Uint8Array(m.length),lo=k>>1,hi=k-1-lo,n=horiz?w:h,L=horiz?h:w,st=horiz?1:w,ls=horiz?w:1,P=new Int32Array(n+1);
+  for(let l=0;l<L;l++){const base=l*ls;P[0]=0;for(let i=0;i<n;i++)P[i+1]=P[i]+m[base+i*st];
+    for(let i=0;i<n;i++){const a=i-lo,b=i+hi;let c;
+      if(erode){const a2=Math.max(a,0),b2=Math.min(b,n-1);c=P[b2+1]-P[a2];o[base+i*st]=(c===(b2-a2+1))?1:0}
+      else{const a2=Math.max(a,0),b2=Math.min(b,n-1);c=P[b2+1]-P[a2];o[base+i*st]=c>0?1:0}}}
+  return o}
+const fvErode=(m,w,h,kw,kh)=>fvRun(fvRun(m,w,h,kw,true,true),w,h,kh,false,true);
+const fvDilate=(m,w,h,kw,kh)=>fvRun(fvRun(m,w,h,kw,true,false),w,h,kh,false,false);
+const fvOpen=(m,w,h,kw,kh)=>fvDilate(fvErode(m,w,h,kw,kh),w,h,kw,kh);
+const fvClose=(m,w,h,kw,kh)=>fvErode(fvDilate(m,w,h,kw,kh),w,h,kw,kh);
+
+/* ---- inchiostro della tabella: toglie caselle nere, righe orizzontali e verticali ---- */
+function fvTableInk(g,w,h,paper,s){
+  const ink=new Uint8Array(g.length),T=paper*0.62;for(let i=0;i<g.length;i++)ink[i]=g[i]<T?1:0;
+  const sq=Math.floor(3.6*s),sq2=Math.floor(1.6*s);
+  const big=fvDilate(fvOpen(ink,w,h,sq,sq),w,h,sq2,sq2);
+  const hl=fvDilate(fvOpen(ink,w,h,Math.floor(24*s),1),w,h,1,Math.floor(1.4*s));
+  const vl=fvDilate(fvOpen(ink,w,h,1,Math.floor(34*s)),w,h,Math.floor(1.4*s),1);
+  const m=new Uint8Array(g.length);for(let i=0;i<m.length;i++)m[i]=(ink[i]&&!big[i]&&!hl[i]&&!vl[i])?1:0;
+  return fvClose(m,w,h,3,3)}
+/* ---- componenti connesse (8 vicini) ---- */
+function fvComps(m,w,h,s,minArea){const lab=new Int32Array(m.length),out=[],stack=[];let id=0;minArea=minArea==null?12*s*s/3:minArea;
+  for(let i=0;i<m.length;i++){if(!m[i]||lab[i])continue;id++;let x0=w,y0=h,x1=0,y1=0,area=0;const px=[];stack.length=0;stack.push(i);lab[i]=id;
+    while(stack.length){const p=stack.pop(),y=(p/w)|0,x=p-y*w;px.push(p);area++;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;
+      for(let dy=-1;dy<=1;dy++){const yy=y+dy;if(yy<0||yy>=h)continue;for(let dx=-1;dx<=1;dx++){const xx=x+dx;if(xx<0||xx>=w)continue;const q=yy*w+xx;if(m[q]&&!lab[q]){lab[q]=id;stack.push(q)}}}}
+    if(area<minArea)continue;const cw=x1-x0+1,ch=y1-y0+1,mk=new Uint8Array(cw*ch);for(const p of px){const y=(p/w)|0;mk[(y-y0)*cw+(p-y*w-x0)]=1}
+    out.push({x0,y0,x1:x1+1,y1:y1+1,cx:(x0+x1+1)/2/s,cy:(y0+y1+1)/2/s,mask:mk,area})}
+  return out}
+function fvAssign(comps,rect,s,slack){slack=slack==null?1.5:slack;const x0=rect[0]/s,y0=rect[1]/s,x1=rect[2]/s,y1=rect[3]/s;
+  return comps.filter(c=>c.cx>=x0-slack&&c.cx<=x1+slack&&c.cy>=y0-slack&&c.cy<=y1+slack).sort((a,b)=>a.cx-b.cx)}
+/* casella con sfondo grigio (somme): soglia sul fondo locale */
+function fvCellComps(g,w,h,rect,s,margin){const mg=Math.floor(margin*s),X0=Math.round(rect[0])+mg,Y0=Math.round(rect[1])+mg,X1=Math.round(rect[2])-mg,Y1=Math.round(rect[3])-mg,cw=X1-X0,ch=Y1-Y0;if(cw<4||ch<4)return [];
+  const c=new Uint8Array(cw*ch),vals=[];for(let y=0;y<ch;y++)for(let x=0;x<cw;x++){const v=g[(Y0+y)*w+X0+x];c[y*cw+x]=v;vals.push(v)}
+  vals.sort((a,b)=>a-b);const med=vals[vals.length>>1],T=med*0.66,b=new Uint8Array(cw*ch);
+  for(let i=0;i<b.length;i++)b[i]=c[i]<T?1:0;
+  const o=fvOpen(b,cw,ch,2,2),cs=fvComps(o,cw,ch,s,10*s*s/3);
+  cs.forEach(k=>{k.x0+=X0;k.x1+=X0;k.y0+=Y0;k.y1+=Y0;k.cx+=X0/s;k.cy+=Y0/s});return cs}
+
+/* ---- pulizia delle componenti: pezzi dello stesso numero, cifre attaccate, parentesi stampate ---- */
+function fvJoin(a,b){const X0=Math.min(a.x0,b.x0),Y0=Math.min(a.y0,b.y0),X1=Math.max(a.x1,b.x1),Y1=Math.max(a.y1,b.y1),w=X1-X0,h=Y1-Y0,mk=new Uint8Array(w*h);
+  for(const c of [a,b]){const cw=c.x1-c.x0;for(let y=c.y0;y<c.y1;y++)for(let x=c.x0;x<c.x1;x++)if(c.mask[(y-c.y0)*cw+x-c.x0])mk[(y-Y0)*w+x-X0]=1}
+  return {x0:X0,y0:Y0,x1:X1,y1:Y1,cx:(X0+X1)/2,cy:(Y0+Y1)/2,mask:mk,area:a.area+b.area,j:1}}
+function fvMerge(comps,cellH,s){let cs=comps.map(c=>Object.assign({},c)),ch=true;
+  while(ch){ch=false;outer:for(let i=0;i<cs.length;i++)for(let j=i+1;j<cs.length;j++){const a=cs[i],b=cs[j],ov=Math.min(a.x1,b.x1)-Math.max(a.x0,b.x0),w=Math.min(a.x1-a.x0,b.x1-b.x0);
+    if(ov>0.5*w){const m=fvJoin(a,b);m.cx=(m.x0+m.x1)/2/s;m.cy=(m.y0+m.y1)/2/s;cs[i]=m;cs.splice(j,1);ch=true;break outer}}}
+  cs=cs.filter(c=>c.y1-c.y0>=0.38*cellH&&(c.x1-c.x0)>=Math.max(3,0.08*(c.y1-c.y0)));cs.sort((a,b)=>a.x0-b.x0);return cs}
+function fvSplit(c,s){const h=c.y1-c.y0,w=c.x1-c.x0;if(w<1.05*h)return [c];
+  const prof=new Array(w).fill(0);for(let y=0;y<h;y++)for(let x=0;x<w;x++)prof[x]+=c.mask[y*w+x];
+  const lo=Math.floor(w*0.30),hi=Math.floor(w*0.70);if(hi<=lo)return [c];let k=lo;for(let x=lo;x<hi;x++)if(prof[x]<prof[k])k=x;
+  const mx=Math.max.apply(null,prof);if(prof[k]>0.45*mx)return [c];
+  const out=[];for(const [a,b] of [[0,k],[k+1,w]]){let x0=w,x1=0,y0=h,y1=0,n=0;for(let y=0;y<h;y++)for(let x=a;x<b;x++)if(c.mask[y*w+x]){n++;if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
+    if(n<10)continue;const cw=x1-x0+1,ch=y1-y0+1,mk=new Uint8Array(cw*ch);for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++)mk[(y-y0)*cw+x-x0]=c.mask[y*w+x];
+    out.push({x0:c.x0+x0,x1:c.x0+x1+1,y0:c.y0+y0,y1:c.y0+y1+1,cx:(c.x0+x0+c.x0+x1+1)/2/s,cy:(c.y0+y0+c.y0+y1+1)/2/s,mask:mk,area:n})}
+  return out.length?out:[c]}
+function fvNoParens(cs,rect){const x0=rect[0],x1=rect[2],w=x1-x0;return cs.filter(c=>{const cw=c.x1-c.x0,ch=c.y1-c.y0,edge=(c.x0-x0)<0.30*w||(x1-c.x1)<0.30*w;return !(edge&&cw<0.38*ch)})}
+function fvClean(base,rect,s,noParens){let cs=fvMerge(base,rect[3]-rect[1],s);cs=[].concat(...cs.map(c=>fvSplit(c,s)));return noParens?fvNoParens(cs,rect):cs}
+
+
+/* una cifra spezzata in due pezzi vicini (tratto interrotto): li riunisce, uno per volta, il più vicino per primo */
+function fvFragMerge(cs,s){let best=-1,bg=1e9;for(let i=0;i<cs.length-1;i++){const a=cs[i],b=cs[i+1],H=Math.max(a.y1-a.y0,b.y1-b.y0),gap=b.x0-a.x1;
+    if(gap<=0.12*H&&(b.x1-a.x0)<=1.3*H&&Math.min(a.y1-a.y0,b.y1-b.y0)>=0.6*H&&gap<bg){bg=gap;best=i}}
+  if(best<0)return null;const m=fvJoin(cs[best],cs[best+1]);m.cx=(m.x0+m.x1)/2/s;m.cy=(m.y0+m.y1)/2/s;const o=cs.slice();o.splice(best,2,m);return o}
+
+/* ---- da maschera a 16x16 (stesso procedimento dell'addestramento) ---- */
+const FV_N=16,FV_BOX=14,FV_K=(()=>{const k=[-1,0,1].map(x=>Math.exp(-x*x/(2*0.36))),t=k[0]+k[1]+k[2];return k.map(x=>x/t)})();
+function fvWmat(nOut,nIn){const W=[],e=[];for(let i=0;i<=nOut;i++)e.push(i*nIn/nOut);
+  for(let i=0;i<nOut;i++){const r=new Float32Array(nIn);let t=0;for(let k=Math.floor(e[i]);k<Math.ceil(e[i+1]);k++){if(k<nIn){const v=Math.min(e[i+1],k+1)-Math.max(e[i],k);r[k]=v;t+=v}}for(let k=0;k<nIn;k++)r[k]/=t;W.push(r)}return W}
+function fvNorm(c){const w=c.x1-c.x0,h=c.y1-c.y0;let X0=w,X1=0,Y0=h,Y1=0;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(c.mask[y*w+x]){if(x<X0)X0=x;if(x>X1)X1=x;if(y<Y0)Y0=y;if(y>Y1)Y1=y}
+  const out=new Float32Array(FV_N*FV_N);if(X1<X0)return out;const bw=X1-X0+1,bh=Y1-Y0+1,sc=FV_BOX/Math.max(bw,bh),nh=Math.max(1,Math.round(bh*sc)),nw=Math.max(1,Math.round(bw*sc));
+  const Wy=fvWmat(nh,bh),Wx=fvWmat(nw,bw),tmp=[];
+  for(let i=0;i<nh;i++){const row=new Float32Array(bw);for(let k=0;k<bh;k++){const a=Wy[i][k];if(!a)continue;for(let x=0;x<bw;x++)row[x]+=a*c.mask[(Y0+k)*w+X0+x]}tmp.push(row)}
+  const img=new Float32Array(FV_N*FV_N),oy=(FV_N-nh)>>1,ox=(FV_N-nw)>>1;
+  for(let i=0;i<nh;i++)for(let j=0;j<nw;j++){let a=0;const wx=Wx[j];for(let x=0;x<bw;x++)a+=tmp[i][x]*wx[x];img[(oy+i)*FV_N+ox+j]=a}
+  const K=FV_K,t=new Float32Array(FV_N*FV_N);
+  for(let y=0;y<FV_N;y++)for(let x=0;x<FV_N;x++){t[y*FV_N+x]=(x>0?img[y*FV_N+x-1]*K[0]:0)+img[y*FV_N+x]*K[1]+(x<FV_N-1?img[y*FV_N+x+1]*K[2]:0)}
+  let mx=0;for(let y=0;y<FV_N;y++)for(let x=0;x<FV_N;x++){const v=(y>0?t[(y-1)*FV_N+x]*K[0]:0)+t[y*FV_N+x]*K[1]+(y<FV_N-1?t[(y+1)*FV_N+x]*K[2]:0);out[y*FV_N+x]=v;if(v>mx)mx=v}
+  if(mx>0)for(let i=0;i<out.length;i++)out[i]/=mx;return out}
+
+/* ---- classificazione: rete incorporata + cifre già confermate (le più vicine) ---- */
+function fvMlp(M,x){const H=M.b1.length,C=M.b2.length,h=new Float32Array(H);
+  for(let j=0;j<H;j++){let s=M.b1[j];for(let i=0;i<256;i++)s+=x[i]*M.W1[i*H+j];h[j]=s>0?s:0}
+  const o=new Float32Array(C);let mx=-1e9;for(let k=0;k<C;k++){let s=M.b2[k];for(let j=0;j<H;j++)s+=h[j]*M.W2[j*C+k];o[k]=s;if(s>mx)mx=s}
+  let t=0;for(let k=0;k<C;k++){o[k]=Math.exp(o[k]-mx);t+=o[k]}for(let k=0;k<C;k++)o[k]/=t;return o}
+/* learn: elenco di {v:[256 interi 0-255], c:'7'}; restituisce {ch, p, alt} */
+const FV_KNN={w:2.0,tau:6.0};
+function fvClassify(M,x,learn){const p=fvMlp(M,x),cls=M.cls,sc=Array.from(p);
+  if(learn&&learn.length){const nn=[];for(const e of learn){let d=0;for(let i=0;i<256;i++){const q=x[i]-e.v[i]/255;d+=q*q}nn.push([d,e.c])}
+    nn.sort((a,b)=>a[0]-b[0]);for(const [d,c] of nn.slice(0,3)){const k=cls.indexOf(c);if(k>=0)sc[k]+=FV_KNN.w*Math.exp(-d/FV_KNN.tau)}}
+  let best=0;for(let k=1;k<sc.length;k++)if(sc[k]>sc[best])best=k;const tot=sc.reduce((a,b)=>a+b,0);
+  const alt=sc.map((v,k)=>[v,k]).sort((a,b)=>b[0]-a[0]).slice(0,3).map(a=>[cls[a[1]],a[0]/tot]);
+  return {ch:cls[best],p:sc[best]/tot,alt}}
+
+/* ---- barra (subtest non somministrato): linea diagonale lunga e sottile ---- */
+function fvIsSlash(c){const w=c.x1-c.x0,h=c.y1-c.y0;let n=0,mx=0,my=0;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(c.mask[y*w+x]){n++;mx+=x;my+=y}
+  if(n<10||w<0.6*h)return false;mx/=n;my/=n;let sxx=0,syy=0,sxy=0;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(c.mask[y*w+x]){const dx=x-mx,dy=y-my;sxx+=dx*dx;syy+=dy*dy;sxy+=dx*dy}
+  sxx/=n;syy/=n;sxy/=n;const t=Math.sqrt(((sxx-syy)/2)**2+sxy*sxy),l1=(sxx+syy)/2+t,l2=Math.max((sxx+syy)/2-t,1e-6);
+  const th=0.5*Math.atan2(2*sxy,sxx-syy)*180/Math.PI,angV=Math.abs(90-Math.abs(th));
+  return l1/l2>=60&&angV>=30&&angV<=80}
+
+/* ---- lettura di una casella: elenco di cifre con le alternative ---- */
+function fvReadCell(cs,M,learn){const parts=cs.map(c=>{if(fvIsSlash(c))return {ch:'/',p:1,alt:[['/',1]],box:[c.x0,c.y0,c.x1,c.y1],vec:null};
+  const v=fvNorm(c),r=fvClassify(M,v,learn);return {ch:r.ch,p:r.p,alt:r.alt,box:[c.x0,c.y0,c.x1,c.y1],vec:v}});
+  return {parts,slash:parts.length===1&&parts[0].ch==='/',empty:parts.length===0,text:parts.map(p=>p.ch).join('')}}
+/* candidati numerici di una casella: [valore|null, punteggio log] */
+function fvCands(cell,lo,hi,maxDigits){if(cell.empty||cell.slash)return [[null,0]];if(cell.parts.length>maxDigits||cell.parts.some(p=>p.ch==='/'))return [];
+  let acc=[['',0]];for(const p of cell.parts){const nx=[];for(const [s,l] of acc)for(const [c,q] of p.alt)if(c!=='/')nx.push([s+c,l+Math.log(Math.max(q,1e-4))]);acc=nx}
+  const m=new Map();for(const [s,l] of acc){const v=+s;if(!(v>=lo&&v<=hi))continue;if(!m.has(v)||m.get(v)<l)m.set(v,l)}
+  return Array.from(m).sort((a,b)=>b[1]-a[1])}
+
+/* ---- WISC-IV: lettura delle due tabelle e controllo con le somme ---- */
+const FV_SUB4={DC:'Disegno con i cubi',SO:'Somiglianze',MC:'Memoria di cifre',CI:'Concetti illustrati',CR:'Cifrario',VC:'Vocabolario',LN:'Riordinamento di lettere e numeri',RM:'Ragionamento con le matrici',CO:'Comprensione',RS:'Ricerca di simboli',CF:'Completamento di figure',CA:'Cancellazione',IN:'Informazione',RA:'Ragionamento aritmetico',RP:'Ragionamento con le parole'};
+const FV_IDX4={CV:'Comprensione Verbale (ICV)',RP:'Ragionamento Visuo-Percettivo (IRP)',ML:'Memoria di Lavoro (IML)',VE:'Velocità di Elaborazione (IVE)',QI:'QI Totale'};
+
+/* ---- le righe della tabella si spostano di qualche pixel con la carta curva: ritrova quelle vere vicino al previsto ---- */
+function fvSnap(g,w,h,s,horiz,exp,a,b,tol,paper){const T=paper*0.62,out=[];
+  const n=horiz?h:w,len=horiz?w:h,A=Math.max(0,Math.round(a*s)),B=Math.min(len,Math.round(b*s));
+  const prof=new Float32Array(n);for(let i=0;i<n;i++){let c=0;for(let j=A;j<B;j++)c+=(horiz?g[i*w+j]:g[j*w+i])<T?1:0;prof[i]=c/Math.max(1,B-A)}
+  for(const e of exp){const c=Math.round(e*s),r=Math.round(tol*s);let bi=c,bv=0;
+    for(let i=Math.max(1,c-r);i<=Math.min(n-2,c+r);i++){const v=(prof[i-1]+prof[i]*2+prof[i+1])/4-0.0005*Math.abs(i-c);if(v>bv){bv=v;bi=i}}
+    out.push(bv>=0.45?bi/s:e)}
+  return out}
+function fvReadWisc4(g,gw,gh,qA,qB,M,learn){
+  const s=FV_S,A=FV_A,B=FV_B,wa=fvWarp(g,gw,gh,qA,A.W,A.H,s),wb=fvWarp(g,gw,gh,qB,B.W,B.H,s),pa=fvPct(wa.g,0.85),pb=fvPct(wb.g,0.85);
+  const comps=fvComps(fvTableInk(wa.g,wa.w,wa.h,pa,s),wa.w,wa.h,s),cells={},order=[];
+  const put=(id,img,rect,cs,lo,hi,md)=>{let c=fvReadCell(cs,M,learn),k=0;while(!c.empty&&!c.slash&&!fvCands(c,lo,hi,md).length&&k++<2){const m=fvFragMerge(cs,s);if(!m)break;cs=m;c=fvReadCell(cs,M,learn)}c.id=id;c.img=img;c.rect=rect;cells[id]=c;order.push(id)};
+  /* tabella A: righe orizzontali (colonna delle sigle) e le due righe verticali del «P. grezzo» */
+  const hexp=[];for(let i=0;i<=15;i++)hexp.push(A.HDR+A.RH*i);
+  const hy=fvSnap(wa.g,wa.w,wa.h,s,true,hexp,205,245,5,pa),vx=fvSnap(wa.g,wa.w,wa.h,s,false,[A.GX0,A.GX1],A.HDR+2,A.HDR+A.RH*15-2,5,pa);
+  A.rows.forEach((r,i)=>{
+    let rc=[vx[0]*s,hy[i]*s,vx[1]*s,hy[i+1]*s];put('gr:'+r,'A',rc,fvClean(fvAssign(comps,rc,s),rc,s,false),0,999,3);
+    const px=A.PX0+A.PW*A.col[r];rc=[px*s,hy[i]*s,(px+A.PW)*s,hy[i+1]*s];put('po:'+r,'A',rc,fvClean(fvAssign(comps,rc,s),rc,s,!!A.supp[r]),1,19,2)});
+  const sy0=hy[15];
+  for(let j=0;j<4;j++){const rc=[(A.PX0+A.PW*j)*s,sy0*s,(A.PX0+A.PW*(j+1))*s,(A.H-0.5)*s];put('sa:'+B.names[j],'A',rc,fvClean(fvCellComps(wa.g,wa.w,wa.h,rc,s,2.0),rc,s,false),0,76,2)}
+  /* tabella B: righe e colonne ritrovate sull'immagine */
+  const by=fvSnap(wb.g,wb.w,wb.h,s,true,B.ys,B.xs.idx[0]+8,B.xs.idx[1]-8,9,pb),bx=fvSnap(wb.g,wb.w,wb.h,s,false,[B.xs.sum[0],B.xs.sum[1],B.xs.idx[1]],B.ys[0]+8,B.ys[5]-8,8,pb);
+  B.names.forEach((n,k)=>{for(const col of ['sum','idx']){const xa=col==='sum'?bx[0]:bx[1],xb=col==='sum'?bx[1]:bx[2],rc=[xa*s,by[k]*s,xb*s,by[k+1]*s];
+    put('sb:'+n+':'+col,'B',rc,fvClean(fvCellComps(wb.g,wb.w,wb.h,rc,s,3.0),rc,s,false),col==='idx'?(n==='QI'?40:45):0,col==='idx'?(n==='QI'?160:155):(n==='QI'?304:76),3)}});
+  /* --- decisione: candidati per cella, poi vincoli sulle somme --- */
+  const val={},flag={},alt={};
+  const cand=(id,lo,hi,md)=>fvCands(cells[id],lo,hi,md);
+  const top=(c)=>c.length?c[0][0]:null;
+  const colRows=j=>A.rows.filter(r=>A.col[r]===j);
+  const sums={};
+  for(let j=0;j<4;j++){const n=B.names[j],rows=colRows(j),cc=rows.map(r=>cand('po:'+r,1,19,2)),ca=cand('sa:'+n,0,76,2),cb=cand('sb:'+n+':sum',0,76,2);
+    /* somma letta due volte (tabella A e B): punteggio congiunto */
+    const sc=new Map();const lp=(arr,v,pen)=>{const f=arr.find(a=>a[0]===v);return f?f[1]:pen};
+    const vs=new Set([...ca.map(a=>a[0]),...cb.map(a=>a[0])]);for(const v of vs)if(v!=null)sc.set(v,lp(ca,v,-5)+lp(cb,v,-5));
+    /* tutte le combinazioni dei ponderati della colonna */
+    let best=null;const rec=(k,tot,l,pick)=>{if(k===rows.length){const sv=sc.get(tot);if(sv!=null){const L=l+sv;if(!best||L>best.L)best={L,pick:pick.slice(),S:tot}}return}
+      for(const [v,q] of cc[k]){pick.push(v);rec(k+1,tot+(v||0),l+q,pick);pick.pop()}};
+    if(cc.every(c=>c.length))rec(0,0,0,[]);
+    const un=cc.map(c=>top(c)),unS=Array.from(sc).sort((a,b)=>b[1]-a[1])[0];
+    const unSum=un.reduce((a,b)=>a+(b||0),0);
+    sums[j]={best,un,unS:unS?unS[0]:null,sc,rows,unSum};
+  }
+  /* QI: somma delle quattro somme, letta nella tabella B */
+  const cq=cand('sb:QI:sum',0,304,3);
+  for(let j=0;j<4;j++){const S=sums[j];let use=S.best&&S.best.L>-9?S.best:null;
+    rows_loop:{const rows=S.rows;rows.forEach((r,k)=>{const c=cells['po:'+r];const pick=use?use.pick[k]:S.un[k];val['po:'+r]=pick;
+      const cc=cand('po:'+r,1,19,2),u=S.un[k];flag['po:'+r]=(c.empty||c.slash)?'':(pick==null?'manca':(c.parts.some(p=>p.p<0.75)||pick!==u?'dubbio':'ok'))})}
+    val['S'+j]=use?use.S:S.unS;val['S'+j+'_ok']=!!use&&S.unSum===(use.S);S.final=val['S'+j]}
+  const sumFinal=[0,1,2,3].reduce((a,j)=>a+(val['S'+j]||0),0),qi=top(cq);
+  val['T']=sumFinal;val['T_read']=qi;val['T_ok']=qi===sumFinal;
+  /* indici e QI: nell'intervallo, valore più probabile */
+  for(const n of B.names){const lo=n==='QI'?40:45,hi=n==='QI'?160:155,c=cand('sb:'+n+':idx',lo,hi,3);val['I:'+n]=top(c);const cell=cells['sb:'+n+':idx'];
+    flag['I:'+n]=top(c)==null?'manca':(cell.parts.some(p=>p.p<0.9)?'dubbio':'ok')}
+  /* i grezzi non hanno nessun controllo aritmetico: restano «da verificare» salvo cifre molto nitide */
+  for(const r of A.rows){const c=cand('gr:'+r,0,999,3),cl=cells['gr:'+r];val['gr:'+r]=cl.slash?'/':(top(c));
+    flag['gr:'+r]=(cl.empty||cl.slash)?'':(val['gr:'+r]==null?'manca':(cl.parts.length&&cl.parts.every(p=>p.p>=0.97)?'ok':'dubbio'))}
+  return {cells,order,val,flag,wa,wb,sums:[0,1,2,3].map(j=>({n:B.names[j],read:sums[j].unS,final:val['S'+j]}))}}
+
+/* ---- allineamento automatico: la grande massa nera della tabella dei ponderati dà posizione, scala e rotazione ---- */
+function fvAutoQuads(g,gw,gh){
+  const f=Math.max(1,Math.ceil(Math.max(gw,gh)/900)),w=Math.floor(gw/f),h=Math.floor(gh/f),sm=new Uint8Array(w*h);
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){let a=0;for(let dy=0;dy<f;dy++)for(let dx=0;dx<f;dx++)a+=g[(y*f+dy)*gw+x*f+dx];sm[y*w+x]=a/(f*f)}
+  const paper=fvPct(sm,0.85),T=paper*0.30,m=new Uint8Array(w*h);for(let i=0;i<m.length;i++)m[i]=sm[i]<T?1:0;
+  const k=Math.max(5,Math.round(w*0.0085)),big=fvOpen(m,w,h,k,k),kc=Math.round(w*0.05),mass=fvClose(big,w,h,kc,kc);
+  const cs=fvComps(mass,w,h,1,600);if(!cs.length)return null;cs.sort((a,b)=>b.area-a.area);
+  let best=null;for(const c of cs.slice(0,5)){const r=fvTryMass(g,gw,gh,f,c);if(r&&(!best||r.r>best.r))best=r}
+  return best&&best.r>0.55?{qA:best.qA,qB:best.qB,score:best.r}:null}
+
+/* rettangolo di area minima attorno a una nuvola di punti (involucro convesso + calibri rotanti) */
+function fvMinRect(pts){pts=pts.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]),lo=[],up=[];
+  for(const p of pts){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}
+  for(let i=pts.length-1;i>=0;i--){const p=pts[i];while(up.length>=2&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}
+  const h=lo.slice(0,-1).concat(up.slice(0,-1));let best=null;
+  for(let i=0;i<h.length;i++){const a=h[i],b=h[(i+1)%h.length],L=Math.hypot(b[0]-a[0],b[1]-a[1]);if(!L)continue;const ux=(b[0]-a[0])/L,uy=(b[1]-a[1])/L;
+    let u0=1e9,u1=-1e9,v0=1e9,v1=-1e9;for(const p of h){const du=p[0]*ux+p[1]*uy,dv=-p[0]*uy+p[1]*ux;if(du<u0)u0=du;if(du>u1)u1=du;if(dv<v0)v0=dv;if(dv>v1)v1=dv}
+    const ar=(u1-u0)*(v1-v0);if(!best||ar<best.ar)best={ar,ux,uy,u0,u1,v0,v1}}
+  return best}
+function fvTryMass(g,gw,gh,f,c){const cw=c.x1-c.x0,pts=[];
+  for(let y=c.y0;y<c.y1;y++)for(let x=c.x0;x<c.x1;x++)if(c.mask[(y-c.y0)*cw+x-c.x0]){const L=x===c.x0||!c.mask[(y-c.y0)*cw+x-c.x0-1],R=x===c.x1-1||!c.mask[(y-c.y0)*cw+x-c.x0+1];if(L||R)pts.push([x,y])}
+  const mr=fvMinRect(pts);if(!mr)return null;let ux=mr.ux,uy=mr.uy,u0=mr.u0,u1=mr.u1,v0=mr.v0,v1=mr.v1;
+  if(u1-u0<v1-v0){[ux,uy]=[-uy,ux];const a=u0,b=u1;u0=v0;u1=v1;v0=-b;v1=-a}   // asse lungo = asse y del foglio
+  const Lu=u1-u0,Lv=v1-v0,ratio=Lu/Lv;if(ratio<1.5||ratio>3.4)return null;
+  const A=FV_A,rx0=A.PX0,rx1=A.PX0+A.PW*4,ry0=A.HDR,ry1=A.HDR+A.RH*15,cx=(rx0+rx1)/2,cy=(ry0+ry1)/2,sc=0.5*(Lu/(ry1-ry0)+Lv/(rx1-rx0));
+  const mu=(u0+u1)/2,mv=(v0+v1)/2,Mx=mu*ux-mv*uy,My=mu*uy+mv*ux;
+  let best=null;
+  for(const fl of [1,-1]){const ey=[fl*ux,fl*uy],ex=[ey[1],-ey[0]];
+    const P=(px,py)=>[(Mx+sc*(ex[0]*(px-cx)+ey[0]*(py-cy)))*f,(My+sc*(ex[1]*(px-cx)+ey[1]*(py-cy)))*f];
+    const qA=[P(0,0),P(A.W,0),P(A.W,A.H),P(0,A.H)],wr=fvWarp(g,gw,gh,qA,A.W,A.H,1),pa=fvPct(wr.g,0.85);
+    const dk=[],ex2=[];A.rows.forEach((r,i)=>{for(let j=0;j<4;j++){const x0=Math.round(A.PX0+A.PW*j+10),x1=Math.round(A.PX0+A.PW*(j+1)-10),y0=Math.round(A.HDR+A.RH*i+7),y1=Math.round(A.HDR+A.RH*(i+1)-7);let a=0,q=0;
+      for(let y=y0;y<y1;y++)for(let x=x0;x<x1;x++){a+=wr.g[y*wr.w+x];q++}dk.push(1-a/q/pa);ex2.push(j===A.col[r]?0:1)}});
+    const md=dk.reduce((a,b)=>a+b,0)/dk.length,me=ex2.reduce((a,b)=>a+b,0)/ex2.length;let cov=0,vd=0,ve=0;for(let i=0;i<dk.length;i++){cov+=(dk[i]-md)*(ex2[i]-me);vd+=(dk[i]-md)**2;ve+=(ex2[i]-me)**2}
+    const r=cov/Math.sqrt(vd*ve+1e-9);
+    if(!best||r>best.r)best={r,qA,qB:[P(0,589),P(541,589),P(541,850),P(0,850)]}}
+  return best}
+
+/* ---- rifinitura: sposta, ingrandisce e ruota il rettangolo finché le righe stampate cadono dove devono ---- */
+function fvQuadXf(q,W,H,p){ // p=[dx,dy,ds,dr] nel sistema del foglio raddrizzato
+  const cx=W/2,cy=H/2,c=Math.cos(p[3]),s=Math.sin(p[3]),f=1+p[2],h=fvHomog(q,W,H);
+  const map=(x,y)=>{const z=h[6]*x+h[7]*y+1;return [(h[0]*x+h[1]*y+h[2])/z,(h[3]*x+h[4]*y+h[5])/z]};
+  return [[0,0],[W,0],[W,H],[0,H]].map(([x,y])=>{const X=(x-cx)*f,Y=(y-cy)*f;return map(cx+X*c-Y*s+p[0],cy+X*s+Y*c+p[1])})}
+function fvLineScore(w,Wd,Hd,hx,hY,hy0,hy1,vY,vx0,vx1,vX,paper){const T=paper*0.62;let sc=0;
+  const hp=new Float32Array(Hd),vp=new Float32Array(Wd);
+  for(let y=0;y<Hd;y++){let c=0;for(let x=hY[0];x<hY[1];x++)c+=w[y*Wd+x]<T?1:0;hp[y]=c/(hY[1]-hY[0])}
+  for(let x=0;x<Wd;x++){let c=0;for(let y=vY[0];y<vY[1];y++)c+=w[y*Wd+x]<T?1:0;vp[x]=c/(vY[1]-vY[0])}
+  for(const y of hx){const i=Math.round(y);if(i>=1&&i<Hd-1)sc+=(hp[i-1]+hp[i]*2+hp[i+1])/4}
+  for(const x of vX){const i=Math.round(x);if(i>=1&&i<Wd-1)sc+=(vp[i-1]+vp[i]*2+vp[i+1])/4}
+  return sc}
+function fvRefine(g,gw,gh,q,W,H,score,sets){let p=[0,0,0,0],best=score(fvWarp(g,gw,gh,fvQuadXf(q,W,H,p),W,H,1));
+  for(const st of sets){let moved=true,n=0;while(moved&&n++<4){moved=false;
+    for(let k=0;k<4;k++)for(const sg of [1,-1]){const t=p.slice();t[k]+=sg*st[k];if(!st[k])continue;const v=score(fvWarp(g,gw,gh,fvQuadXf(q,W,H,t),W,H,1));if(v>best+1e-6){best=v;p=t;moved=true}}}}
+  return fvQuadXf(q,W,H,p)}
+function fvRefineA(g,gw,gh,q){const A=FV_A,hx=[];for(let i=0;i<=15;i++)hx.push(A.HDR+A.RH*i);
+  const sc=wr=>{const pa=fvPct(wr.g,0.85);return fvLineScore(wr.g,wr.w,wr.h,hx,[205,245],0,0,[Math.round(A.HDR+3),Math.round(A.HDR+A.RH*15-3)],0,0,[A.GX0,A.GX1],pa)};
+  const d=Math.PI/180;return fvRefine(g,gw,gh,q,A.W,A.H,sc,[[8,8,0.03,1.5*d],[4,4,0.015,0.7*d],[2,2,0.007,0.35*d],[1,1,0.003,0.15*d]])}
+function fvRefineB(g,gw,gh,q){const B=FV_B,hx=B.ys.slice(),vx=[B.xs.sum[0],B.xs.sum[1],B.xs.idx[1],448];
+  const sc=wr=>{const pb=fvPct(wr.g,0.85);return fvLineScore(wr.g,wr.w,wr.h,hx,[B.xs.idx[0]+8,B.xs.idx[1]-8],0,0,[B.ys[0]+8,B.ys[5]-8],0,0,vx,pb)};
+  const d=Math.PI/180;return fvRefine(g,gw,gh,q,B.W,B.H,sc,[[8,8,0.03,1.5*d],[4,4,0.015,0.7*d],[2,2,0.007,0.35*d],[1,1,0.003,0.15*d]])}
+
+const FV_MODEL=(()=>{const m={"W1":[0.006262,24576],"b1":[0.003059,96],"W2":[0.012899,960],"b2":[0.002039,10]},b=atob('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'),u=new Int8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i)<<24>>24;let o=0;const r=k=>{const n=m[k][1],s=m[k][0],a=new Float32Array(n);for(let i=0;i<n;i++)a[i]=u[o+i]*s;o+=n;return a};return {cls:'0123456789',W1:r('W1'),b1:r('b1'),W2:r('W2'),b2:r('b2')}})();
+
+/* ============================ integrazione nell'app ============================ */
+const FV_RE=/^WISC-IV/i;
+const _ftForm18=ftForm;
+ftForm=function(ctx,it){
+  if(!it&&ctx&&ctx.sheet&&!ctx.manual){const F=ftDef(ctx.w);if(F&&F.kind==='ins'&&F.d&&FV_RE.test(F.d.nome||'')){fvStart(ctx);return}}
+  return _ftForm18.apply(this,arguments)};
+
+/* foto → immagine in grigi (sul dispositivo) */
+async function fvLoadPhoto(it){
+  const p=await idbGet('docs',it.ph.id);if(!p)throw new Error('Manca la foto: eliminala e aggiungila di nuovo.');
+  const buf=await decB(S.key,p),blob=new Blob([buf],{type:it.ph.mime||'image/jpeg'});
+  let bmp;try{bmp=await createImageBitmap(blob,{imageOrientation:'from-image'})}catch(e){bmp=await createImageBitmap(blob)}
+  const cv=document.createElement('canvas');cv.width=bmp.width;cv.height=bmp.height;const cx=cv.getContext('2d',{willReadFrequently:true});cx.drawImage(bmp,0,0);
+  const d=cx.getImageData(0,0,cv.width,cv.height);return {g:fvGray(d.data,cv.width*cv.height),w:cv.width,h:cv.height,url:URL.createObjectURL(blob)}}
+const fvDefQ=(w,h)=>({A:[[.038,.383],[.497,.380],[.505,.684],[.044,.690]].map(p=>[p[0]*w,p[1]*h]),B:[[.044,.759],[.508,.757],[.513,.923],[.050,.925]].map(p=>[p[0]*w,p[1]*h])});
+async function fvStart(ctx){
+  const it=FOG().find(x=>x.id===ctx.sheet);if(!it){toast('Foto non trovata.');return}
+  modal('<h3>Leggi dal foglio</h3><p class="small mut">Preparo la foto…</p>',true);
+  let im;try{im=await fvLoadPhoto(it)}catch(e){closeModal();toast(e.message||'Non riesco ad aprire la foto.');return}
+  let q=null;try{q=fvAutoQuads(im.g,im.w,im.h)}catch(e){}
+  const d=fvDefQ(im.w,im.h);
+  S.fv={ctx,im,qA:q?q.qA:d.A,qB:q?q.qB:d.B,auto:!!q,z:1,res:null};
+  fvAlignView()}
+function fvAlignView(){const f=S.fv;if(!f)return;const {im}=f;
+  modal('<h3>Leggi dal foglio · allineamento</h3>'+
+   '<p class="small">'+(f.auto?'Ho trovato le due tabelle del protocollo: <b>controlla</b> che i riquadri combacino con i bordi e, se serve, <b>trascina gli angoli</b>.':'Non ho trovato le tabelle da solo: <b>trascina gli angoli</b> dei due riquadri sui bordi delle tabelle.')+'</p>'+
+   '<div class="fvleg"><span class="fvA">① Conversione dei punteggi grezzi in ponderati (con la riga «Somma»)</span><span class="fvB">② Conversione delle somme in Indici e QI</span></div>'+
+   '<div class="fvbox" id="fvbox"><div class="fvin" id="fvin"><img id="fvimg" alt="Foto del foglio" src="'+im.url+'"><svg id="fvsvg" viewBox="0 0 '+im.w+' '+im.h+'" preserveAspectRatio="none"></svg></div></div>'+
+   '<div class="row"><button class="btn sm" data-act="fvZoom" data-d="-1">− Riduci</button><button class="btn sm" data-act="fvZoom" data-d="1">+ Ingrandisci</button><span class="small mut">Tieni premuto un angolo e spostalo.</span></div>'+
+   '<div class="row end"><button class="btn" data-act="fvManual">Scrivo i numeri a mano</button><button class="btn" data-act="fvClose">Annulla</button><button class="btn pri" data-act="fvRead">Leggi i punteggi</button></div>',true);
+  fvDraw();fvBind()}
+function fvScale(){const f=S.fv,box=$('#fvbox');if(!box||!f)return 1;const bw=Math.max(240,box.clientWidth||320);return bw/f.im.w*f.z}
+function fvDraw(){const f=S.fv,svg=$('#fvsvg'),inn=$('#fvin');if(!f||!svg||!inn)return;const k=fvScale(),im=f.im;
+  inn.style.width=Math.round(im.w*k)+'px';inn.style.height=Math.round(im.h*k)+'px';
+  const poly=(q,c)=>'<polygon points="'+q.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')+'" fill="'+c+'22" stroke="'+c+'" stroke-width="'+(2/k).toFixed(2)+'"/>';
+  const hs=(q,c,n)=>q.map((p,i)=>'<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+(11/k).toFixed(1)+'" fill="'+c+'" fill-opacity=".55" stroke="#fff" stroke-width="'+(2/k).toFixed(2)+'"/><circle class="fvh" data-q="'+n+'" data-i="'+i+'" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+(26/k).toFixed(1)+'" fill="transparent"/>').join('');
+  svg.innerHTML=poly(f.qA,'#5C6B2E')+poly(f.qB,'#B5532F')+hs(f.qA,'#5C6B2E','A')+hs(f.qB,'#B5532F','B')}
+function fvBind(){const svg=$('#fvsvg');if(!svg)return;let drag=null;
+  svg.addEventListener('pointerdown',e=>{const t=e.target;if(!t.classList||!t.classList.contains('fvh'))return;drag={q:t.dataset.q,i:+t.dataset.i};try{svg.setPointerCapture(e.pointerId)}catch(x){}e.preventDefault()});
+  svg.addEventListener('pointermove',e=>{if(!drag||!S.fv)return;const r=svg.getBoundingClientRect(),im=S.fv.im,x=(e.clientX-r.left)/r.width*im.w,y=(e.clientY-r.top)/r.height*im.h;
+    const q=drag.q==='A'?S.fv.qA:S.fv.qB;q[drag.i]=[Math.max(0,Math.min(im.w,x)),Math.max(0,Math.min(im.h,y))];fvDraw();e.preventDefault()});
+  const end=()=>{drag=null};svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end)}
+A.fvZoom=d=>{const f=S.fv;if(!f)return;f.z=Math.max(1,Math.min(4,f.z+(+d.d>0?0.5:-0.5)));fvDraw()};
+A.fvClose=()=>{fvFree();closeModal()};
+A.fvManual=()=>{const f=S.fv;if(!f)return;const c=Object.assign({},f.ctx,{manual:true});fvFree();closeModal();setTimeout(()=>_ftForm18(c),30)};
+function fvFree(){if(S.fv&&S.fv.im&&S.fv.im.url){try{URL.revokeObjectURL(S.fv.im.url)}catch(e){}}S.fv=null}
+
+/* ---------- lettura e revisione ---------- */
+A.fvRead=()=>{const f=S.fv;if(!f)return;
+  modal('<h3>Leggi dal foglio</h3><p class="small mut">Sto leggendo i numeri… (qualche secondo, tutto sul telefono)</p>',true);
+  setTimeout(()=>{try{
+    const t0=Date.now();f.res=fvReadWisc4(f.im.g,f.im.w,f.im.h,f.qA,f.qB,FV_MODEL,null);f.ms=Date.now()-t0;fvReviewView()}
+   catch(e){toast('Non sono riuscito a leggere il foglio: '+(e.message||e));fvAlignView()}},60)};
+function fvCropURL(res,id,pad){const c=res.cells[id];if(!c)return '';const im=c.img==='A'?res.wa:res.wb,r=c.rect,s=FV_S;pad=pad==null?2:pad;
+  const x0=Math.max(0,Math.round(r[0]-pad*s)),y0=Math.max(0,Math.round(r[1]-pad*s)),x1=Math.min(im.w,Math.round(r[2]+pad*s)),y1=Math.min(im.h,Math.round(r[3]+pad*s)),w=x1-x0,h=y1-y0;
+  if(w<4||h<4)return '';const cv=document.createElement('canvas');cv.width=w;cv.height=h;const cx=cv.getContext('2d'),d=cx.createImageData(w,h);
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const v=im.g[(y0+y)*im.w+x0+x],o=(y*w+x)*4;d.data[o]=d.data[o+1]=d.data[o+2]=v;d.data[o+3]=255}
+  cx.putImageData(d,0,0);const sc=Math.min(1,150/w),o2=document.createElement('canvas');o2.width=Math.round(w*sc);o2.height=Math.round(h*sc);o2.getContext('2d').drawImage(cv,0,0,o2.width,o2.height);
+  try{return o2.toDataURL('image/jpeg',0.72)}catch(e){return ''}}
+const fvv=x=>x==null?'':String(x);
+const fvCls=f=>f==='dubbio'?'dubbio':f==='manca'?'manca':'';
+function fvInp(id,val,fl,ph){return '<input class="fvi '+fvCls(fl)+'" data-fv="'+id+'" value="'+esc(fvv(val))+'" inputmode="numeric" autocomplete="off" aria-label="'+esc(id)+'"'+(ph?' placeholder="'+esc(ph)+'"':'')+'>'}
+function fvReviewView(){const f=S.fv,r=f.res,A4=FV_A,B4=FV_B;
+  const cell=(id,val,fl)=>{const u=fvCropURL(r,id);return '<div class="fvc">'+(u?'<img src="'+u+'" alt="">':'')+fvInp(id,val,fl)+'</div>'};
+  let rows='';A4.rows.forEach(rw=>{const sup=A4.supp[rw],po=r.val['po:'+rw],pc=r.cells['po:'+rw],gr=r.val['gr:'+rw];
+    const slash=pc.slash,fl=r.flag['po:'+rw]||'';
+    rows+='<tr'+(sup?' class="fvsup"':'')+'><td class="fvn"><b>'+rw+'</b><small>'+esc(FV_SUB4[rw])+(sup?' (suppl.)':'')+'</small></td><td>'+cell('gr:'+rw,gr==='/'?'':gr,r.flag['gr:'+rw]||'')+'</td><td>'+(slash?'<div class="fvc"><img src="'+fvCropURL(r,'po:'+rw)+'" alt=""><span class="small mut">non somministrato</span>'+fvInp('po:'+rw,'','')+'</div>':cell('po:'+rw,po,fl))+'</td></tr>'});
+  let idx='';B4.names.forEach((n,j)=>{const sumv=j<4?r.val['S'+j]:r.val['T_read'],fl=r.flag['I:'+n]||'';
+    idx+='<tr><td class="fvn"><b>'+n+'</b><small>'+esc(n==='QI'?'Totale (QI)':FV_IDX4[n])+'</small></td><td>'+(j<4?cell('sa:'+n,sumv,sumv==null?'manca':(r.val['S'+j+'_ok']?'':'dubbio')):cell('sb:QI:sum',sumv,sumv==null?'manca':(r.val.T_ok?'':'dubbio')))+'</td><td>'+cell('sb:'+n+':idx',r.val['I:'+n],fl)+'</td></tr>'});
+  modal('<h3>Leggi dal foglio · controlla</h3>'+
+   '<p class="small">Per ogni numero vedi il <b>ritaglio della tua foto</b> e quello che ho letto. Correggi dove non coincide: il bordo <span class="fvk dubbio">arancione</span> è un dubbio, <span class="fvk manca">rosso</span> è una casella che non riesco a leggere. <b>Un numero letto male finisce nel referto: controllali tutti.</b></p>'+
+   '<div id="fvmsg" class="fvmsg"></div>'+
+   '<h4>Subtest</h4><div class="fvwrap"><table class="fvt"><thead><tr><th>Subtest</th><th>Punteggio grezzo</th><th>Punteggio ponderato</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+   '<h4>Somme, indici e QI</h4><div class="fvwrap"><table class="fvt"><thead><tr><th>Scala</th><th>Somma dei ponderati</th><th>Indice / QI</th></tr></thead><tbody>'+idx+'</tbody></table></div>'+
+   '<p class="small mut">Il punteggio grezzo e le somme non vanno nello strumento: restano nella nota del risultato. Salvo i ponderati e gli indici. IAG e ICC non sono sul foglio: calcolali dalle tabelle del manuale.</p>'+
+   '<div class="row end"><button class="btn" data-act="fvBack">‹ Allineamento</button><button class="btn" data-act="fvManual">Scrivo a mano</button><button class="btn pri" data-act="fvSave">Salva il risultato</button></div>',true);
+  fvLive()}
+A.fvBack=()=>fvAlignView();
+const fvGet=id=>{const e=document.querySelector('[data-fv="'+id+'"]');return e?String(e.value||'').trim():''};
+const fvNum=s=>{s=String(s||'').trim();if(s==='')return null;const x=+s.replace(',','.');return Number.isFinite(x)?x:NaN};
+function fvLive(){const m=$('#fvmsg');if(!m)return;const msgs=[];let bad=0;
+  const col=['CV','RP','ML','VE'],sums=[];
+  col.forEach((n,j)=>{const parts=[];let tot=0,any=false;FV_A.rows.forEach(rw=>{if(FV_A.col[rw]!==j)return;const v=fvNum(fvGet('po:'+rw));if(v!=null&&!isNaN(v)){parts.push(v);tot+=v;any=true}});
+    const sv=fvNum(fvGet('sa:'+n));sums.push(sv);
+    const ok=any&&sv!=null&&tot===sv;if(any||sv!=null){msgs.push('<div class="'+(ok?'ok':'no')+'">'+(ok?'✓ ':'✗ ')+esc(FV_IDX4[n]||n)+': '+(parts.length?parts.join(' + ')+' = '+tot:'nessun ponderato')+(sv==null?'':(ok?'':' · somma scritta sul foglio: '+sv)));msgs[msgs.length-1]+='</div>';if(!ok)bad++}});
+  const T=fvNum(fvGet('sb:QI:sum')),st=sums.reduce((a,b)=>a+(b||0),0);
+  if(T!=null||sums.some(x=>x!=null)){const ok=T!=null&&sums.every(x=>x!=null)&&T===st;msgs.push('<div class="'+(ok?'ok':'no')+'">'+(ok?'✓ ':'✗ ')+'Totale: '+sums.map(x=>x==null?'?':x).join(' + ')+' = '+st+(T==null?'':(ok?'':' · totale scritto sul foglio: '+T))+'</div>');if(!ok)bad++}
+  m.className='fvmsg '+(bad?'warn':'okk');m.innerHTML='<b>'+(bad?'Le somme non tornano: controlla le cifre segnate ✗.':'Le somme del foglio tornano.')+'</b>'+msgs.join('')}
+document.addEventListener('input',e=>{const t=e.target;if(t&&t.dataset&&t.dataset.fv){t.classList.remove('dubbio','manca');fvLive()}});
+const fvSubFor=(subs,name)=>{const l=s=>String(s||'').toLowerCase().replace(/\s+/g,' ').trim();return subs.find(s=>l(s.nome)===l(name))};
+A.fvSave=async()=>{const f=S.fv;if(!f)return;const ctx=f.ctx,F=ftDef(ctx.w),d=F&&F.d;if(!d){toast('Strumento non trovato.');return}
+  const vals={},notes=[],miss=[];
+  try{
+    for(const rw of FV_A.rows){const v=fvNum(fvGet('po:'+rw));if(v==null)continue;if(isNaN(v))throw new Error(FV_SUB4[rw]+': scrivi un numero.');
+      const s=fvSubFor(d.sub,FV_SUB4[rw]);if(!s){miss.push(FV_SUB4[rw]);continue}
+      if(s.min!=null&&(v<s.min||v>s.max))throw new Error(s.nome+': il valore deve essere tra '+s.min+' e '+s.max+'.');vals[s.nome]=v}
+    for(const n of FV_B.names){const v=fvNum(fvGet('sb:'+n+':idx'));if(v==null)continue;if(isNaN(v))throw new Error(FV_IDX4[n]+': scrivi un numero.');
+      const s=fvSubFor(d.sub,FV_IDX4[n]);if(!s){miss.push(FV_IDX4[n]);continue}
+      if(s.min!=null&&(v<s.min||v>s.max))throw new Error(s.nome+': il valore deve essere tra '+s.min+' e '+s.max+'.');vals[s.nome]=v}
+    if(!Object.keys(vals).length)throw new Error('Non c’è nessun punteggio da salvare: scrivi almeno un ponderato o un indice.');
+  }catch(e){toast(e.message);return}
+  const gr=FV_A.rows.map(rw=>[rw,fvGet('gr:'+rw)]).filter(x=>x[1]!=='').map(x=>x[0]+' '+x[1]);
+  if(gr.length)notes.push('Punteggi grezzi (dal foglio): '+gr.join(', ')+'.');
+  const sm=FV_B.names.slice(0,4).map(n=>[n,fvGet('sa:'+n)]).filter(x=>x[1]!=='').map(x=>x[0]+' '+x[1]),T=fvGet('sb:QI:sum');
+  if(sm.length||T)notes.push('Somme dei ponderati: '+sm.join(', ')+(T?(sm.length?'; ':'')+'totale '+T:'')+'.');
+  const sl=FV_A.rows.filter(rw=>f.res&&f.res.cells['po:'+rw]&&f.res.cells['po:'+rw].slash).map(rw=>rw);if(sl.length)notes.push('Non somministrati: '+sl.join(', ')+'.');
+  if(miss.length)notes.push('Non previsti nello strumento: '+miss.join(', ')+'.');
+  notes.push('Numeri letti dalla foto con la lettura automatica dell’app e controllati a mano.');
+  const rec={kind:'ins',nome:d.nome,versione:d.versione||'',iid:d.id||'',data:ctx.data,nota:notes.join(' '),sheet:ctx.sheet||'',vals,campi:{}};
+  try{const before=OUT().length;await ctSave('risultato',Object.assign({pz:ctx.pz},rec),null);
+    const made=OUT().length>before?OUT()[OUT().length-1]:null;if(ctx.sheet)await fogMark(ctx.sheet,made&&made.id);
+    fvFree();closeModal();render();toast('Risultato salvato: '+Object.keys(vals).length+' punteggi.')}
+  catch(e){toast(e.message||'Salvataggio non riuscito.')}};
+
+/* ---------- foto o PDF scansionato in «Da foglio» ---------- */
+async function fvPdfJpeg(file){
+  if(file.size>25*1024*1024)throw new Error('Il PDF è troppo grande (massimo 25 MB).');
+  const u=new Uint8Array(await file.arrayBuffer()),txt=new TextDecoder('latin1').decode(u);let best=null,i=-1;
+  while((i=txt.indexOf('/DCTDecode',i+1))>=0){
+    const o=txt.lastIndexOf(' obj',i),dict=txt.slice(Math.max(0,o),i+400),w=/\/Width\s+(\d+)/.exec(dict),h=/\/Height\s+(\d+)/.exec(dict);
+    let st=txt.indexOf('stream',i);if(st<0)continue;st+=6;if(u[st]===13)st++;if(u[st]===10)st++;const en=txt.indexOf('endstream',st);if(en<0)continue;
+    let e2=en;while(e2>st&&(u[e2-1]===10||u[e2-1]===13))e2--;
+    if(u[st]!==0xFF||u[st+1]!==0xD8)continue;const area=(w?+w[1]:0)*(h?+h[1]:0)||(e2-st);
+    if(!best||area>best.area)best={area,st,en:e2}}
+  if(!best)throw new Error('In questo PDF non trovo una foto della pagina (forse è testo digitale, non una scansione). Scatta la foto del foglio, oppure scansionalo con l’app Note o File di iPhone e carica il PDF.');
+  return new Blob([u.slice(best.st,best.en)],{type:'image/jpeg'})}
+const _fogNew18=A.fogNew;
+A.fogNew=d=>{const k=d.k==='test'?'test':'app';
+  formModal(k==='test'?'Foto o PDF di un test':'Foto o PDF di appunti',[{k:'foto',l:'Foto del foglio (o PDF scansionato)',t:'file',accept:'image/*,application/pdf,.pdf',req:1,h:'Scegli «Scatta foto»: la foto resta solo qui, cifrata. Un PDF scansionato viene letto come immagine (prima pagina con una foto).'},{k:'titolo',l:'Titolo (facoltativo)'},{k:'cat',l:'Cartella',t:'select',o:fogCatOpts()},DTF('data','Data')],{cat:S.ffc&&S.ffc!=='-'?S.ffc:'',data:today()},async o=>{
+    if(!o.foto)throw new Error('Scegli la foto.');
+    let file=o.foto;if(/pdf/i.test(file.type||'')||/\.pdf$/i.test(file.name||''))file=await fvPdfJpeg(file);
+    const ph=await photoStore(file);
+    const it={id:uid(),k,t:new Date().toISOString(),data:o.data||today(),titolo:String(o.titolo||'').trim().slice(0,80),cat:o.cat||'',stato:'da',ph,dest:''};
+    FOG().push(it);log(k==='test'?'Foto di un test aggiunta':'Foto di appunti aggiunta','');await save();render();setTimeout(()=>A.fogOpen({id:it.id}),60)})};
+
+const _cm18=closeModal;closeModal=function(){fvFree();return _cm18.apply(this,arguments)};
 
 /* ====================================================================
    DWARF · identità grafica (20/10/2026)
