@@ -1254,15 +1254,18 @@ mark{background:#f3d77a;color:#222;border-radius:3px;padding:0 1px}
 .detrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}.detseg{margin:10px 0}.deterr{border-color:#a2553b}.detgo{width:100%;margin:10px 0 20px}
 #det-t{font-size:16px;line-height:1.5}
 /* benvenuto DWARF: lento, sobrio, solo opacità e trasformazioni */
-.wl{--ease:cubic-bezier(.22,1,.36,1);--soft:cubic-bezier(.4,0,.2,1);position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;background:#F3ECE0;color:#414625;font-family:var(--f-d);
+.wl{--ease:cubic-bezier(.22,1,.36,1);--soft:cubic-bezier(.4,0,.2,1);position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;background:radial-gradient(900px 600px at 80% -10%,rgba(239,160,122,.35),transparent 60%),#F1E9DC;color:#414625;font-family:var(--f-d);
   transition:opacity .9s var(--soft),transform 1s var(--soft);-webkit-font-smoothing:antialiased}
 .wl.wl-out{opacity:0;transform:scale(1.025);pointer-events:none}
-.wl-glow{position:absolute;inset:-20%;background:radial-gradient(42% 34% at 50% 40%,rgba(255,252,246,.95),rgba(255,252,246,0) 70%),radial-gradient(60% 50% at 85% 0%,rgba(239,160,122,.16),transparent 70%);opacity:0}
+.wl-glow{position:absolute;inset:-20%;background:radial-gradient(40% 30% at 50% 40%,rgba(255,252,246,.7),rgba(255,252,246,0) 70%);opacity:0}
+.wl-sun{position:absolute;width:150vmax;height:150vmax;left:50%;top:118%;border-radius:50%;background:#4E5A2D;transform:translate(-50%,-50%) scale(.35);opacity:0}
+.wl-thread{position:absolute;left:0;right:0;bottom:5%;width:100%;height:120px}
+.wl-thread path{fill:none;stroke:#AC5437;stroke-width:1.6;stroke-linecap:round;stroke-dasharray:640;stroke-dashoffset:640;opacity:.6}
 .wl-in{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 28px}
 .wl-fig{width:min(40vw,168px);aspect-ratio:1;margin-bottom:6px}
 .wl-mascot{width:100%;height:100%;object-fit:contain;opacity:0;transform:translateY(14px) scale(.94);filter:drop-shadow(0 18px 26px rgba(65,70,37,.16))}
 .wl-word{font-size:clamp(30px,9vw,44px);font-weight:400;line-height:1;color:#414625;margin-top:10px}
-.wl-word span{display:inline-block;letter-spacing:.62em;padding-left:.62em;opacity:0}
+.wl-word span{display:inline-block;letter-spacing:.62em;padding-left:.62em;opacity:0}.wl-word i{font-style:normal;color:#AC5437}
 .wl-rule{width:56px;height:1px;margin:22px 0 20px;background:rgba(65,70,37,.12);overflow:hidden}
 .wl-rule i{display:block;height:100%;width:100%;background:#AC5437;transform:scaleX(0);transform-origin:left center}
 .wl-t{font-size:clamp(21px,5.6vw,26px);font-weight:300;letter-spacing:.005em;opacity:0;transform:translateY(8px)}.wl-t em{font-style:normal;font-weight:400;color:#8F4527}
@@ -1271,6 +1274,8 @@ mark{background:#f3d77a;color:#222;border-radius:3px;padding:0 1px}
 .wl-lock svg{width:15px;height:15px;fill:none;stroke:#565C38;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
 .wl-shackle{transform:translateY(-2.5px)}
 .wl-go .wl-glow{animation:wlFade 2.4s var(--soft) forwards}
+.wl-go .wl-sun{animation:wlSun 2.6s var(--ease) forwards}
+.wl-go .wl-thread path{animation:wlDraw 2.6s var(--ease) 1.6s forwards}
 .wl-go .wl-mascot{animation:wlRise 1.6s var(--ease) .15s forwards}
 .wl-go .wl-word span{animation:wlTrack 2s var(--ease) .65s forwards}
 .wl-go .wl-rule i{animation:wlLine 1.5s var(--ease) 1.45s forwards}
@@ -1279,14 +1284,16 @@ mark{background:#f3d77a;color:#222;border-radius:3px;padding:0 1px}
 .wl-go .wl-lock{animation:wlFade 1s var(--soft) 2.55s forwards}
 .wl-go .wl-shackle{animation:wlLock .7s var(--ease) 3.05s forwards}
 @keyframes wlFade{to{opacity:1}}
+@keyframes wlSun{to{transform:translate(-50%,-50%) scale(1);opacity:.1}}
+@keyframes wlDraw{to{stroke-dashoffset:0}}
 @keyframes wlRise{to{opacity:1;transform:none}}
 @keyframes wlTrack{to{opacity:1;letter-spacing:.2em;padding-left:.2em}}
 @keyframes wlLine{to{transform:scaleX(1)}}
 @keyframes wlUp{to{opacity:1;transform:none}}
 @keyframes wlLock{to{transform:none}}
-@media (prefers-color-scheme:dark){.wl{background:#1E2016;color:#EDE4D3}.wl-word{color:#EDE4D3}.wl-t{color:#EDE4D3}.wl-t em{color:#EFA07A}.wl-s,.wl-lock{color:#A9A18F}.wl-lock svg{stroke:#C9BFA9}
+@media (prefers-color-scheme:dark){.wl{background:radial-gradient(900px 600px at 80% -10%,rgba(239,160,122,.14),transparent 60%),#1E2016;color:#EDE4D3}.wl-word{color:#EDE4D3}.wl-t{color:#EDE4D3}.wl-t em{color:#EFA07A}.wl-s,.wl-lock{color:#A9A18F}.wl-lock svg{stroke:#C9BFA9}
   .wl-glow{background:radial-gradient(42% 34% at 50% 40%,rgba(86,92,56,.45),transparent 70%)}.wl-rule{background:rgba(237,228,211,.15)}}
-@media (prefers-reduced-motion:reduce){.wl *{animation:none!important;transition:none!important;opacity:1!important;transform:none!important}.wl-word span{letter-spacing:.2em;padding-left:.2em}}
+@media (prefers-reduced-motion:reduce){.wl *{animation:none!important;transition:none!important;opacity:1!important;transform:none!important}.wl-word span{letter-spacing:.2em;padding-left:.2em}.wl-sun{opacity:.1!important;transform:translate(-50%,-50%)!important}.wl-thread path{stroke-dashoffset:0}}
 .lk-go.lk-pulse{animation:lkPulse 1.2s ease 2}
 @keyframes lkPulse{0%,100%{box-shadow:0 0 0 0 rgba(124,143,74,0)}50%{box-shadow:0 0 0 8px rgba(124,143,74,.28)}}
 /* libreria: risultati come l'indice di un libro */
@@ -1690,7 +1697,7 @@ html[data-eff=dark] .nqs .nq.cam .ctile-i{background:#40261C;color:#E9A98B}
 <div id="root"></div><div id="modal"></div><div id="print"></div><div id="toast" role="status" aria-live="polite"></div>
 <noscript>Questa applicazione richiede JavaScript.</noscript>
 <script>
-const APP_VER='2026-10-25 · 7dbb65a';
+const APP_VER='2026-10-25 · abce595';
 'use strict';
 /* =====================================================================
    ARCHIVIO CLINICO  v0.3  -  file unico, offline, dati cifrati nel browser
@@ -7758,9 +7765,9 @@ compView=function(v){return v==='cdet'?vCDet():_cvDet.apply(this,arguments)};
    Con «riduci movimento» attivo è una semplice dissolvenza. Non tocca dati né accesso. */
 function benvenutoHTML(){
   const h=new Date().getHours(),sal=h<5?'Buonanotte':h<13?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera';
-  return '<div class="wl-glow"></div><div class="wl-in">'+
+  return '<div class="wl-sun"></div><div class="wl-glow"></div><svg class="wl-thread" viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true"><path d="M-10 90 C 60 20, 120 120, 200 60 S 330 10, 410 70"/></svg><div class="wl-in">'+
     '<div class="wl-fig"><img class="wl-mascot" src="'+DW_IMG+'" alt="" width="720" height="720" decoding="async"></div>'+
-    '<div class="wl-word" aria-hidden="true"><span>DWARF</span></div>'+
+    '<div class="wl-word" aria-hidden="true"><span>DW<i>A</i>RF</span></div>'+
     '<div class="wl-rule"><i></i></div>'+
     '<div class="wl-t">'+sal+', <em>Simone</em></div><div class="wl-s">Il tuo archivio privato</div>'+
     '<div class="wl-lock"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="wl-shackle" d="M8 11V8a4 4 0 018 0v3"/><path d="M6 11h12v9H6z"/></svg><span>Cifrato · solo su questo dispositivo</span></div></div>';
