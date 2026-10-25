@@ -1708,7 +1708,7 @@ html[data-eff=dark] .nqs .nq.cam .ctile-i{background:#40261C;color:#E9A98B}
 <div id="root"></div><div id="modal"></div><div id="print"></div><div id="toast" role="status" aria-live="polite"></div>
 <noscript>Questa applicazione richiede JavaScript.</noscript>
 <script>
-const APP_VER='2026-10-25 · de13b96';
+const APP_VER='2026-10-25 · f15f9a0';
 'use strict';
 /* =====================================================================
    ARCHIVIO CLINICO  v0.3  -  file unico, offline, dati cifrati nel browser
@@ -6054,7 +6054,7 @@ function calBg(c,e,p,dk,l){
   if(!cols.length)return '';if(cols.length===1)return cols[0];
   const st=100/cols.length;return 'linear-gradient(135deg,'+cols.map((x,i)=>x+' '+(i*st).toFixed(1)+'% '+((i+1)*st).toFixed(1)+'%').join(',')+')'}
 const isPers=f=>f&&f.cat==='pers';
-const isLav=f=>f&&f.cat==='lav'; /* impegni di lavoro senza pazienti: commercialista, colleghi, riunioni */
+const isLav=f=>f&&f.cat==='lav'; /* lavoro: commercialista, colleghi, riunioni */
 const evK=f=>isPers(f)?'pers':isLav(f)?'lav':'form';
 const ymdK=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
 function spanDays(a0,z0,cb){if(!/^\d{4}-\d{2}-\d{2}$/.test(a0||''))return;let a=new Date(a0+'T12:00:00'),z=new Date((z0&&z0>=a0?z0:a0)+'T12:00:00'),n=0;for(;a<=z&&n<120;a.setDate(a.getDate()+1),n++)cb(ymdK(a))}
@@ -6080,12 +6080,12 @@ const oraTxt=f=>f&&f.ora?f.ora+(f.oraFine?'–'+f.oraFine:''):'';
 const persChk=o=>{if(o.dataFine&&o.dataFine<o.data)throw new Error('La data finale è prima di quella iniziale.');const e=oraErr(o);if(e)throw new Error(e)};
 A.newPers=()=>formModal('Nuovo impegno personale',PERS_F(),{data:S.cd||today()},async o=>{persChk(o);
   D().formaz.push({id:uid(),cat:'pers',titolo:String(o.titolo).trim(),data:o.data,dataFine:o.dataFine||'',ora:o.ora||'',oraFine:o.oraFine||'',ente:'',nota:o.nota||''});log('Impegno personale aggiunto','');await save();render()});
-const LAV_F=()=>[{k:'titolo',l:'Impegno di lavoro',req:1,h:'Per esempio: commercialista, riunione con colleghi, ordine professionale.'},{k:'data',l:'Dal',t:'date',req:1},{k:'dataFine',l:'Al (se dura più giorni)',t:'date'}].concat(ORA_F(),[{k:'nota',l:'Nota',t:'textarea',r:3}]);
-A.newLav=()=>formModal('Nuovo impegno di lavoro',LAV_F(),{data:S.cd||today()},async o=>{persChk(o);
-  D().formaz.push({id:uid(),cat:'lav',titolo:String(o.titolo).trim(),data:o.data,dataFine:o.dataFine||'',ora:o.ora||'',oraFine:o.oraFine||'',ente:'',nota:o.nota||''});log('Impegno di lavoro aggiunto','');await save();render()});
+const LAV_F=()=>[{k:'titolo',l:'Lavoro',req:1,h:'Per esempio: commercialista, riunione con colleghi, ordine professionale.'},{k:'data',l:'Dal',t:'date',req:1},{k:'dataFine',l:'Al (se dura più giorni)',t:'date'}].concat(ORA_F(),[{k:'nota',l:'Nota',t:'textarea',r:3}]);
+A.newLav=()=>formModal('Nuovo impegno: lavoro',LAV_F(),{data:S.cd||today()},async o=>{persChk(o);
+  D().formaz.push({id:uid(),cat:'lav',titolo:String(o.titolo).trim(),data:o.data,dataFine:o.dataFine||'',ora:o.ora||'',oraFine:o.oraFine||'',ente:'',nota:o.nota||''});log('Lavoro aggiunto','');await save();render()});
 const _editFz38=A.editFormaz;
 A.editFormaz=d=>{const f=D().formaz.find(x=>x.id===d.id);if(!f)return;
-  if(isLav(f))return formModal('Modifica impegno di lavoro',LAV_F(),f,async o=>{persChk(o);Object.assign(f,{titolo:String(o.titolo).trim(),data:o.data,dataFine:o.dataFine||'',ora:o.ora||'',oraFine:o.oraFine||'',nota:o.nota||''});log('Impegno di lavoro modificato','');await save();render()});
+  if(isLav(f))return formModal('Modifica: lavoro',LAV_F(),f,async o=>{persChk(o);Object.assign(f,{titolo:String(o.titolo).trim(),data:o.data,dataFine:o.dataFine||'',ora:o.ora||'',oraFine:o.oraFine||'',nota:o.nota||''});log('Lavoro modificato','');await save();render()});
   if(!isPers(f))return formModal('Modifica evento formativo',FORM_F2(),f,async o=>{persChk(o);Object.assign(f,{titolo:String(o.titolo).trim(),data:o.data,dataFine:o.dataFine||'',ora:o.ora||'',oraFine:o.oraFine||'',ente:o.ente||'',nota:o.nota||''});log('Evento formativo modificato',f.titolo);await save();render()});
   formModal('Modifica impegno personale',PERS_F(),f,async o=>{persChk(o);Object.assign(f,{titolo:String(o.titolo).trim(),data:o.data,dataFine:o.dataFine||'',ora:o.ora||'',oraFine:o.oraFine||'',nota:o.nota||''});log('Impegno personale modificato','');await save();render()})};
 A.newFormaz=()=>formModal('Nuovo evento formativo',FORM_F2(),{data:S.cd||today()},async o=>{persChk(o);
@@ -6104,7 +6104,7 @@ calHTML=function(){
   for(let i=0;i<off;i++)cells+='<div class="cd o"></div>';
   for(let d=1;d<=n;d++){
     const k=cm+'-'+p2(d),c=day[k]?Object.keys(day[k]).length:0,e=fz[k]?fz[k].length:0,p=ps[k]?ps[k].length:0,l=lv[k]?lv[k].length:0,bg=calBg(c,e,p,dk,l);
-    cells+='<button class="cd'+(c||e||p||l?' on':'')+(k===today()?' t':'')+(S.cd===k?' s':'')+'"'+(bg?' style="background:'+bg+'"':'')+' data-act="calDay" data-d="'+k+'" aria-label="'+d+(c?', '+c+(c===1?' paziente':' pazienti'):'')+(e?', '+e+(e===1?' evento formativo':' eventi formativi'):'')+(p?', '+p+(p===1?' impegno personale':' impegni personali'):'')+(l?', '+l+(l===1?' impegno di lavoro':' impegni di lavoro'):'')+'"><span class="dn">'+d+'</span>'+(c||e||p||l?'<span class="dcs">'+(c?'<span class="dc p">'+c+'</span>':'')+(e?'<span class="dc f">'+e+'</span>':'')+(p?'<span class="dc x">'+p+'</span>':'')+'</span>':'')+'</button>';
+    cells+='<button class="cd'+(c||e||p||l?' on':'')+(k===today()?' t':'')+(S.cd===k?' s':'')+'"'+(bg?' style="background:'+bg+'"':'')+' data-act="calDay" data-d="'+k+'" aria-label="'+d+(c?', '+c+(c===1?' paziente':' pazienti'):'')+(e?', '+e+(e===1?' evento formativo':' eventi formativi'):'')+(p?', '+p+(p===1?' impegno personale':' impegni personali'):'')+(l?', '+l+' lavoro':'')+'"><span class="dn">'+d+'</span>'+(c||e||p||l?'<span class="dcs">'+(c?'<span class="dc p">'+c+'</span>':'')+(e?'<span class="dc f">'+e+'</span>':'')+(p?'<span class="dc x">'+p+'</span>':'')+'</span>':'')+'</button>';
   }
   const evRow=(f,lab,cls)=>'<tr><td style="width:60px"><span class="badge '+cls+'">'+lab+'</span></td><td><b>'+esc(f.titolo)+'</b><div class="small mut">'+esc([oraTxt(f),f.ente,f.dataFine&&f.dataFine!==f.data?fd(f.data)+' – '+fd(f.dataFine):''].filter(Boolean).join(' · '))+(f.nota?' · '+esc(f.nota):'')+'</div></td><td class="row"><button class="btn sm" data-act="editFormaz" data-id="'+f.id+'">Modifica</button><button class="btn sm" data-act="delFormaz" data-id="'+f.id+'">Elimina</button></td></tr>';
   let sel='';
@@ -6119,14 +6119,14 @@ calHTML=function(){
   const evN=new Set(Object.keys(fz).flatMap(k=>fz[k].map(f=>f.id))).size,peN=new Set(Object.keys(ps).flatMap(k=>ps[k].map(f=>f.id))).size,lvN=new Set(Object.keys(lv).flatMap(k=>lv[k].map(f=>f.id))).size;
   return '<div class="card cal"><div class="cal-h"><button class="btn sm" data-act="calNav" data-n="-1" aria-label="Mese precedente">‹</button><h3>'+esc(new Date(y,m-1,1).toLocaleDateString('it-IT',{month:'long',year:'numeric'}))+'</h3><span class="row"><button class="btn sm" data-act="newFormaz">+ Formazione</button><button class="btn sm" data-act="newLav">+ Lavoro</button><button class="btn sm" data-act="newPers">+ Impegno</button><button class="btn sm" data-act="calNav" data-n="0">Oggi</button><button class="btn sm" data-act="calNav" data-n="1" aria-label="Mese successivo">›</button></span></div><div class="cal-g">'+cells+'</div>'+
    '<div class="cal-leg"><span>Pazienti</span>'+G.map(c=>'<i style="background:'+c+'"></i>').join('')+'<span style="margin-left:10px">Formazione</span>'+T.map(c=>'<i style="background:'+c+'"></i>').join('')+'<span style="margin-left:10px">Lavoro</span>'+Lc.map(c=>'<i style="background:'+c+'"></i>').join('')+'<span style="margin-left:10px">Personali</span>'+Pc.map(c=>'<i style="background:'+c+'"></i>').join('')+
-   '<span>· '+tot.size+(tot.size===1?' paziente diverso':' pazienti diversi')+' · '+evN+(evN===1?' evento di formazione':' eventi di formazione')+' · '+lvN+(lvN===1?' impegno di lavoro':' impegni di lavoro')+' · '+peN+(peN===1?' impegno personale':' impegni personali')+'</span></div>'+sel+'</div>'};
+   '<span>· '+tot.size+(tot.size===1?' paziente diverso':' pazienti diversi')+' · '+evN+(evN===1?' evento di formazione':' eventi di formazione')+' · '+lvN+' lavoro'+' · '+peN+(peN===1?' impegno personale':' impegni personali')+'</span></div>'+sel+'</div>'};
 
 /* ---------- Mac: importare «Impegno personale» dal telefono (o da file IMPEGNO_…) ---------- */
-IMP_T.push(['impegno','Impegno personale',['impegno','impegni','personale'],0],['lavoro','Impegno di lavoro',['lavoro'],0]);
+IMP_T.push(['impegno','Impegno personale',['impegno','impegni','personale'],0],['lavoro','Lavoro',['lavoro'],0]);
 const _plan38=impPlan;
 impPlan=function(it,all){
   if(it.type!=='impegno'&&it.type!=='lavoro')return _plan38.apply(this,arguments);
-  const lav=it.type==='lavoro',cat=lav?isLav:isPers,lab=lav?'Impegno di lavoro':'Impegno personale';
+  const lav=it.type==='lavoro',cat=lav?isLav:isPers,lab=lav?'Lavoro':'Impegno personale';
   const P={st:'ok',skip:false,sum:'',notes:[]},fail=m=>{P.st='err';P.sum=m;return P};
   const date=it.dates[0],t=[...it.nameT,...it.descT].join(' ').trim().slice(0,80),ora=it.ora||'',oraFine=impOraFine(it);
   if(!date)return fail('Manca la data nel nome del file (AAAA-MM-GG).');if(!t)return fail('Manca il titolo: scrivilo nel nome del file.');
@@ -6144,7 +6144,7 @@ impPlan=function(it,all){const P=_planF38.apply(this,arguments);
 const _apply38=impApply;
 impApply=async function(it,made){
   if(it.type!=='impegno'&&it.type!=='lavoro')return _apply38.apply(this,arguments);
-  const lav=it.type==='lavoro';D().formaz.push(Object.assign({id:uid(),cat:lav?'lav':'pers',ente:'',nota:''},it.pl.rec));log(lav?'Impegno di lavoro ricevuto':'Impegno personale ricevuto','');return 'Impegno aggiunto al calendario'};
+  const lav=it.type==='lavoro';D().formaz.push(Object.assign({id:uid(),cat:lav?'lav':'pers',ente:'',nota:''},it.pl.rec));log(lav?'Lavoro ricevuto':'Impegno personale ricevuto','');return 'Impegno aggiunto al calendario'};
 
 /* ---------- Mac → telefono: l'elenco porta anche formazione e impegni (solo date e titoli) ---------- */
 const _plPay38=plistPayload;
@@ -6164,8 +6164,8 @@ CT.impegno={l:'Impegno personale',s:'Un tuo impegno nel calendario',ic:'M12 21s-
   name:v=>'IMPEGNO_'+v.data+(v.dataFine?'_'+v.dataFine:'')+(v.ora?'_'+String(v.ora).replace(':','.'):'')+'_'+fz(v.titolo),text:v=>v.ora&&v.oraFine?'fino alle: '+v.oraFine:'',
   chk:v=>v.dataFine&&v.dataFine<v.data?'La fine è prima dell’inizio.':oraErr(v),
   sum:v=>fd(v.data)+(v.ora?' · '+oraTxt(v):'')+' · '+v.titolo};
-CT.lavoro=Object.assign({},CT.impegno,{l:'Impegno di lavoro',s:'Commercialista, colleghi, riunioni: senza pazienti',ic:'M4 8h16v11H4zM9 8V5h6v3M4 13h16',
-  f:()=>[{k:'titolo',l:'Impegno di lavoro',req:1},DTF('data','Data'),{k:'dataFine',l:'Fino al (facoltativo)',t:'date'}].concat(ORA_F()),
+CT.lavoro=Object.assign({},CT.impegno,{l:'Lavoro',s:'Commercialista, colleghi, riunioni',ic:'M4 8h16v11H4zM9 8V5h6v3M4 13h16',
+  f:()=>[{k:'titolo',l:'Lavoro',req:1},DTF('data','Data'),{k:'dataFine',l:'Fino al (facoltativo)',t:'date'}].concat(ORA_F()),
   name:v=>'LAVORO_'+v.data+(v.dataFine?'_'+v.dataFine:'')+(v.ora?'_'+String(v.ora).replace(':','.'):'')+'_'+fz(v.titolo)});
 /* formazione sul telefono: anche gli orari (dalle / alle) */
 Object.assign(CT.formazione,{
@@ -6220,11 +6220,11 @@ lcHTML=function(off){
    '<div class="lc-f">'+(on?lcLeg(calDk()):'Nessun dettaglio: i colori dei giorni si attivano in Impostazioni › Blocco automatico.')+'</div>'};
 
 /* ---------- telefono: il calendario modificabile (vista «Agenda») ---------- */
-const PCAT={appuntamento:['Appuntamento','pp'],formazione:['Formazione','pf'],impegno:['Impegno personale','px'],lavoro:['Impegno di lavoro','pl']};
+const PCAT={appuntamento:['Appuntamento','pp'],formazione:['Formazione','pf'],impegno:['Impegno personale','px'],lavoro:['Lavoro','pl']};
 function pcItems(k){
   const L=[];
   PLI().ag.forEach(a=>{if(a.d===k)L.push({o:a.o,t:a.c+' · '+a.i,s:(a.u||50)+' min · dal Mac',c:'pp'})});
-  (PLI().ev||[]).forEach(e=>{let hit=false;spanDays(e.d,e.f,x=>{if(x===k)hit=true});if(hit)L.push({o:e.o?e.o+(e.e?'–'+e.e:''):'',t:e.t,s:(e.k==='pers'?'impegno personale':e.k==='lav'?'impegno di lavoro':'formazione')+' · dal Mac',c:e.k==='pers'?'px':e.k==='lav'?'pl':'pf'})});
+  (PLI().ev||[]).forEach(e=>{let hit=false;spanDays(e.d,e.f,x=>{if(x===k)hit=true});if(hit)L.push({o:e.o?e.o+(e.e?'–'+e.e:''):'',t:e.t,s:(e.k==='pers'?'impegno personale':e.k==='lav'?'lavoro':'formazione')+' · dal Mac',c:e.k==='pers'?'px':e.k==='lav'?'pl':'pf'})});
   calSrc().forEach(i=>{const v=i.v||{},P=PCAT[i.type];if(!P)return;let hit=false;
     if(i.type==='appuntamento')hit=v.data===k;else spanDays(v.data,v.dataFine,x=>{if(x===k)hit=true});
     if(hit)L.push({o:i.type==='appuntamento'?(v.ora||''):oraTxt(v),t:i.type==='appuntamento'?pzLabel(i.pz):v.titolo,s:P[0]+(i.type==='appuntamento'?' · '+(v.durata||50)+' min':'')+(i.batch||i.kept?' · già esportato':' · su questo telefono'),c:P[1],id:i.batch||i.kept?'':i.id,del:i.id})});
@@ -7633,7 +7633,7 @@ const DET_SEZ=[ /* dalla più lunga alla più corta: «nota personale» prima di
   ['appuntamento',['appuntamento','appuntamenti']],
   ['formazione',['formazione','corso','supervisione']],
   ['paziente',['paziente']]];
-const DET_TIPI=[['seduta','Seduta'],['episodio','Domanda'],['diagnosi','Diagnosi'],['nota','Nota'],['notap','Nota personale'],['relazione','Relazione'],['impegno','Impegno personale'],['lavoro','Impegno di lavoro'],['appuntamento','Appuntamento'],['formazione','Formazione'],['','Non creare (scarta)']];
+const DET_TIPI=[['seduta','Seduta'],['episodio','Domanda'],['diagnosi','Diagnosi'],['nota','Nota'],['notap','Nota personale'],['relazione','Relazione'],['impegno','Impegno personale'],['lavoro','Lavoro'],['appuntamento','Appuntamento'],['formazione','Formazione'],['','Non creare (scarta)']];
 const DET_CAT=[['Ansia',['ansia','panico','fobi']],['Umore',['umore','depress','tristezza']],['Relazioni e famiglia',['famiglia','relazion','coppia','genitori']],['Trauma e stress',['trauma','stress']],
   ['Lavoro e studio',['lavoro','studio','scuola','universit']],['Lutto e perdita',['lutto','perdita']],['Sviluppo e infanzia',['sviluppo','infanzia','bambin']]];
 const detRe=(()=>{const k=[].concat(...DET_SEZ.map(s=>s[1])).sort((a,b)=>b.length-a.length).map(x=>x.replace(/ /g,'\\s+'));
@@ -7726,7 +7726,7 @@ function detVoce(g){
 const detStato=()=>D().dettBozza||(D().dettBozza={testo:'',pz:'',data:today(),segs:null});
 function vCDet(){
   const st=detStato(),fld=(l,h)=>'<label class="fld"><span>'+l+'</span>'+h+'</label>';
-  let h='<h1>Dettatura</h1><p class="small mut">Tocca il riquadro e usa il <b>microfono della tastiera</b>. Prima di ogni parte di’ il nome della sezione: «Seduta…», «Domanda…», «Diagnosi F41.1 confermata…», «Nota…», «Nota personale…», «Relazione…». Per cambiare paziente: «Paziente PZ 3». La sezione si riconosce solo all’inizio di una frase. Controlli tutto prima di creare le voci.</p>'+
+  let h='<h1>Dettatura</h1><p class="small mut">Tocca il riquadro e usa il <b>microfono della tastiera</b>. Prima di ogni parte di’ il nome della sezione: «Seduta…», «Domanda…», «Diagnosi F41.1 confermata…», «Nota…», «Nota personale…», «Relazione…». Per cambiare paziente: «Paziente PZ 3». Per il calendario: «Impegno…», «Appuntamento…», «Formazione…», «Lavoro…», oppure di’ il colore: giallo personale, verde paziente, arancione formazione, blu lavoro. La sezione si riconosce solo all’inizio di una frase. Controlli tutto prima di creare le voci.</p>'+
    '<datalist id="pzl">'+pzOptions()+'</datalist><div class="detrow">'+fld('Paziente','<input data-dk="pz" list="pzl" autocomplete="off" autocapitalize="characters" placeholder="PZ-0001" value="'+esc(st.pz)+'">')+fld('Data','<input data-dk="data" type="date" value="'+esc(st.data)+'">')+'</div>'+
    fld('Testo dettato','<textarea id="det-t" data-dk="testo" rows="10" placeholder="Seduta. Il paziente riferisce…">'+esc(st.testo)+'</textarea>')+
    '<div class="row"><button class="btn pri" data-act="detDividi">Dividi in sezioni</button><button class="btn" data-act="detSvuota">Svuota</button><button class="btn" data-act="dettaImpegno">Solo impegni</button></div>';
@@ -7777,7 +7777,7 @@ function detImpegni(testo){
     ultimaData=g.data;out.push(g)}
   return out}
 A.dettaImpegno=()=>{
-  modal('<h3>Detta impegni</h3><p class="small mut">Tocca il riquadro, poi il <b>microfono della tastiera</b>, e parla. Il colore dice il tipo, come nel calendario: <b>giallo</b> impegno personale, <b>verde</b> paziente, <b>arancione</b> formazione, <b>blu</b> lavoro senza pazienti (commercialista, colleghi). Puoi dirne <b>più di uno</b>: separali con «poi» o con una pausa. Per esempio: «domani alle 9 riunione di équipe, poi alle 11 dentista. Venerdì dalle 15 alle 17 supervisione. Appuntamento lunedì alle 10 PZ 4».</p>'+
+  modal('<h3>Detta impegni</h3><p class="small mut">Tocca il riquadro, poi il <b>microfono della tastiera</b>, e parla. Il colore dice il tipo, come nel calendario: <b>giallo</b> impegno personale, <b>verde</b> paziente, <b>arancione</b> formazione, <b>blu</b> lavoro (commercialista, colleghi). Puoi dirne <b>più di uno</b>: separali con «poi» o con una pausa. Per esempio: «domani alle 9 riunione di équipe, poi alle 11 dentista. Venerdì dalle 15 alle 17 supervisione. Appuntamento lunedì alle 10 PZ 4».</p>'+
    '<textarea id="detimp" rows="4" placeholder="domani alle 9 riunione, poi alle 11 dentista"></textarea><div class="err" id="detimperr"></div>'+
    '<div class="row end"><button class="btn" data-act="close">Annulla</button><button class="btn pri" data-act="dettaImpegnoOk">Continua</button></div>',true);
   setTimeout(()=>{const t=$('#detimp');if(t)t.focus()},60)};
