@@ -1254,6 +1254,9 @@ mark{background:#f3d77a;color:#222;border-radius:3px;padding:0 1px}
 .libprog{margin:10px 0}.libbar{height:8px;border-radius:6px;background:var(--line);overflow:hidden;margin:6px 0}.libbar i{display:block;height:100%;background:#4f6b2c}
 .libpg{white-space:pre-wrap;font-size:15px;line-height:1.55;max-height:46vh;overflow:auto;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin:8px 0}
 .libnav{margin:8px 0}.libcv{margin:8px 0}.libcv canvas{border:1px solid var(--line);border-radius:8px;background:#fff}
+/* dettatura */
+.detrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}.detseg{margin:10px 0}.deterr{border-color:#a2553b}.detgo{width:100%;margin:10px 0 20px}
+#det-t{font-size:16px;line-height:1.5}
 
 /* tema scuro */
 html[data-eff=dark]{--glass:32,36,26;--glass2:19,21,14;--green:#3B4122;--green-deep:#2A2E17;--green-soft:#7F8A56;--gtx:#CBD39E;--cream:#13150E;--cream-2:#1C1F14;--paper:#1A1D13;--card:#20241A;--hero:#1E2216;--terra:#D27C58;--terra-dark:#E5A07F;--terra-light:#C0724F;--terra-bg:#3A261C;--ink:#EEE7D7;--body:#D3CCBA;--mut:#B5AB96;--line:#363B2B;--sand:#4C5239;--pri2:#2C3220;--ok:#BDD596;--ok2:#27311B;--warn:#EBC57E;--warn2:#3A2F15;--bad:#F3A898;--bad2:#40211B;color-scheme:dark}
@@ -4742,7 +4745,6 @@ function compRiskHTML(){
   if(isStandalone()&&S.persisted!==false&&days<3)return '';
   const msg=!isStandalone()&&S.persisted!==true?'Su iPhone, se l’app non è aggiunta alla schermata Home, Safari può cancellare i dati dopo 7 giorni senza aprirla. Esporta spesso verso il Mac.':'';
   return '<div class="banner '+(days>=3?'warn':'info')+' small">'+(days>=3?'<b>La voce più vecchia aspetta da '+days+' giorni.</b> ':'')+msg+(days>=3&&!msg?'Esportala presto verso il Mac.':'')+'</div>'}
-const _vCNew32=vCNew;vCNew=function(){return _vCNew32.apply(this,arguments).replace('</p><div class="ctiles">','</p>'+compRiskHTML()+'<div class="ctiles">')};
 const _vCOut32=vCOut;vCOut=function(){return _vCOut32.apply(this,arguments).replace('<h1>In uscita</h1>','<h1>In uscita</h1>'+compRiskHTML())};
 
 /* bozza cifrata: se il telefono si blocca mentre scrivi, al nuovo sblocco il modulo si riapre com'era */
@@ -6245,8 +6247,6 @@ function ftCatalog(){
 COMP_V.push('cfog');
 const _cv40=compView;
 compView=function(v){return v==='cfog'?vCFog():_cv40.apply(this,arguments)};
-const _vCNew40=vCNew;
-vCNew=function(){return _vCNew40.apply(this,arguments).replace('<div class="ctiles">','<button class="cfogb" data-act="cgo" data-v="cfog"><span class="ctile-i">'+svgI(FIC.cam)+'</span><span><b>Da foglio</b><small>Fotografa appunti o un test: li trascrivi con «Scansiona testo» di iPhone</small></span><span class="cfogc">'+svgI(CI.chev)+'</span></button><div class="ctiles">')};
 function vCFog(){
   const f=S.ffc||'',L=FOG().filter(x=>!f||(f==='-'?!x.cat:x.cat===f)).sort((a,b)=>(b.t||'').localeCompare(a.t||'')),cats=FCAT();
   let h='<h1>Da foglio</h1><p class="small mut">Le foto restano <b>cifrate in questa app</b>: non finiscono nella libreria Foto né su iCloud e non si esportano. Le trascrivi tu, anche con «Scansiona testo» di iPhone; la trascrizione si esporta come le altre voci.</p>'+
@@ -6486,7 +6486,9 @@ vCNew=function(){
   const groups=NEW_GRP.map(g=>[g[0],g[1].filter(has)]).concat(rest.length?[['Altro',rest]]:[]).filter(g=>g[1].length);
   let risk='';try{risk=compRiskHTML()}catch(e){}
   return '<h1>Nuovo</h1><p class="small mut">Scegli cosa registrare. Resta cifrato su questo telefono finché non lo esporti verso il Mac.</p>'+risk+
-   '<div class="nqs">'+NEW_TOP.filter(has).map(big).join('')+'<button class="nq cam" data-act="cgo" data-v="cfog"><span class="ctile-i">'+svgI(FIC.cam)+'</span><b>Da foglio</b><small>Foto di appunti o di un test</small></button></div>'+
+   '<div class="nqs">'+NEW_TOP.filter(has).map(big).join('')+'<button class="nq cam" data-act="cgo" data-v="cfog"><span class="ctile-i">'+svgI(FIC.cam)+'</span><b>Da foglio</b><small>Foto di appunti o di un test</small></button>'+
+   '<button class="nq det" data-act="cgo" data-v="cdet"><span class="ctile-i">'+svgI(micIc)+'</span><b>Dettatura</b><small>Detta più sezioni insieme</small></button>'+
+   '<button class="nq lib" data-act="cgo" data-v="clib"><span class="ctile-i">'+svgI(FIC.dir)+'</span><b>Libreria</b><small>DSM, ICD: cerca nei PDF</small></button></div>'+
    groups.map((g,i)=>'<div class="ngr g'+i+'"><h3>'+esc(g[0])+'</h3><div class="nls">'+g[1].map(row).join('')+'</div></div>').join('')+
    (n?'<button class="cpend" data-act="cgo" data-v="cout"><b>'+n+(n===1?' voce':' voci')+'</b> in attesa di esportazione<span>'+svgI(CI.chev)+'</span></button>':'')};
 
@@ -7306,11 +7308,107 @@ A.libVedi=async()=>{
     await pg.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;box.innerHTML='';box.appendChild(cv)}
   catch(e){box.innerHTML='<p class="small libwarn">'+esc(e.message||'Non riesco a mostrare la pagina.')+'</p>'}};
 
-/* ---- entrata nella schermata «Nuovo» e nel menu ---- */
+/* ---- schermata (il riquadro «Libreria» è in «Nuovo», js_v17.js) ---- */
 const _cvLib=compView;
 compView=function(v){return v==='clib'?vCLib():_cvLib.apply(this,arguments)};
-const _vCNewLib=vCNew;
-vCNew=function(){return _vCNewLib.apply(this,arguments).replace('<div class="ctiles">','<button class="cfogb" data-act="cgo" data-v="clib"><span class="ctile-i">'+svgI(FIC.dir)+'</span><span><b>Libreria</b><small>DSM-5-TR, ICD e altri PDF: cerca una parola e vai alla pagina</small></span><span class="cfogc">'+svgI(CI.chev)+'</span></button><div class="ctiles">')};
+
+/* ---------- Dettatura (telefono) ----------
+   Detti con il microfono della tastiera di iPhone: l'app riceve solo testo (nessun audio, nessuna rete).
+   Prima di ogni parte dici il nome della sezione («Seduta…», «Domanda…», «Diagnosi…», «Nota…»): l'app divide il testo,
+   prepara una voce per sezione, tu controlli e correggi, poi le voci vanno in «In uscita» come quelle scritte a mano.
+   La parola-sezione vale solo all'inizio del testo, di una riga o di una frase. I punteggi dei test restano fuori. */
+COMP_V.push('cdet');
+const DET_SEZ=[ /* dalla più lunga alla più corta: «nota personale» prima di «nota» */
+  ['notap',['nota personale','note personali','appunto personale']],
+  ['seduta',['nota di seduta','note di seduta','seduta','sedute']],
+  ['episodio',['motivo della richiesta','domanda','domande']],
+  ['diagnosi',['ipotesi diagnostica','diagnosi']],
+  ['relazione',['relazione']],
+  ['test',['test e scale','test','scale']],
+  ['nota',['nota','note','appunto','appunti']],
+  ['paziente',['paziente']]];
+const DET_TIPI=[['seduta','Seduta'],['episodio','Domanda'],['diagnosi','Diagnosi'],['nota','Nota'],['notap','Nota personale'],['relazione','Relazione'],['','Non creare (scarta)']];
+const DET_CAT=[['Ansia',['ansia','panico','fobi']],['Umore',['umore','depress','tristezza']],['Relazioni e famiglia',['famiglia','relazion','coppia','genitori']],['Trauma e stress',['trauma','stress']],
+  ['Lavoro e studio',['lavoro','studio','scuola','universit']],['Lutto e perdita',['lutto','perdita']],['Sviluppo e infanzia',['sviluppo','infanzia','bambin']]];
+const detRe=(()=>{const k=[].concat(...DET_SEZ.map(s=>s[1])).sort((a,b)=>b.length-a.length).map(x=>x.replace(/ /g,'\\s+'));
+  return new RegExp('(^|[\\n.!?;]\\s*)('+k.join('|')+')(?=[\\s:,.\\-–]|$)','g')})();
+const detTipoDi=kw=>{kw=kw.replace(/\s+/g,' ');return (DET_SEZ.find(s=>s[1].includes(kw))||[''])[0]};
+const detPulisci=s=>{s=String(s||'').replace(/^[\s:,.\-–]+/,'').replace(/\s+$/,'');return s?s[0].toUpperCase()+s.slice(1):''};
+
+/* divide il testo dettato in sezioni */
+function detDividi(testo,pz0,data0){
+  const t=String(testo||''),f=libFold(t),M=[];let m;detRe.lastIndex=0;
+  while((m=detRe.exec(f))){const da=m.index+m[1].length;M.push({tipo:detTipoDi(m[2]),da,dopo:da+m[2].length})}
+  const segs=[];let pz=pz0||'';
+  const add=(tipo,s)=>{s=detPulisci(s);if(s||tipo==='diagnosi')segs.push(detPrepara(tipo,s,pz,data0))};
+  if(!M.length){add('',t);return segs}
+  add('',t.slice(0,M[0].da));
+  M.forEach((x,i)=>{let s=t.slice(x.dopo,i+1<M.length?M[i+1].da:t.length);
+    if(x.tipo==='paziente'){const c=/^[\s:,.\-–]*(?:p\s?z[\s\-]*)?(\d{1,6})\b/i.exec(s);if(c){pz=normPz('PZ-'+c[1]);s=s.slice(c[0].length)}add('',s);return}
+    if(x.tipo==='test'){s=detPulisci(s);if(s)segs.push(Object.assign(detPrepara('nota','Test e scale: '+s,pz,data0),{avviso:'I punteggi si inseriscono a parte: qui resta come nota.'}));return}
+    add(x.tipo,s)});
+  return segs}
+/* campi specifici di ogni tipo, ricavati dal testo quando è possibile */
+function detPrepara(tipo,s,pz,data){
+  const g={tipo,testo:s,pz,data:data||today(),durata:50,codice:'',stato:'ipotesi',cat:'Altro',avviso:tipo?'':'Non ho capito la sezione: sceglila tu.'};
+  if(tipo==='seduta'){const d=/\bdurata\s*(?:di\s*)?(\d{1,3})\s*minut[io]\b[\s,.;]*/i.exec(s);if(d){g.durata=+d[1];g.testo=detPulisci(s.replace(d[0],''))}}
+  if(tipo==='diagnosi'){
+    const c=/\b([A-Z])\s?(\d{2})(?:\s?[.,]\s?(\d{1,2}))?\b|\b(\d[A-Z]\d{1,2}(?:\.\d)?)\b/.exec(s); /* lettera maiuscola: «a 12 anni» non è un codice */
+    if(c){g.codice=c[4]?c[4].toUpperCase():(c[1].toUpperCase()+c[2]+(c[3]?'.'+c[3]:''));g.testo=detPulisci(s.replace(c[0],''))}
+    const fs=libFold(g.testo);g.stato=/\bconfermat/.test(fs)?'confermata':/\bin remission/.test(fs)?'in remissione':/\besclus/.test(fs)?'esclusa':'ipotesi';
+    if(!g.codice)g.avviso='Non ho trovato il codice (per esempio F41.1): scrivilo tu.'}
+  if(tipo==='episodio'){const fs=libFold(s);const c=DET_CAT.find(x=>x[1].some(k=>fs.includes(k)));if(c)g.cat=c[0]}
+  return g}
+/* dalla sezione alla voce «In uscita» */
+function detVoce(g){
+  const b={pz:g.pz,data:g.data};
+  switch(g.tipo){
+    case 'seduta':return Object.assign(b,{durata:g.durata||50,nota:g.testo});
+    case 'episodio':return Object.assign(b,{cat:g.cat||'Altro',motivo:g.testo});
+    case 'diagnosi':return Object.assign(b,{codice:g.codice,stato:g.stato||'ipotesi',nota:g.testo});
+    case 'nota':return {pz:g.pz,nota:g.testo};
+    case 'notap':return Object.assign(b,{titolo:'',nota:g.testo});
+    case 'relazione':return Object.assign(b,{testo:g.testo})}
+  return null}
+
+/* la dettatura in corso resta nell'archivio cifrato finché non crei le voci o la svuoti */
+const detStato=()=>D().dettBozza||(D().dettBozza={testo:'',pz:'',data:today(),segs:null});
+function vCDet(){
+  const st=detStato(),fld=(l,h)=>'<label class="fld"><span>'+l+'</span>'+h+'</label>';
+  let h='<h1>Dettatura</h1><p class="small mut">Tocca il riquadro e usa il <b>microfono della tastiera</b>. Prima di ogni parte di’ il nome della sezione: «Seduta…», «Domanda…», «Diagnosi F41.1 confermata…», «Nota…», «Nota personale…», «Relazione…». Per cambiare paziente: «Paziente PZ 3». La sezione si riconosce solo all’inizio di una frase. Controlli tutto prima di creare le voci.</p>'+
+   '<datalist id="pzl">'+pzOptions()+'</datalist><div class="detrow">'+fld('Paziente','<input data-dk="pz" list="pzl" autocomplete="off" autocapitalize="characters" placeholder="PZ-0001" value="'+esc(st.pz)+'">')+fld('Data','<input data-dk="data" type="date" value="'+esc(st.data)+'">')+'</div>'+
+   fld('Testo dettato','<textarea id="det-t" data-dk="testo" rows="10" placeholder="Seduta. Il paziente riferisce…">'+esc(st.testo)+'</textarea>')+
+   '<div class="row"><button class="btn pri" data-act="detDividi">Dividi in sezioni</button><button class="btn" data-act="detSvuota">Svuota</button></div>';
+  if(st.segs){
+    h+='<h3 class="libh">'+(st.segs.length?st.segs.length+(st.segs.length===1?' sezione':' sezioni')+' da controllare':'Nessuna sezione')+'</h3>'+
+     st.segs.map((g,i)=>{const k=f=>'data-dk="'+i+':'+f+'"',inp=(f,l,t)=>fld(l,'<input '+k(f)+(t?' type="'+t+'"':'')+' value="'+esc(g[f]==null?'':g[f])+'">');
+      const sel=(f,l,o)=>fld(l,'<select '+k(f)+'>'+o.map(x=>{x=Array.isArray(x)?x:[x,x];return '<option value="'+esc(x[0])+'"'+(String(g[f])===String(x[0])?' selected':'')+'>'+esc(x[1])+'</option>'}).join('')+'</select>');
+      return '<div class="card detseg'+(g.err?' deterr':'')+'">'+(g.err?'<div class="banner bad small">'+esc(g.err)+'</div>':g.avviso?'<div class="banner warn small">'+esc(g.avviso)+'</div>':'')+
+       sel('tipo','Sezione',DET_TIPI)+(g.tipo?'<div class="detrow">'+(g.tipo!=='nota'?inp('data','Data','date'):'')+inp('pz',g.tipo==='notap'?'Paziente (facoltativo)':'Paziente')+'</div>':'')+
+       (g.tipo==='seduta'?inp('durata','Durata (minuti)','number'):'')+
+       (g.tipo==='diagnosi'?'<div class="detrow">'+inp('codice','Codice')+sel('stato','Stato',['ipotesi','confermata','in remissione','esclusa'])+'</div>':'')+
+       (g.tipo==='episodio'?sel('cat','Categoria',CATS):'')+
+       fld(g.tipo==='diagnosi'?'Nota (facoltativa)':'Testo','<textarea '+k('testo')+' rows="5">'+esc(g.testo)+'</textarea>')+'</div>'}).join('')+
+     (st.segs.some(g=>g.tipo)?'<button class="btn pri detgo" data-act="detCrea">Crea '+st.segs.filter(g=>g.tipo).length+' voci in «In uscita»</button>':'')}
+  return h}
+document.addEventListener('input',detCampo);document.addEventListener('change',detCampo);
+function detCampo(e){const t=e.target,k=t&&t.dataset&&t.dataset.dk;if(!k||S.view!=='cdet')return;const st=detStato(),m=/^(\d+):(\w+)$/.exec(k);
+  if(m){const g=st.segs&&st.segs[+m[1]];if(!g)return;g[m[2]]=m[2]==='durata'?(+t.value||50):t.value;
+    if(m[2]==='tipo'&&e.type==='change'){Object.assign(g,detPrepara(g.tipo,g.testo,g.pz,g.data),{err:''});render()}}
+  else st[k]=t.value;
+  saveSoon()}
+A.detDividi=()=>{const st=detStato();if(!st.testo.trim()){toast('Detta o scrivi prima il testo.');return}
+  st.segs=detDividi(st.testo,normPz(st.pz)||st.pz.trim(),st.data||today());save().then(render)};
+A.detSvuota=async()=>{const st=detStato();if((st.testo||st.segs)&&!await ask('<p>Svuotare la dettatura? Il testo e le sezioni non ancora create andranno persi.</p>',{ok:'Svuota'}))return;
+  delete D().dettBozza;await save();render()};
+A.detCrea=async()=>{
+  const st=detStato();let n=0;const resto=[];
+  for(const g of st.segs){if(!g.tipo)continue;
+    try{await ctSave(g.tipo,detVoce(g),null);n++}catch(e){g.err=e.message||'Non salvato.';resto.push(g)}}
+  if(resto.length){st.segs=resto;await save();render();toast(n+' voci create. '+resto.length+' da correggere (in rosso).');return}
+  delete D().dettBozza;await save();S.view='cout';render();toast(n+(n===1?' voce creata':' voci create')+': le trovi qui, pronte da esportare.')};
+const _cvDet=compView;
+compView=function(v){return v==='cdet'?vCDet():_cvDet.apply(this,arguments)};
 
 /* ---------- Coda dei fogli e controllo delle variazioni ----------
    Più foto di test in una volta, lette una dopo l'altra (strumento ricordato), con riepilogo finale.
