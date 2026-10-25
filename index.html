@@ -1309,6 +1309,8 @@ mark{background:#f3d77a;color:#222;border-radius:3px;padding:0 1px}
 .lrd-ar{width:44px;height:40px;border-radius:12px;border:1px solid #DDD0B8;background:#FFFDF8;color:#414625;font-size:24px;line-height:1;cursor:pointer}.lrd-ar:disabled{opacity:.35}
 .lrd-seg{flex:1;display:flex}.lrd-seg button{flex:1}.libres{margin:10px 0}
 .lrd-bot input{width:76px;padding:8px 6px;border-radius:10px;border:1px solid #DDD0B8;font-size:16px}
+.detimpb{display:inline-flex;align-items:center;gap:8px;margin:2px 0 12px}.detimpb svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+#detimp{width:100%;font-size:17px;line-height:1.5;padding:12px;border-radius:12px;border:1px solid var(--line)}
 
 /* tema scuro */
 html[data-eff=dark]{--glass:32,36,26;--glass2:19,21,14;--green:#3B4122;--green-deep:#2A2E17;--green-soft:#7F8A56;--gtx:#CBD39E;--cream:#13150E;--cream-2:#1C1F14;--paper:#1A1D13;--card:#20241A;--hero:#1E2216;--terra:#D27C58;--terra-dark:#E5A07F;--terra-light:#C0724F;--terra-bg:#3A261C;--ink:#EEE7D7;--body:#D3CCBA;--mut:#B5AB96;--line:#363B2B;--sand:#4C5239;--pri2:#2C3220;--ok:#BDD596;--ok2:#27311B;--warn:#EBC57E;--warn2:#3A2F15;--bad:#F3A898;--bad2:#40211B;color-scheme:dark}
@@ -1677,6 +1679,7 @@ html[data-eff=dark] .nqs .nq.cam .ctile-i{background:#40261C;color:#E9A98B}
 <div id="root"></div><div id="modal"></div><div id="print"></div><div id="toast" role="status" aria-live="polite"></div>
 <noscript>Questa applicazione richiede JavaScript.</noscript>
 <script>
+const APP_VER='2026-10-25 · 1d248b3';
 'use strict';
 /* =====================================================================
    ARCHIVIO CLINICO  v0.3  -  file unico, offline, dati cifrati nel browser
@@ -2518,7 +2521,9 @@ let VIEWURL=null;
 function newRid(){const used=new Set(((S.db&&S.db.patients)||[]).map(p=>p.rid));for(let k=0;k<50;k++){const c='R-'+Array.from(rnd(8),b=>REC_AL[b&31]).join('');if(!used.has(c))return c}return 'R-'+uid().toUpperCase()}
 function ensureRids(d){const used=new Set(d.patients.map(p=>p.rid).filter(Boolean));d.patients.forEach(p=>{if(!p.rid){let c;do{c='R-'+Array.from(rnd(8),b=>REC_AL[b&31]).join('')}while(used.has(c));used.add(c);p.rid=c}})}
 document.addEventListener('input',e=>{const t=e.target;if(t&&t.dataset&&t.dataset.pw){const h=document.getElementById(t.dataset.pw);if(h)h.textContent=pwHint(t.value)}});
-function nextCod(d){const n=Math.max(d.set.nextCod||0,...d.patients.map(p=>parseInt(String(p.cod||'').replace(/\D/g,''),10)||0))+1;d.set.nextCod=n;return 'PZ-'+String(n).padStart(4,'0')}
+/* codici: PZ-0001 (Mac) e PZ-CLL0001 (creati sul telefono, js_codici.js) */
+const PZ_RE=/^PZ-(?:CLL)?\d{1,6}$/;
+function nextCod(d){const n=Math.max(d.set.nextCod||0,...d.patients.map(p=>{const m=/^PZ-(\d+)$/.exec(p.cod||'');return m?+m[1]:0}))+1;d.set.nextCod=n;return 'PZ-'+String(n).padStart(4,'0')}
 function assignCods(d){
   const seen=new Set();
   d.patients.slice().sort((a,b)=>String(a.creato||a.presa||'').localeCompare(String(b.creato||b.presa||''))||String(a.id).localeCompare(String(b.id))).forEach(p=>{if(p.cod&&!seen.has(p.cod)){seen.add(p.cod)}else p.cod=''});
@@ -3525,7 +3530,7 @@ function impParse(f){
   if(toks.length){const k=nz(toks[0]).replace(/ /g,''),t=IMP_T.find(x=>x[2].includes(k));if(t){type=t[0];tipoDoc=IMP_DOCT[k]||'altro';toks.shift()}}
   let cod='',nameT=[],descT=[],dates=[],ora='',dur=0,seen=false;
   toks.forEach(t=>{let m;
-    if(m=/^PZ-?(\d{1,6})$/i.exec(t)){cod='PZ-'+String(+m[1]).padStart(4,'0');return}
+    if(m=/^PZ-?(CLL-?)?(\d{1,6})$/i.exec(t)){cod='PZ-'+(m[1]?'CLL':'')+String(+m[2]).padStart(4,'0');return}
     const d=parseDateT(t);if(d){dates.push(d);seen=true;return}
     if(m=/^(\d{1,2})[.:h](\d{2})$/.exec(t)){ora=m[1].padStart(2,'0')+':'+m[2];seen=true;return}
     if(m=/^(\d{2,3})\s?min$/i.exec(t)){dur=+m[1];seen=true;return}
@@ -4391,7 +4396,7 @@ A.tkNew=async()=>{
 const fz=s=>String(s==null?'':s).replace(/[\\/:*?"<>|_\r\n\t]+/g,' ').replace(/\s+-\s+/g,' ').replace(/\s+/g,' ').trim();
 const oneL=s=>String(s==null?'':s).replace(/\s*[\r\n]+\s*/g,' ').trim();
 /* codice paziente (PZ-0001) oppure «Cognome Nome» di un paziente nuovo creato sul telefono */
-function normPz(s){s=String(s||'').trim();const m=/^PZ[-\s]?(\d{1,6})$/i.exec(s);if(m)return 'PZ-'+String(+m[1]).padStart(4,'0');const n=fz(s);return n.split(' ').length>=2?n:''}
+function normPz(s){s=String(s||'').trim();const m=/^(?:PZ[-\s]?)?(CLL[-\s]?)?(\d{1,6})$/i.exec(s);if(m&&(m[1]||/^PZ/i.test(s)))return 'PZ-'+(m[1]?'CLL':'')+String(+m[2]).padStart(4,'0');const n=fz(s);return n.split(' ').length>=2?n:''}
 const PZF={k:'pz',l:'Paziente',req:1,list:'pzl',h:'Codice (PZ-0001) oppure, per un paziente nuovo creato qui, «Cognome Nome».'};
 const DTF=(k,l)=>({k:k||'data',l:l||'Data',t:'date',req:1,d:today()});
 const DXRE=/^([A-Z]\d{2}(\.\d{1,2})?|\d[A-Z]\d{1,2}(\.\d)?)$/i;
@@ -4519,7 +4524,7 @@ async function ctFiles(items){
   const files=[],used=new Set();
   for(const it of items){
     const T=CT[it.type];if(!T)continue;
-    const z=it.pz?(/^PZ-\d+$/.test(it.pz)?it.pz:fz(it.pz)):'';
+    const z=it.pz?(PZ_RE.test(it.pz)?it.pz:fz(it.pz)):'';
     let base=T.name(it.v,z),ext='.txt',bytes,mime='text/plain';
     if(T.photo){
       if(!it.photo)continue;
@@ -4581,9 +4586,9 @@ A.crcPick=()=>formModal('Ricevuta del Mac',[{k:'file',l:'File RICEVUTA_….acrc'
 function plApply(p){
   if(p.kind!=='elenco')throw new Error('Questo è un pacchetto di un altro tipo: serve il file ELENCO dal Mac.');
   const s=x=>String(x==null?'':x).slice(0,40);
-  const pz=(Array.isArray(p.pz)?p.pz:[]).slice(0,5000).map(x=>({c:s(x.c),i:s(x.i)})).filter(x=>/^PZ-\d+$/.test(x.c));
+  const pz=(Array.isArray(p.pz)?p.pz:[]).slice(0,5000).map(x=>({c:s(x.c),i:s(x.i)})).filter(x=>PZ_RE.test(x.c));
   const ag=(Array.isArray(p.ag)?p.ag:[]).slice(0,3000).map(x=>({d:s(x.d),o:s(x.o),u:Number(x.u)||50,c:s(x.c),i:s(x.i)})).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x.d));
-  D().plist={at:today(),pz,ag,blocchi:pzBlocchiDa(p)};log('Elenco dal Mac caricato',pz.length+' codici');return save().then(()=>{render();toast('Elenco caricato: '+pz.length+' pazienti, '+ag.length+' appuntamenti')})}
+  D().plist={at:today(),pz,ag};log('Elenco dal Mac caricato',pz.length+' codici');return save().then(()=>{render();toast('Elenco caricato: '+pz.length+' pazienti, '+ag.length+' appuntamenti')})}
 A.plPick=()=>pickFile('.acpk',async f=>{
   const text=await f.text();let h;try{h=pkHead(text)}catch(e){pkErr(e.message);return}
   if(pkIsKey(h)){try{await plApply(await pkOpenK(h))}catch(e){pkErr(e.message)}return}
@@ -4597,7 +4602,7 @@ function plistPayload(){
   const pz=A_.map(p=>({c:p.cod,i:ini(p)})).sort((a,b)=>a.c.localeCompare(b.c));
   const lim=new Date(Date.now()+120*86400000).toISOString().slice(0,10);
   const ag=D().appts.filter(a=>a.stato==='previsto'&&a.data>=today()&&a.data<=lim&&by[a.pid]).map(a=>({d:a.data,o:a.ora||'',u:a.durata||50,c:by[a.pid].cod,i:ini(by[a.pid])})).sort((a,b)=>(a.d+a.o).localeCompare(b.d+b.o));
-  return {kind:'elenco',t:new Date().toISOString(),pz,ag,blocco:pzBloccoTelefono()}}
+  return {kind:'elenco',t:new Date().toISOString(),pz,ag}}
 A.pkgPlist=async()=>{
   if(!D().set.tk){await A.pkgKey();toast('Prima metti questa chiave sul telefono, poi crea l’elenco.');return}
   const pl=plistPayload(),sealed=await pkSealK(D().set.tk,pl);
@@ -4699,7 +4704,7 @@ function vCExp(){
    '<div class="err"></div><button class="btn pri"'+(p||s?'':' disabled')+'>Crea il pacchetto</button></form></div>'}
 function vCSet(){
   const P=PLI(),ex=OUT().filter(x=>x.batch).length,s=D().set,cur=s.idleMin||5,opts=IDLE_OPT.indexOf(cur)<0?IDLE_OPT.concat([cur]).sort((a,b)=>a-b):IDLE_OPT;
-  return '<h1>Impostazioni</h1>'+
+  return '<h1>Impostazioni</h1><p class="small mut">Versione dell’app: <b>'+esc(typeof APP_VER==='string'?APP_VER:'?')+'</b></p>'+
    '<div class="card"><h3>Chiave di trasferimento</h3><p class="small mut">'+(s.tk?'<b>Impostata.</b> Esporti senza password. Se la cambi sul Mac, inserisci qui la nuova.':'Non ancora impostata. Serve una sola volta: la crei sul Mac (Importa › Chiave per il telefono) e la incolli qui.')+'</p><button class="btn'+(s.tk?'':' pri')+'" data-act="tkSet">'+(s.tk?'Cambia la chiave':'Inserisci la chiave')+'</button></div>'+
    '<div class="card"><h3>Pazienti e agenda dal Mac</h3>'+pzCodiciCardHTML()+'<p class="small mut">'+(P.at?'Caricato il '+fd(P.at)+': <b>'+P.pz.length+'</b> pazienti (solo codice e iniziali), <b>'+P.ag.length+'</b> appuntamenti.':'Nessun elenco caricato. Senza elenco scrivi tu il codice PZ-… ogni volta, ed è la scelta più riservata.')+'</p><button class="btn" data-act="plPick">'+(P.at?'Aggiorna l’elenco':'Carica l’elenco dal Mac')+'</button></div>'+
    '<div class="card"><h3>Svuota il telefono</h3><p class="small mut">Dopo aver importato sul Mac, apri la ricevuta che il Mac ti ha dato: il telefono cancella da solo le voci importate.</p><div class="row"><button class="btn pri" data-act="crcPick">Apri la ricevuta</button><button class="btn" data-act="cclear"'+(ex?'':' disabled')+'>Cancella le '+ex+' già esportate</button></div></div>'+
@@ -4777,7 +4782,7 @@ function sanitizeDb(d){
     SAFE_DATE_K.forEach(k=>{if(typeof x[k]==='string'&&x[k]!==''&&!okYmd(x[k])){const m=/^(\d{4}-\d{2}-\d{2})/.exec(x[k]);x[k]=m?m[1]:'';fixed++}});
     if(typeof x.ora==='string'&&x.ora!==''&&!/^\d{2}:\d{2}$/.test(x.ora)){x.ora='';fixed++}
     ['kw'].forEach(k=>{if(Array.isArray(x[k]))x[k]=x[k].map(v=>typeof v==='string'?cleanId(v):v)});
-    if(typeof x.cod==='string'&&x.cod!==''&&!/^PZ-\d{1,6}$/.test(x.cod)){x.cod='';fixed++}
+    if(typeof x.cod==='string'&&x.cod!==''&&!PZ_RE.test(x.cod)){x.cod='';fixed++}
   };
   ['patients','episodes','sessions','docs','scales','consents','events','dx','appts','tests','tasks','paths','instr','tpls','views','formaz','inbox','customScales','vocab','out','notes','npCats'].forEach(c=>{if(Array.isArray(d[c]))d[c].forEach(fix)});
   if(Array.isArray(d.out))d.out.forEach(it=>{if(it&&it.v)fix(it.v);if(it&&it.photo)fix(it.photo)});
@@ -6183,6 +6188,7 @@ vCAg=function(){
   const dm=phoneDayMap(),sel=S.pcd||today(),L=pcItems(sel),dk=calDk();
   const title=d.toLocaleDateString('it-IT',{month:'long',year:'numeric'});
   let h='<h1>Calendario</h1><p class="small mut">Lo stesso calendario che vedi prima dell’accesso. Tocca un giorno per vedere o aggiungere impegni: arrivano sul Mac con l’esportazione.</p>'+
+   '<button class="btn pri detimpb" data-act="dettaImpegno">'+svgI(micIc)+' Detta un impegno</button>'+
    '<div class="card pcal"><div class="lc-h"><button type="button" class="lc-n" data-act="pcNav" data-n="-1" aria-label="Mese precedente"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><b>'+esc(title)+'</b><button type="button" class="lc-n" data-act="pcNav" data-n="1" aria-label="Mese successivo"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div>'+
    '<div class="lc-g">'+lcCells(cm,k=>dm[k],true,sel)+'</div><div class="lc-f">'+lcLeg(dk)+'</div></div>'+
    '<h3 class="csec">'+esc(new Date(sel+'T12:00:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'}))+'</h3>';
@@ -6346,7 +6352,7 @@ const fogMark=async(id,outId)=>{const it=FOG().find(x=>x.id===id);if(it){it.stat
 /* ---------- appunti: dal testo riconosciuto alla voce da esportare ---------- */
 function fogGuess(txt){
   const t=String(txt||''),o={};let m;
-  if(m=/\bPZ[-\s]?(\d{1,6})\b/i.exec(t))o.pz='PZ-'+String(+m[1]).padStart(4,'0');
+  if(m=/\bPZ[-\s]?(CLL[-\s]?)?(\d{1,6})\b/i.exec(t))o.pz='PZ-'+(m[1]?'CLL':'')+String(+m[2]).padStart(4,'0');
   if(m=/\b(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})\b/.exec(t)){let y=+m[3];if(y<100)y+=2000;const dd=okDate(y,+m[2],+m[1]);if(dd)o.data=dd}
   else if(m=/\b(\d{4})-(\d{2})-(\d{2})\b/.exec(t)){const dd=okDate(+m[1],+m[2],+m[3]);if(dd)o.data=dd}
   return o}
@@ -6371,7 +6377,7 @@ A.fogTest=d=>{const it=FOG().find(x=>x.id===d.id);if(!it)return;const C=ftCatalo
   const opts=C.ins.map((x,i)=>['i'+i,x.nome+(x.versione?' '+x.versione:'')]).concat(C.sc.map((x,i)=>['s'+i,x.nome+' (scala a item)'])).sort((a,b)=>a[1].localeCompare(b[1],'it'));
   formModal('Trascrivi il test'+fqTitle(),[{k:'w',l:'Strumento o scala',t:'select',o:opts,req:1,h:C.mac?'Sono gli strumenti e le scale del tuo Mac.':'Sono i modelli dell’app. Per avere anche gli strumenti che hai creato sul Mac, carica di nuovo l’Elenco dal Mac.'},
     Object.assign({},PZF,{h:'Codice PZ-0001: il risultato va nella scheda di questo paziente.'}),{k:'data',l:'Data della somministrazione',t:'date',req:1}],{data:it.data,w:(S.fq&&S.fq.w)||(opts[0]&&opts[0][0])},async o=>{
-    const pz=normPz(o.pz);if(!/^PZ-\d+$/.test(pz))throw new Error('Per un test serve il codice del paziente (PZ-0001).');
+    const pz=normPz(o.pz);if(!PZ_RE.test(pz))throw new Error('Per un test serve il codice del paziente (PZ-0001).');
     if(S.fq)S.fq.w=o.w;setTimeout(()=>ftForm({w:o.w,pz,data:o.data,sheet:it.id}),40)},'<datalist id="pzl">'+pzOptions()+'</datalist>'+fqExtras())};
 function ftDef(w,v){const C=ftCatalog();
   if(v&&v.kind){if(v.kind==='sc'){const s=C.sc.find(x=>x.nome===v.nome)||{nome:v.nome,n:(v.items||[]).length||1,min:0,max:999};return {kind:'sc',d:s}}
@@ -7001,40 +7007,24 @@ function grpEnsure(nome){
   if(!g){g={id:uid(),nome,colore:GRP_COLORI[grps().length%GRP_COLORI.length][0]};grps().push(g);log('Gruppo creato (da importazione)',nome)}
   return g.id}
 
-/* ---------- Codici paziente automatici anche sul telefono, senza doppioni con il Mac ----------
-   Il Mac e il telefono non si parlano: per non creare due volte lo stesso PZ, il Mac RISERVA al telefono un blocco
-   di codici (per esempio PZ-0041…PZ-0070) e lo manda dentro l'ELENCO per il telefono; da quel momento il Mac,
-   per i pazienti creati da lui, salta quei numeri. Il telefono assegna da solo il primo codice libero del blocco a ogni
-   «Nuovo paziente» e lo scrive nella voce esportata; il Mac, importando, usa proprio quel codice.
-   Se per errore un codice fosse già occupato, il Mac ne assegna un altro e lo dice nell'anteprima dell'importazione. */
-const PZ_BLOCCO=30,PZ_RIMANDA=10;
-const pzNum=c=>parseInt(String(c||'').replace(/\D/g,''),10)||0;
-const pzCod=n=>'PZ-'+String(n).padStart(4,'0');
-/* lato Mac: blocco da mandare con l'elenco. Si rimanda lo stesso finché ha almeno 10 codici non ancora arrivati */
-function pzBloccoTelefono(){
-  const s=D().set,usati=new Set(D().patients.map(p=>pzNum(p.cod))),b=s.bloccoTel;
-  if(b){let liberi=0;for(let n=b.da;n<=b.a;n++)if(!usati.has(n))liberi++;if(liberi>=PZ_RIMANDA)return {da:b.da,a:b.a}}
-  const max=Math.max(s.nextCod||0,...D().patients.map(p=>pzNum(p.cod)));
-  const nb={da:max+1,a:max+PZ_BLOCCO};s.nextCod=nb.a;s.bloccoTel=nb;
-  log('Codici riservati al telefono',pzCod(nb.da)+' – '+pzCod(nb.a));saveSoon();return nb}
-/* lato telefono: blocchi ricevuti (si sommano, così un codice di un blocco vecchio non torna mai libero) */
-function pzBlocchiDa(p){const old=(D().plist&&D().plist.blocchi)||[],b=p&&p.blocco;
-  const ok=b&&Number.isInteger(b.da)&&Number.isInteger(b.a)&&b.da>0&&b.a>=b.da&&b.a-b.da<=200;
-  return ok&&!old.some(x=>x.da===b.da&&x.a===b.a)?old.concat([{da:b.da,a:b.a}]).slice(-20):old}
+/* ---------- Codici dei pazienti creati sul telefono: PZ-CLL0001, PZ-CLL0002… ----------
+   Il Mac numera PZ-0001, PZ-0002…; il telefono ha una numerazione sua, con «CLL» (cellulare) nel codice.
+   Le due serie non si toccano mai: niente elenchi da sincronizzare, niente doppioni. Il codice resta quello per sempre,
+   anche sul Mac dopo l'importazione. Il contatore del telefono riparte dal più alto che conosce (le voci in uscita,
+   quelle già esportate e i codici arrivati con l'elenco dal Mac): anche dopo una reinstallazione, caricando l'elenco,
+   non ripete un codice. Se per errore un codice fosse già occupato, il Mac all'importazione ne assegna un altro e lo dice. */
+const pzNumTel=c=>{const m=/^PZ-CLL(\d+)$/.exec(String(c||''));return m?+m[1]:0};
 const pzUsatiTel=()=>D().pzUsati||(D().pzUsati=[]);
-function pzLiberiTel(){
-  const usati=new Set(pzUsatiTel().concat(PLI().pz.map(x=>x.c),OUT().filter(i=>i.type==='nuovo'&&i.v.cod).map(i=>i.v.cod))),L=[];
-  for(const b of PLI().blocchi||[])for(let n=b.da;n<=b.a;n++){const c=pzCod(n);if(!usati.has(c))L.push(c)}
-  return L}
-/* chiamata da ctSave per «Nuovo paziente»: il codice c'è sempre, anche senza nome */
+function pzProssimoTel(){
+  const n=Math.max(D().set.cllNext||0,...PLI().pz.map(x=>pzNumTel(x.c)),...pzUsatiTel().map(pzNumTel),
+    ...OUT().filter(i=>i.type==='nuovo'&&i.v).map(i=>pzNumTel(i.v.cod)))+1;
+  return 'PZ-CLL'+String(n).padStart(4,'0')}
+/* chiamata da ctSave per «Nuovo paziente»: il codice c'è sempre, anche senza nome; modificando la voce non cambia */
 function pzConCodice(o,editId){
   const old=editId&&OUT().find(x=>x.id===editId);
-  if(old&&old.v&&old.v.cod)return Object.assign({},o,{cod:old.v.cod});
-  const c=pzLiberiTel()[0];
-  if(!c)throw new Error((PLI().blocchi||[]).length?'Hai usato tutti i codici riservati al telefono. Esporta le voci, importale sul Mac e carica qui un nuovo elenco: arriveranno altri codici.':'Per assegnare il codice (PZ-…) serve l’elenco dal Mac: sul Mac crea l’«Elenco per il telefono» e caricalo qui in Impostazioni. Contiene i codici riservati al telefono.');
-  return Object.assign({},o,{cod:c})}
-function pzCodiciCardHTML(){const L=pzLiberiTel(),B=PLI().blocchi||[];
-  return '<p class="small mut">Codici per i nuovi pazienti: '+(B.length?'<b>'+L.length+'</b> ancora liberi'+(L.length?' (il prossimo è <b>'+esc(L[0])+'</b>)':'')+'.':'nessuno: carica l’elenco dal Mac.')+'</p>'}
+  const cod=old&&old.v&&old.v.cod?old.v.cod:pzProssimoTel();
+  return Object.assign({},o,{cod})}
+function pzCodiciCardHTML(){return '<p class="small mut">I pazienti nuovi creati qui ricevono da soli un codice del telefono: il prossimo è <b>'+esc(pzProssimoTel())+'</b>.</p>'}
 
 /* ---------- Da fare e percorsi di valutazione ----------
    D().tasks = [{id,pid,testo,scad,fatto,dataFatto}]   compiti per paziente, con scadenza facoltativa
@@ -7226,7 +7216,7 @@ compView=function(v){return (v==='cfog'||v==='cnew'||!v?fvBozzaBanner():'')+_com
    Se il PDF è una scansione senza testo, la ricerca non può funzionare (non c'è riconoscimento ottico dei caratteri). */
 COMP_V.push('clib');
 const LIB_MAX_MB=500,LIB_SALVA_OGNI=40,LIB_VERSIONE=2; /* 2 = testo + struttura (titoli, numeri di pagina, indici) */
-const LIB={idx:null,prog:null,q:'',libro:'',doc:null,docId:null,pdfjs:null,stop:false,tutte:false};
+const LIB={idx:null,prog:null,q:'',libro:'',doc:null,docId:null,pdfjs:null,stop:false,tutte:{},carico:null};
 
 /* ---- database proprio: meta (scheda del PDF), testo (pagine; «id:s» = struttura), pdf (il file) ---- */
 let _libDb=null;
@@ -7240,11 +7230,15 @@ const libDelKey=(s,k)=>libTx(s,'readwrite',o=>o.delete(k));
 const libMetas=async()=>(await libTx('meta','readonly',o=>o.getAll())||[]).sort((a,b)=>a.t-b.t);
 
 /* ---- normalizzazione: minuscolo, senza accenti, spazi uniformi, SEMPRE della stessa lunghezza (le posizioni coincidono) ---- */
-const _libFoldMap={};
-function libFold(s){let o='';
-  for(let i=0;i<s.length;i++){const c=s[i];let f=_libFoldMap[c];
-    if(f===undefined){let x=/\s/.test(c)?' ':c.normalize('NFD')[0].toLowerCase();if(x.length!==1)x=c;f=_libFoldMap[c]=x}
-    o+=f}
+let _libTab=null;
+function libTabella(){const t=new Uint16Array(65536);
+  for(let c=0;c<65536;c++){const ch=String.fromCharCode(c);let x=ch;
+    if(c<0xD800||c>0xDFFF){if(/\s/.test(ch))x=' ';else{x=ch.normalize('NFD')[0].toLowerCase();if(x.length!==1)x=ch}}
+    t[c]=x.charCodeAt(0)}
+  return t}
+function libFold(s){const T=_libTab||(_libTab=libTabella()),n=s.length,u=new Uint16Array(n);
+  for(let i=0;i<n;i++)u[i]=T[s.charCodeAt(i)];
+  let o='';for(let i=0;i<n;i+=8192)o+=String.fromCharCode.apply(null,u.subarray(i,Math.min(n,i+8192)));
   return o}
 
 /* ---- una pagina: testo a righe, titoli, numero stampato, pagina di indice ---- */
@@ -7386,11 +7380,15 @@ compView=function(v){return v==='clib'?vCLib():_cvLib.apply(this,arguments)};
    4. Comorbidità e diagnosi differenziale – menzioni dentro questi paragrafi di altri capitoli
    5. Altre pagine – le menzioni secondarie
    Funziona bene quanto è ordinata la struttura del PDF: segnalibri e titoli più grandi del testo. */
-const LIB_ALTRE=25;
+const LIB_LIMITI={indice:12,capitolo:8,paragrafi:30,comorb:20,altre:20},LIB_MIN=3;
 
 /* ---- indice in memoria ---- */
-async function libCarica(){
-  if(LIB.idx)return LIB.idx;
+function libCarica(){
+  if(LIB.idx)return Promise.resolve(LIB.idx);
+  /* un solo caricamento alla volta: le lettere scritte nel frattempo aspettano questo */
+  if(!LIB.carico)LIB.carico=libCaricaOra().finally(()=>{LIB.carico=null});
+  return LIB.carico}
+async function libCaricaOra(){
   const out=[];
   for(const m of await libMetas()){if(!m.fatte||(m.v||1)<LIB_VERSIONE)continue;
     const pages=(await libGet('testo',m.id))||[],st=(await libGet('testo',m.id+':s'))||{heads:[],pn:[],toc:[],outline:[]},norm=[];
@@ -7420,6 +7418,8 @@ function libCerca(q,libroId){
   const T=libTermini(q),G={indice:[],capitolo:[],paragrafi:[],comorb:[],altre:[]};
   if(!T.length||!LIB.idx)return {T,G,tot:0,parziale:false};
   const P=T.join(' '),tutti=s=>T.every(t=>s.includes(t));
+  /* più parole: se la frase esatta esiste nel libro, contano solo le pagine che la contengono */
+  const frase=T.length>1&&LIB.idx.some(b=>(!libroId||b.id===libroId)&&b.norm.some(pg=>pg.includes(P)));
   const run=or=>{
    const ha=or?(s=>T.some(t=>s.includes(t))):tutti;
    for(const b of LIB.idx){if(libroId&&b.id!==libroId)continue;
@@ -7448,7 +7448,7 @@ function libCerca(q,libroId){
     const nelTitolo=(i,o)=>princ.some(x=>x.da==='tit'&&x.i===i&&o>=x.o&&o<x.o+x.hl);
     const gruppi=new Map();
     for(let i=0;i<b.n;i++){if(b.st.toc[i])continue;const pg=b.norm[i];
-      let cerca=null;if(T.length>1&&pg.includes(P))cerca=P;else if(ha(pg))cerca=T.find(t=>pg.includes(t));if(!cerca)continue;
+      let cerca=null;if(T.length>1&&pg.includes(P))cerca=P;else if(!(frase&&!or)&&ha(pg))cerca=T.find(t=>pg.includes(t));if(!cerca)continue;
       let pos=-1,k=0;while(k<12&&(pos=pg.indexOf(cerca,pos+1))>=0){k++;if(nelTitolo(i,pos))continue;
         const c=libCtx(b,i,pos),inP=dentro(i,pos),sz=c.sez?libFold(c.sez.t):'';
         const cls=inP?'paragrafi':/comorbid|differential|differenzial/.test(sz)?'comorb':'altre';
@@ -7461,7 +7461,7 @@ function libCerca(q,libroId){
   G.capitolo.sort((a,c)=>(c.esatto-a.esatto)||(c.z-a.z)||(a.i-c.i));G.capitolo=G.capitolo.filter((x,k,L)=>L.findIndex(y=>y.b===x.b&&y.i===x.i)===k);
   G.paragrafi.sort((a,c)=>a.b===c.b?a.i-c.i||a.o-c.o:0);G.comorb.sort((a,c)=>a.i-c.i);
   G.altre.sort((a,c)=>(c.frase-a.frase)||(c.n-a.n)||(a.i-c.i));
-  return {T,G,parziale,tot:Object.values(G).reduce((s,x)=>s+x.length,0)}}
+  return {T,G,parziale,frase,tot:Object.values(G).reduce((s,x)=>s+x.length,0)}}
 
 /* ---- testo con le parole cercate in evidenza (da..a = parte da mostrare) ---- */
 function libMarca(orig,norm,T,da,a){
@@ -7483,22 +7483,27 @@ function libVoce(x,T,tipo){
   const tit=x.sez||x.big||libPercorso(x.b,x.i).slice(-1)[0]||'Testo',sopra=x.sez&&x.big?x.big:(x.sez?libPercorso(x.b,x.i).slice(-1)[0]:'');
   return '<button class="lx-e lx-par"'+dati+'><span class="lx-r"><span class="lx-t">'+esc(tit)+'</span><span class="lx-dots"></span><span class="lx-n">'+esc(pag||x.i+1)+'</span></span>'+
     (sopra?'<span class="lx-w">'+esc(sopra)+libro+'</span>':libro?'<span class="lx-w">'+libro.slice(3)+'</span>':'')+'<span class="lx-s">'+libSnippet(x.b,x.i,x.o,T)+'</span></button>'}
-let _libT=null;
-async function libRisultati(){
-  const box=$('#libres');if(!box)return;
+let _libT=null,_libSeq=0;
+const libCorta=q=>{q=q.trim().replace(/^["«“]|["»”]$/g,'');return q.length<LIB_MIN&&!/\d/.test(q)};
+/* un errore imprevisto si vede nella pagina (con il testo da mandarmi), invece di bloccare la ricerca */
+async function libRisultati(){try{await libRisultatiOra()}catch(e){const b=$('#libres');if(b)b.innerHTML='<p class="small libwarn">Errore nella ricerca: '+esc((e&&e.message)||String(e))+'. Fai uno screenshot e mandamelo.</p>'}}
+async function libRisultatiOra(){
+  const box=$('#libres');if(!box)return;const seq=++_libSeq;
   if(!LIB.q.trim()){box.innerHTML='';return}
-  if(!LIB.idx)box.innerHTML='<p class="small mut">Preparo la ricerca…</p>';
-  await libCarica();if($('#libres')!==box)return;
+  if(libCorta(LIB.q)){box.innerHTML='<p class="small mut">Scrivi almeno '+LIB_MIN+' lettere.</p>';return}
+  if(!LIB.idx)box.innerHTML='<p class="small mut">Preparo la ricerca… (la prima volta qualche secondo)</p>';
+  await libCarica();if($('#libres')!==box||seq!==_libSeq)return;
   if(!LIB.idx.length){box.innerHTML='<p class="small mut">Non c’è ancora nessun PDF pronto per la ricerca.</p>';return}
   const r=libCerca(LIB.q,LIB.libro);
   if(!r.tot){box.innerHTML='<p class="small mut">Nessun risultato per «'+esc(LIB.q)+'».</p>';return}
-  const sez=(k,tit,L,lim)=>L.length?'<section class="lx lx-'+k+'"><h4 class="lx-h">'+tit+' <span>'+L.length+'</span></h4>'+L.slice(0,lim||L.length).map(x=>libVoce(x,r.T,k)).join('')+
-    (lim&&L.length>lim?'<button class="btn sm lx-more" data-act="libTutte">Mostra tutte le '+L.length+' pagine</button>':'')+'</section>':'';
+  const sez=(k,tit,L)=>{if(!L.length)return '';const lim=LIB.tutte[k]?L.length:LIB_LIMITI[k];
+    return '<section class="lx lx-'+k+'"><h4 class="lx-h">'+tit+' <span>'+L.length+'</span></h4>'+L.slice(0,lim).map(x=>libVoce(x,r.T,k)).join('')+
+    (L.length>lim?'<button class="btn sm lx-more" data-act="libTutte" data-k="'+k+'">Mostra tutte ('+L.length+')</button>':'')+'</section>'};
   box.innerHTML=(r.parziale?'<p class="small mut">Nessuna pagina contiene tutte le parole: ecco quelle con almeno una.</p>':'')+'<div class="lxbook">'+
     sez('indice','Indice',r.G.indice)+sez('capitolo','Capitolo',r.G.capitolo)+sez('paragrafi','Paragrafi del capitolo',r.G.paragrafi)+
-    sez('comorb','Comorbidità e diagnosi differenziale',r.G.comorb)+sez('altre','Altre pagine',r.G.altre,LIB.tutte?0:LIB_ALTRE)+'</div>'}
-document.addEventListener('input',e=>{const t=e.target;if(t&&t.id==='libq'){LIB.q=t.value;LIB.tutte=false;clearTimeout(_libT);_libT=setTimeout(libRisultati,160)}});
-A.libTutte=()=>{LIB.tutte=true;libRisultati()};
+    sez('comorb','Comorbidità e diagnosi differenziale',r.G.comorb)+sez('altre','Altre pagine',r.G.altre)+'</div>'}
+document.addEventListener('input',e=>{const t=e.target;if(t&&t.id==='libq'){LIB.q=t.value;LIB.tutte={};clearTimeout(_libT);_libT=setTimeout(libRisultati,350)}});
+A.libTutte=d=>{LIB.tutte[d.k]=true;libRisultati()};
 
 /* ---------- Libreria: lettura «a libro» ----------
    A schermo intero: la pagina vera del PDF con le parole cercate evidenziate, si sfoglia con il dito o con le frecce.
@@ -7598,7 +7603,7 @@ function detDividi(testo,pz0,data0){
   if(!M.length){add('',t);return segs}
   add('',t.slice(0,M[0].da));
   M.forEach((x,i)=>{let s=t.slice(x.dopo,i+1<M.length?M[i+1].da:t.length);
-    if(x.tipo==='paziente'){const c=/^[\s:,.\-–]*(?:p\s?z[\s\-]*)?(\d{1,6})\b/i.exec(s);if(c){pz=normPz('PZ-'+c[1]);s=s.slice(c[0].length)}add('',s);return}
+    if(x.tipo==='paziente'){const c=/^[\s:,.\-–]*(?:p\s?z[\s\-]*)?(c\s?l\s?l[\s\-]*)?(\d{1,6})\b/i.exec(s);if(c){pz=normPz('PZ-'+(c[1]?'CLL':'')+c[2]);s=s.slice(c[0].length)}add('',s);return}
     if(x.tipo==='test'){s=detPulisci(s);if(s)segs.push(Object.assign(detPrepara('nota','Test e scale: '+s,pz,data0),{avviso:'I punteggi si inseriscono a parte: qui resta come nota.'}));return}
     add(x.tipo,s)});
   return segs}
@@ -7613,7 +7618,7 @@ function detPrepara(tipo,s,pz,data){
     if(!g.codice)g.avviso='Non ho trovato il codice (per esempio F41.1): scrivilo tu.'}
   if(tipo==='impegno'||tipo==='formazione'||tipo==='appuntamento'){
     const t=detTempo(s);Object.assign(g,{data:t.data||g.data,dataFine:t.dataFine||'',ora:t.ora||'',oraFine:t.oraFine||''});let resto=t.resto;
-    if(tipo==='appuntamento'){const c=/\b(?:con\s+)?p\s?z[\s\-]*(\d{1,6})\b/i.exec(resto);if(c){g.pz=normPz('PZ-'+c[1]);resto=resto.replace(c[0],' ')}
+    if(tipo==='appuntamento'){const c=/\b(?:con\s+)?(?:p\s?z[\s\-]*(c\s?l\s?l[\s\-]*)?|(c\s?l\s?l[\s\-]*))(\d{1,6})\b/i.exec(resto);if(c){g.pz=normPz('PZ-'+(c[1]||c[2]?'CLL':'')+c[3]);resto=resto.replace(c[0],' ')}
       const d=/\b(?:durata\s*(?:di\s*)?|di\s+)(\d{1,3})\s*minut[io]\b/i.exec(resto);if(d){g.durata=+d[1];resto=resto.replace(d[0],' ')}
       if(!g.ora)g.avviso='Manca l’ora dell’appuntamento: scrivila tu.'}
     g.testo=detPulisci(detRipulisci(resto));
@@ -7672,7 +7677,7 @@ function vCDet(){
   let h='<h1>Dettatura</h1><p class="small mut">Tocca il riquadro e usa il <b>microfono della tastiera</b>. Prima di ogni parte di’ il nome della sezione: «Seduta…», «Domanda…», «Diagnosi F41.1 confermata…», «Nota…», «Nota personale…», «Relazione…». Per cambiare paziente: «Paziente PZ 3». La sezione si riconosce solo all’inizio di una frase. Controlli tutto prima di creare le voci.</p>'+
    '<datalist id="pzl">'+pzOptions()+'</datalist><div class="detrow">'+fld('Paziente','<input data-dk="pz" list="pzl" autocomplete="off" autocapitalize="characters" placeholder="PZ-0001" value="'+esc(st.pz)+'">')+fld('Data','<input data-dk="data" type="date" value="'+esc(st.data)+'">')+'</div>'+
    fld('Testo dettato','<textarea id="det-t" data-dk="testo" rows="10" placeholder="Seduta. Il paziente riferisce…">'+esc(st.testo)+'</textarea>')+
-   '<div class="row"><button class="btn pri" data-act="detDividi">Dividi in sezioni</button><button class="btn" data-act="detSvuota">Svuota</button></div>';
+   '<div class="row"><button class="btn pri" data-act="detDividi">Dividi in sezioni</button><button class="btn" data-act="detSvuota">Svuota</button><button class="btn" data-act="dettaImpegno">Solo un impegno</button></div>';
   if(st.segs){
     h+='<h3 class="libh">'+(st.segs.length?st.segs.length+(st.segs.length===1?' sezione':' sezioni')+' da controllare':'Nessuna sezione')+'</h3>'+
      st.segs.map((g,i)=>{const k=f=>'data-dk="'+i+':'+f+'"',inp=(f,l,t)=>fld(l,'<input '+k(f)+(t?' type="'+t+'"':'')+' value="'+esc(g[f]==null?'':g[f])+'">');
@@ -7703,6 +7708,21 @@ A.detCrea=async()=>{
     try{await ctSave(g.tipo,detVoce(g),null);n++}catch(e){g.err=e.message||'Non salvato.';resto.push(g)}}
   if(resto.length){st.segs=resto;await save();render();toast(n+' voci create. '+resto.length+' da correggere (in rosso).');return}
   delete D().dettBozza;await save();S.view='cout';render();toast(n+(n===1?' voce creata':' voci create')+': le trovi qui, pronte da esportare.')};
+/* ---- un impegno solo, a voce: dall'Agenda o dalla Dettatura ---- */
+A.dettaImpegno=()=>{
+  modal('<h3>Detta un impegno</h3><p class="small mut">Tocca il riquadro, poi il <b>microfono della tastiera</b>, e parla. Per esempio: «giovedì alle 15:30 dentista», «domani dalle 9 alle 11 riunione», «formazione dal 3 al 5 dicembre corso EMDR», «appuntamento venerdì alle 10 PZ 4».</p>'+
+   '<textarea id="detimp" rows="3" placeholder="giovedì alle 15:30 dentista"></textarea><div class="err" id="detimperr"></div>'+
+   '<div class="row end"><button class="btn" data-act="close">Annulla</button><button class="btn pri" data-act="dettaImpegnoOk">Continua</button></div>',true);
+  setTimeout(()=>{const t=$('#detimp');if(t)t.focus()},60)};
+A.dettaImpegnoOk=()=>{
+  let s=String(($('#detimp')||{}).value||'').trim();if(!s){const e=$('#detimperr');if(e)e.textContent='Detta o scrivi l’impegno.';return}
+  const f=libFold(s);let tipo='impegno';
+  if(/^(appuntamento|seduta)\b/.test(f)||/\bp\s?z[\s\-]*(c\s?l\s?l[\s\-]*)?\d|\bc\s?l\s?l[\s\-]*\d/.test(f))tipo='appuntamento';else if(/^(formazione|corso|supervisione)\b/.test(f))tipo='formazione';
+  s=s.replace(/^\s*(impegno personale|impegno|appuntamento|formazione)\b[\s:,.\-–]*/i,'');
+  const g=detPrepara(tipo,s,'',today()),T=CT[tipo],v=detVoce(g);
+  if(tipo==='impegno'||tipo==='formazione')v.titolo=v.titolo||'Impegno';
+  formModal(T.l+' · controlla e salva',T.f(),v,async o=>{await ctSave(tipo,o,null);render();toast(T.l+' aggiunto: arriva sul Mac con l’esportazione.')},
+    '<datalist id="pzl">'+pzOptions()+'</datalist>'+(g.avviso?'<div class="banner warn small">'+esc(g.avviso)+'</div>':''))};
 const _cvDet=compView;
 compView=function(v){return v==='cdet'?vCDet():_cvDet.apply(this,arguments)};
 
