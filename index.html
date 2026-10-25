@@ -1704,7 +1704,7 @@ html[data-eff=dark] .nqs .nq.cam .ctile-i{background:#40261C;color:#E9A98B}
 <div id="root"></div><div id="modal"></div><div id="print"></div><div id="toast" role="status" aria-live="polite"></div>
 <noscript>Questa applicazione richiede JavaScript.</noscript>
 <script>
-const APP_VER='2026-10-25 · 9f8262d';
+const APP_VER='2026-10-25 · 0a1364f';
 'use strict';
 /* =====================================================================
    ARCHIVIO CLINICO  v0.3  -  file unico, offline, dati cifrati nel browser
@@ -7637,7 +7637,11 @@ function detDividi(testo,pz0,data0){
     add(x.tipo,s)});
   return segs}
 /* campi specifici di ogni tipo, ricavati dal testo quando è possibile */
+/* colore detto → tipo, come la legenda del calendario: giallo = impegno personale, verde = paziente, arancione = formazione */
+const DET_COLORI=[['impegno',/\b(?:(?:in|di|colore|di colore)\s+)?(?:giall[oaie])\b/i],['appuntamento',/\b(?:(?:in|di|colore|di colore)\s+)?(?:verd[ei])\b/i],['formazione',/\b(?:(?:in|di|colore|di colore)\s+)?(?:arancion[ei]|aranci[oa])\b/i]];
+function detColore(s){for(const [tipo,re] of DET_COLORI){const m=re.exec(s);if(m)return {tipo,resto:(s.slice(0,m.index)+' '+s.slice(m.index+m[0].length)).replace(/\s+/g,' ').trim()}}return null}
 function detPrepara(tipo,s,pz,data){
+  if(DET_CAL.includes(tipo)){const c=detColore(s);if(c){tipo=c.tipo;s=c.resto}}
   const g={tipo,testo:s,pz,data:data||today(),durata:50,codice:'',stato:'ipotesi',cat:'Altro',avviso:tipo?'':'Non ho capito la sezione: sceglila tu.'};
   if(tipo==='seduta'){const d=/\bdurata\s*(?:di\s*)?(\d{1,3})\s*minut[io]\b[\s,.;]*/i.exec(s);if(d){g.durata=+d[1];g.testo=detPulisci(s.replace(d[0],''))}}
   if(tipo==='diagnosi'){
@@ -7750,11 +7754,11 @@ function detImpegni(testo){
     const t=detTempo(p),g=detPrepara(tipo,p,'',ultimaData||today());
     if(!t.data&&ultimaData){g.data=ultimaData;g.avviso=g.avviso.replace(/ ?Non ho trovato la data[^.]*\./,'')}
     if(!g.avviso)delete g.avviso;
-    if((tipo==='impegno'||tipo==='formazione')&&!g.testo)g.testo='Impegno';
+    if((g.tipo==='impegno'||g.tipo==='formazione')&&!g.testo)g.testo='Impegno';
     ultimaData=g.data;out.push(g)}
   return out}
 A.dettaImpegno=()=>{
-  modal('<h3>Detta impegni</h3><p class="small mut">Tocca il riquadro, poi il <b>microfono della tastiera</b>, e parla. Puoi dirne <b>più di uno</b>: separali con «poi» o con una pausa. Per esempio: «domani alle 9 riunione di équipe, poi alle 11 dentista. Venerdì dalle 15 alle 17 supervisione. Appuntamento lunedì alle 10 PZ 4».</p>'+
+  modal('<h3>Detta impegni</h3><p class="small mut">Tocca il riquadro, poi il <b>microfono della tastiera</b>, e parla. Il colore dice il tipo, come nel calendario: <b>giallo</b> impegno personale, <b>verde</b> paziente, <b>arancione</b> formazione. Puoi dirne <b>più di uno</b>: separali con «poi» o con una pausa. Per esempio: «domani alle 9 riunione di équipe, poi alle 11 dentista. Venerdì dalle 15 alle 17 supervisione. Appuntamento lunedì alle 10 PZ 4».</p>'+
    '<textarea id="detimp" rows="4" placeholder="domani alle 9 riunione, poi alle 11 dentista"></textarea><div class="err" id="detimperr"></div>'+
    '<div class="row end"><button class="btn" data-act="close">Annulla</button><button class="btn pri" data-act="dettaImpegnoOk">Continua</button></div>',true);
   setTimeout(()=>{const t=$('#detimp');if(t)t.focus()},60)};
