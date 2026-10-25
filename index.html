@@ -1237,6 +1237,23 @@ html:root .nqs .nq.cam .ctile-i{background:var(--terra-bg);color:var(--terra-dar
 .grplist{display:flex;flex-direction:column;gap:8px;margin:10px 0}
 .grprow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;padding:8px 12px}
 .grprow .grp{margin-left:0}.grprow .grow{flex:1}
+/* da fare e percorsi */
+.taskrow{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}.taskrow:first-child{border-top:0}
+.taskrow.done .grow>div:first-child{text-decoration:line-through;opacity:.6}.taskrow .grow{flex:1;min-width:0}
+.steps{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.step{display:flex;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:10px;padding:9px 12px;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.step .sdot{width:12px;height:12px;border-radius:50%;border:2px solid var(--mut,#888)}
+.step.st-incorso .sdot{background:#c9a227;border-color:#c9a227}.step.st-fatta .sdot{background:#4f6b2c;border-color:#4f6b2c}.step.st-fatta{opacity:.75}
+/* libreria PDF */
+.libsearch input{width:100%;font-size:16px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.libres{margin:10px 0}.libr{display:block;width:100%;text-align:left;margin:8px 0;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;cursor:pointer}
+.libr-h{display:block;font-weight:600;font-size:13.5px;color:var(--gtx);margin-bottom:4px}.libr-s{display:block;font-size:14px;line-height:1.45}
+mark{background:#f3d77a;color:#222;border-radius:3px;padding:0 1px}
+.libh{margin:20px 0 8px}.libbook{display:flex;gap:8px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}.libbook .grow{flex:1;min-width:0}.libwarn{color:#a2553b}
+.libadd{display:inline-block;margin:12px 0;cursor:pointer}
+.libprog{margin:10px 0}.libbar{height:8px;border-radius:6px;background:var(--line);overflow:hidden;margin:6px 0}.libbar i{display:block;height:100%;background:#4f6b2c}
+.libpg{white-space:pre-wrap;font-size:15px;line-height:1.55;max-height:46vh;overflow:auto;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin:8px 0}
+.libnav{margin:8px 0}.libcv{margin:8px 0}.libcv canvas{border:1px solid var(--line);border-radius:8px;background:#fff}
 
 /* tema scuro */
 html[data-eff=dark]{--glass:32,36,26;--glass2:19,21,14;--green:#3B4122;--green-deep:#2A2E17;--green-soft:#7F8A56;--gtx:#CBD39E;--cream:#13150E;--cream-2:#1C1F14;--paper:#1A1D13;--card:#20241A;--hero:#1E2216;--terra:#D27C58;--terra-dark:#E5A07F;--terra-light:#C0724F;--terra-bg:#3A261C;--ink:#EEE7D7;--body:#D3CCBA;--mut:#B5AB96;--line:#363B2B;--sand:#4C5239;--pri2:#2C3220;--ok:#BDD596;--ok2:#27311B;--warn:#EBC57E;--warn2:#3A2F15;--bad:#F3A898;--bad2:#40211B;color-scheme:dark}
@@ -2096,7 +2113,7 @@ A.purgePat=async d=>{
   const ok=await ask('<p>Eliminazione <b>definitiva</b> di '+esc(nm(p))+' con tutti i suoi dati e documenti. Non è annullabile.</p><p class="small">Vengono cancellate anche le versioni di sicurezza dell’archivio che lo contengono (ne viene creata una nuova senza di lui) e il suo nome sparisce dal registro delle operazioni. <b>I file di backup che hai già salvato altrove non si possono toccare</b>: eliminali tu se lo contengono. Le fatture e i pagamenti restano, perché hanno un obbligo di conservazione a parte.</p>'+(early?'<div class="banner bad">'+(rs.s==='attivo'?'Il percorso non risulta concluso.':'Il termine minimo di conservazione scade il '+fd(rs.fine)+'.')+' Eliminare prima potrebbe violare gli obblighi di conservazione della documentazione. L’operazione viene registrata.</div>':''),{typed:early?'ELIMINA PRIMA DEL TERMINE':'ELIMINA',ok:'Elimina per sempre'});
   if(!ok)return;
   for(const x of byP(D().docs,p.id))await idbDel('docs',x.id);
-  ['episodes','sessions','docs','scales','consents','events','dx','appts','tests'].forEach(k=>{D()[k]=D()[k].filter(x=>x.pid!==p.id)});
+  ['episodes','sessions','docs','scales','consents','events','dx','appts','tests','tasks','paths'].forEach(k=>{D()[k]=(D()[k]||[]).filter(x=>x.pid!==p.id)});
   D().prot.items=D().prot.items.filter(x=>x.pid!==p.id);D().patients=D().patients.filter(x=>x.id!==p.id);
   /* il registro delle operazioni conserva data e azione, ma non il nome del paziente */
   D().audit.forEach(a=>{if(a.pid===p.id){a.d='(paziente eliminato)';a.pid=null}});
@@ -2598,7 +2615,7 @@ function openReadme(){return '﻿Esportazione completa dell’archivio clinico �
 'CONSERVAZIONE\r\n  Tratta questi file come dati sanitari: conservali su un supporto cifrato e cancellali quando non servono più.\r\n'}
 async function buildOpenExport(){
   const d=D(),files=[],J=(n,v)=>files.push({name:'dati/'+n+'.json',data:enc.encode(JSON.stringify(v,null,1))});
-  ['patients','episodes','sessions','dx','scales','tests','instr','tpls','consents','docs','events','appts','vocab','customScales','formaz','rptTypes','consMods'].forEach(k=>J(k,d[k]||[]));
+  ['patients','episodes','sessions','dx','scales','tests','instr','tpls','consents','docs','events','appts','tasks','paths','vocab','customScales','formaz','rptTypes','consMods'].forEach(k=>J(k,d[k]||[]));
   J('impostazioni',d.set);
   let n=0;
   for(const m of d.docs){const p=await idbGet('docs',m.id);if(!p)continue;files.push({name:'documenti/'+m.id+'_'+String(m.nome).replace(/[^\w.\- ]+/g,'_'),data:new Uint8Array(await decB(S.key,p))});n++}
@@ -2666,6 +2683,7 @@ A.copyOut=async()=>{const t=outText();try{await navigator.clipboard.writeText(t)
 A.openMail=()=>{const o=S.out,to=o.to||'',s=($('#mo_s')&&$('#mo_s').value)||'';const a=document.createElement('a');a.href='mailto:'+encodeURIComponent(to)+'?subject='+encodeURIComponent(s)+'&body='+encodeURIComponent(outText());document.body.appendChild(a);a.click();a.remove();log('Bozza email preparata',o.title,o.pid);saveSoon()};
 A.printOut=()=>{log('Resoconto stampato',S.out.title,S.out.pid);saveSoon();printHTML('<div style="font:13px/1.5 Arial,sans-serif;white-space:pre-wrap;color:#000">'+esc(outText())+'</div>')};
 A.saveOut=async()=>{
+  if(!S.out.pid){toast('Questo resoconto non riguarda un solo paziente: copialo o stampalo.');return}
   const o=S.out,txt=outText(),buf=enc.encode(txt),id=uid(),hash=await sha256(buf);
   await idbPut('docs',id,await encB(S.key,buf));
   D().docs.push({id,pid:o.pid,nome:o.title+' – '+fd(today())+'.txt',tipo:'relazione',dataDoc:today(),dataCarico:today(),size:buf.length,mime:'text/plain',hash});
@@ -2692,7 +2710,7 @@ function scoreLines(p){
 function buildReport(p,kind,sez,dest){
   const title=(RPT_KINDS.find(k=>k[0]===kind)||[0,'Resoconto'])[1],S0=byP(D().sessions,p.id).sort((a,b)=>a.data.localeCompare(b.data)),eps=byP(D().episodes,p.id).sort((a,b)=>a.dataApertura.localeCompare(b.dataApertura));
   const has=k=>sez.indexOf(k)>=0,out=[];
-  out.push(title.toUpperCase());out.push('Data: '+fd(today())+(dest?'\nDestinatario: '+dest:''));out.push('');
+  const gm=grpModello(p);if(gm.intest)out.push(gm.intest);out.push(title.toUpperCase());out.push('Data: '+fd(today())+((dest||gm.dest)?'\nDestinatario: '+(dest||gm.dest):''));out.push('');
   out.push('DATI DEL PAZIENTE\n'+nm(p)+(p.nascita?', nato/a il '+fd(p.nascita)+' ('+age(p.nascita)+' anni)':'')+'\nPresa in carico: '+fd(p.presa)+(p.stato==='concluso'&&p.dataConcl?' · Conclusione: '+fd(p.dataConcl):' · Stato: '+p.stato));
   if(kind!=='punti'){
     out.push('MOTIVO DELLA RICHIESTA\n'+(eps.length?eps.map(e=>(e.categoria?e.categoria+': ':'')+e.motivo).join('\n'):'[non registrato]'));
@@ -2706,7 +2724,7 @@ function buildReport(p,kind,sez,dest){
     out.push('ESITO\n'+(p.esito||'[non indicato]'));
   }
   if(kind!=='punti')out.push('CONCLUSIONI\n[da compilare a cura del professionista]');
-  out.push('\n'+(D().set.firma||'[firma]'));
+  out.push('\n'+(gm.firma||D().set.firma||'[firma]'));
   return out.join('\n\n');
 }
 A.newReport=()=>{
@@ -3079,9 +3097,9 @@ function plistNew(){
 function vPatNew(){
   const p=pat(S.pid);if(!p||p.deletedAt){S.view='pats';return vPats()}
   const n=(a)=>byP(a,p.id).length,nT=n(D().scales)+n(D().tests)+byP(D().docs,p.id).filter(d=>d.scan).length;
-  const tabs=[['pan','Panoramica',''],['epi','Domande',n(D().episodes)],['dx','Diagnosi',n(D().dx)],['ses','Sedute e note',n(D().sessions)],['doc','Documenti',byP(D().docs,p.id).filter(d=>!d.scan&&!d.audio).length],['test','Test e scale',nT],['con','Consensi',n(D().consents)],['pri','Privacy','']];
+  const tabs=[['pan','Panoramica',''],['epi','Domande',n(D().episodes)],['dx','Diagnosi',n(D().dx)],['ses','Sedute e note',n(D().sessions)],['doc','Documenti',byP(D().docs,p.id).filter(d=>!d.scan&&!d.audio).length],['test','Test e scale',nT],['con','Consensi',n(D().consents)],['fare','Da fare',faresCount(p)],['pri','Privacy','']];
   const dup=dupOf(p);let body='';
-  switch(S.tab){case 'pan':body=tPan(p);break;case 'epi':body=tEpi(p);break;case 'dx':body=tDx(p);break;case 'ses':body=tSes(p);break;case 'doc':body=tDoc(p);break;case 'test':body=tTest(p);break;case 'con':body=tCon(p);break;case 'pri':body=tPri(p)}
+  switch(S.tab){case 'pan':body=tPan(p);break;case 'epi':body=tEpi(p);break;case 'dx':body=tDx(p);break;case 'ses':body=tSes(p);break;case 'doc':body=tDoc(p);break;case 'test':body=tTest(p);break;case 'con':body=tCon(p);break;case 'fare':body=tFare(p);break;case 'pri':body=tPri(p)}
   const lastS=byP(D().sessions,p.id).map(s=>s.data).sort().pop(),nx=byP(D().appts,p.id).filter(a=>a.stato==='previsto'&&a.data>=today()).sort((a,b)=>(a.data+(a.ora||'')).localeCompare(b.data+(b.ora||'')))[0];
   return '<a class="backl" href="#" data-act="go" data-v="pats"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Pazienti</a>'+
    '<section class="phd"><div class="phd-top"><span class="av xl '+avTone(p)+'">'+esc(inis(p))+'</span><div class="phd-id"><h1>'+esc(nm(p))+'</h1><div class="phd-m">'+badge(p.stato)+(p.cognome||p.nome?'<span class="codc">'+esc(p.cod||'')+'</span>':'')+grpChip(grpById(p.gid))+''+(age(p.nascita)!=null?'<span class="mt">'+age(p.nascita)+' anni'+(p.genere?' · '+esc(p.genere):'')+'</span>':'')+(isMinor(p)?'<span class="badge warn">minorenne</span>':'')+(p.tags||[]).map(t=>'<span class="tg">'+esc(t)+'</span>').join('')+'</div></div>'+
@@ -4002,7 +4020,7 @@ buildReport=function(p,kind,sez,dest){
 A.newReport=()=>{
   const p=pat(S.pid),K=rptKinds(),ttl=k=>(K.find(x=>x[0]===k)||[0,'Resoconto'])[1];
   if(!K.length){toast('Nessun tipo di resoconto: creane uno da Modelli');return}
-  formModal('Resoconto per '+nm(p),[{k:'kind',l:'Tipo di resoconto',t:'select',o:K,req:1},{k:'dest',l:'Destinatario (facoltativo)'},{k:'sez',l:'Sezioni facoltative',t:'multi',o:[['diagnosi','Diagnosi codificata'],['strumenti','Strumenti e punteggi'],['obiettivi','Obiettivi e piano (sintesi di fine percorso)']]}],{kind:K[0][0],sez:['diagnosi','strumenti','obiettivi']},async o=>{
+  formModal('Resoconto per '+nm(p),[{k:'kind',l:'Tipo di resoconto',t:'select',o:K,req:1},{k:'dest',l:'Destinatario (facoltativo)'},{k:'sez',l:'Sezioni facoltative',t:'multi',o:[['diagnosi','Diagnosi codificata'],['strumenti','Strumenti e punteggi'],['obiettivi','Obiettivi e piano (sintesi di fine percorso)']]}],{kind:K[0][0],dest:grpModello(p).dest,sez:['diagnosi','strumenti','obiettivi']},async o=>{
     log('Resoconto preparato',ttl(o.kind),p.id);saveSoon();
     showOut({kind:'rpt',pid:p.id,title:ttl(o.kind),body:buildReport(p,o.kind,o.sez,o.dest),rows:22,banner:'Contiene solo dati registrati, senza note di sedute né note personali. Rileggi e scrivi le conclusioni. Prima di consegnarlo a terzi servono il consenso del paziente e la tua firma.'});
   },'');
@@ -4689,7 +4707,7 @@ try{document.addEventListener('focusin',e=>{const t=e.target;if(TOUCH&&t&&t.matc
    Codici interni: solo lettere, cifre, - e _. Date: AAAA-MM-GG. Ore: HH:MM.
    Si applica a ogni apertura dell'archivio e a ogni ripristino di backup. */
 const SAFE_ID_K=['id','pid','epId','docId','instrId','rif'];
-const SAFE_DATE_K=['data','dataApertura','dataChiusura','dataConcl','dataDoc','dataCarico','dataTest','dataFine','nascita','presa','creato','deletedAt'];
+const SAFE_DATE_K=['scad','dataFatto','data','dataApertura','dataChiusura','dataConcl','dataDoc','dataCarico','dataTest','dataFine','nascita','presa','creato','deletedAt'];
 const cleanId=v=>String(v).replace(/[^A-Za-z0-9_-]/g,'').slice(0,64);
 const okYmd=v=>/^\d{4}-\d{2}-\d{2}$/.test(v);
 function sanitizeDb(d){
@@ -4701,7 +4719,7 @@ function sanitizeDb(d){
     ['kw'].forEach(k=>{if(Array.isArray(x[k]))x[k]=x[k].map(v=>typeof v==='string'?cleanId(v):v)});
     if(typeof x.cod==='string'&&x.cod!==''&&!/^PZ-\d{1,6}$/.test(x.cod)){x.cod='';fixed++}
   };
-  ['patients','episodes','sessions','docs','scales','consents','events','dx','appts','tests','instr','tpls','views','formaz','inbox','customScales','vocab','out','notes','npCats'].forEach(c=>{if(Array.isArray(d[c]))d[c].forEach(fix)});
+  ['patients','episodes','sessions','docs','scales','consents','events','dx','appts','tests','tasks','paths','instr','tpls','views','formaz','inbox','customScales','vocab','out','notes','npCats'].forEach(c=>{if(Array.isArray(d[c]))d[c].forEach(fix)});
   if(Array.isArray(d.out))d.out.forEach(it=>{if(it&&it.v)fix(it.v);if(it&&it.photo)fix(it.photo)});
   if(d.prot&&Array.isArray(d.prot.items))d.prot.items.forEach(fix);
   [].concat(d.notes||[],(d.docs||[]).filter(x=>x&&x.np)).forEach(x=>{if(x&&typeof x.cat==='string'){const c=cleanId(x.cat);if(c!==x.cat){x.cat=c;fixed++}}});
@@ -6767,7 +6785,7 @@ function fvBind(){const svg=$('#fvsvg');if(!svg)return;let drag=null;
   const end=()=>{drag=null};svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end)}
 A.fvZoom=d=>{const f=S.fv;if(!f)return;f.z=Math.max(1,Math.min(4,f.z+(+d.d>0?0.5:-0.5)));fvDraw()};
 A.fvClose=()=>{fvFree();closeModal()};
-A.fvManual=()=>{const f=S.fv;if(!f)return;const c=Object.assign({},f.ctx,{manual:true});fvFree();closeModal();setTimeout(()=>_ftForm18(c),30)};
+A.fvManual=()=>{const f=S.fv;if(!f)return;fvBozzaScarta();const c=Object.assign({},f.ctx,{manual:true});fvFree();closeModal();setTimeout(()=>_ftForm18(c),30)};
 function fvFree(){if(S.fv&&S.fv.im&&S.fv.im.url){try{URL.revokeObjectURL(S.fv.im.url)}catch(e){}}S.fv=null}
 
 /* ---------- lettura e revisione ---------- */
@@ -6776,7 +6794,8 @@ A.fvRead=()=>{const f=S.fv;if(!f)return;
   setTimeout(()=>{try{
     const t0=Date.now();f.res=fvReadWisc4(f.im.g,f.im.w,f.im.h,f.qA,f.qB,FV_MODEL,cifPerLettura());f.ms=Date.now()-t0;fvReviewView()}
    catch(e){toast('Non sono riuscito a leggere il foglio: '+(e.message||e));fvAlignView()}},60)};
-function fvCropURL(res,id,pad){const c=res.cells[id];if(!c)return '';const im=c.img==='A'?res.wa:res.wb,r=c.rect,s=FV_S;pad=pad==null?2:pad;
+function fvCropURL(res,id,pad){const cc=res.crops||(res.crops={});if(id in cc)return cc[id];const u=fvCropRender(res,id,pad);cc[id]=u;return u}
+function fvCropRender(res,id,pad){const c=res.cells[id];if(!c||!c.rect)return '';const im=c.img==='A'?res.wa:res.wb,r=c.rect,s=FV_S;pad=pad==null?2:pad;
   const x0=Math.max(0,Math.round(r[0]-pad*s)),y0=Math.max(0,Math.round(r[1]-pad*s)),x1=Math.min(im.w,Math.round(r[2]+pad*s)),y1=Math.min(im.h,Math.round(r[3]+pad*s)),w=x1-x0,h=y1-y0;
   if(w<4||h<4)return '';const cv=document.createElement('canvas');cv.width=w;cv.height=h;const cx=cv.getContext('2d'),d=cx.createImageData(w,h);
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const v=im.g[(y0+y)*im.w+x0+x],o=(y*w+x)*4;d.data[o]=d.data[o+1]=d.data[o+2]=v;d.data[o+3]=255}
@@ -6798,8 +6817,8 @@ function fvReviewView(){const f=S.fv,r=f.res,A4=FV_A,B4=FV_B;
    '<h4>Subtest</h4><div class="fvwrap"><table class="fvt"><thead><tr><th>Subtest</th><th>Punteggio grezzo</th><th>Punteggio ponderato</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
    '<h4>Somme, indici e QI</h4><div class="fvwrap"><table class="fvt"><thead><tr><th>Scala</th><th>Somma dei ponderati</th><th>Indice / QI</th></tr></thead><tbody>'+idx+'</tbody></table></div>'+
    '<p class="small mut">Il punteggio grezzo e le somme non vanno nello strumento: restano nella nota del risultato. Salvo i ponderati e gli indici. IAG e ICC non sono sul foglio: calcolali dalle tabelle del manuale.</p>'+
-   '<div class="row end"><button class="btn" data-act="fvBack">‹ Allineamento</button><button class="btn" data-act="fvManual">Scrivo a mano</button><button class="btn pri" data-act="fvSave">Salva il risultato</button></div>',true);
-  fvLive()}
+   '<div class="row end">'+(f.bozza?'':'<button class="btn" data-act="fvBack">‹ Allineamento</button>')+'<button class="btn" data-act="fvManual">Scrivo a mano</button><button class="btn pri" data-act="fvSave">Salva il risultato</button></div>',true);
+  fvLive();fvBozzaSalva()}
 A.fvBack=()=>fvAlignView();
 const fvGet=id=>{const e=document.querySelector('[data-fv="'+id+'"]');return e?String(e.value||'').trim():''};
 const fvNum=s=>{s=String(s||'').trim();if(s==='')return null;const x=+s.replace(',','.');return Number.isFinite(x)?x:NaN};
@@ -6835,7 +6854,7 @@ A.fvSave=async()=>{const f=S.fv;if(!f)return;const ctx=f.ctx,F=ftDef(ctx.w),d=F&
   if(!await fqConfermaVariazioni(ctx.pz,rec))return;
   try{const before=OUT().length;await ctSave('risultato',Object.assign({pz:ctx.pz},rec),null);
     const made=OUT().length>before?OUT()[OUT().length-1]:null;if(ctx.sheet)await fogMark(ctx.sheet,made&&made.id);
-    fvImpara(f);fvFree();closeModal();render();toast('Risultato salvato: '+Object.keys(vals).length+' punteggi.')}
+    fvImpara(f);fvBozzaScarta();fvFree();closeModal();render();toast('Risultato salvato: '+Object.keys(vals).length+' punteggi.')}
   catch(e){toast(e.message||'Salvataggio non riuscito.')}};
 
 /* ---------- foto o PDF scansionato in «Da foglio» ---------- */
@@ -6878,11 +6897,11 @@ const grpCount=id=>act().filter(p=>id==='_none'?!grpById(p.gid):p.gid===id).leng
 /* barra dei gruppi sopra l'elenco dei pazienti */
 function groupBarHTML(){
   const G=grps();
-  if(!G.length)return '<div class="grpbar"><button class="btn sm" data-act="grpManage">+ Crea un gruppo (reparto, servizio…)</button></div>';
+  if(!G.length)return '<div class="grpbar"><button class="btn sm" data-act="grpManage">+ Crea un gruppo (reparto, servizio…)</button><button class="btn sm" data-act="mensile">Resoconto mensile</button></div>';
   const cur=S.f.gid||'',item=(id,label,n,c)=>'<button class="'+(cur===id?'on':'')+'" data-act="setGid" data-g="'+esc(id)+'"'+(c?' style="--gc:'+c+'"':'')+'>'+esc(label)+' <span>'+n+'</span></button>';
   return '<div class="grpbar"><div class="seg grpseg" role="group" aria-label="Gruppo">'+item('','Tutti',act().length)+
     G.map(g=>item(g.id,g.nome,grpCount(g.id),grpColor(g))).join('')+(grpCount('_none')?item('_none','Senza gruppo',grpCount('_none')):'')+
-    '</div><button class="btn sm" data-act="grpManage">Gestisci gruppi</button></div>';
+    '</div><button class="btn sm" data-act="grpManage">Gestisci gruppi</button><button class="btn sm" data-act="mensile">Resoconto mensile</button></div>';
 }
 const grpMatch=(p,gid)=>!gid||(gid==='_none'?!grpById(p.gid):p.gid===gid);
 A.setGid=d=>{S.f.gid=d.g||'';render()};
@@ -6895,14 +6914,19 @@ A.grpManage=()=>{
       '<span class="grow"></span><button class="btn sm" data-act="grpEdit" data-id="'+g.id+'">Modifica</button><button class="btn sm danger" data-act="grpDel" data-id="'+g.id+'">Elimina</button></div>').join('')+'</div>':'<p class="mut">Nessun gruppo ancora.</p>')+
     '<div class="row end"><button class="btn" data-act="close">Chiudi</button><button class="btn pri" data-act="grpNew">+ Nuovo gruppo</button></div>');
 };
-const GRP_F=()=>[{k:'nome',l:'Nome del gruppo (per esempio il reparto)',req:1},{k:'colore',l:'Colore',t:'select',o:GRP_COLORI.map(c=>[c[0],c[1]])}];
+const GRP_F=()=>[{k:'nome',l:'Nome del gruppo (per esempio il reparto)',req:1},{k:'colore',l:'Colore',t:'select',o:GRP_COLORI.map(c=>[c[0],c[1]])},
+  {k:'intest',l:'Intestazione dei resoconti di questo gruppo (facoltativa)',t:'textarea',r:3,h:'Per esempio il nome del servizio. Compare in cima ai resoconti dei pazienti del gruppo.'},
+  {k:'dest',l:'Destinatario abituale (facoltativo)'},{k:'firma',l:'Firma per questo gruppo (facoltativa, altrimenti vale la tua firma generale)',t:'textarea',r:2}];
+/* modello di resoconto del gruppo a cui appartiene il paziente */
+const grpModello=p=>{const g=p&&grpById(p.gid);return {intest:g&&g.intest||'',dest:g&&g.dest||'',firma:g&&g.firma||''}};
 function grpSave(g){return async o=>{
   const nome=String(o.nome||'').trim().slice(0,60);if(!nome)throw new Error('Scrivi il nome del gruppo.');
   if(grps().some(x=>x!==g&&x.nome.toLowerCase()===nome.toLowerCase()))throw new Error('Esiste già un gruppo con questo nome.');
-  if(g){g.nome=nome;g.colore=o.colore;log('Gruppo modificato',nome)}else{grps().push({id:uid(),nome,colore:o.colore});log('Gruppo creato',nome)}
+  const mod={intest:String(o.intest||'').slice(0,300),dest:String(o.dest||'').slice(0,120),firma:String(o.firma||'').slice(0,200)};
+  if(g){Object.assign(g,{nome,colore:o.colore},mod);log('Gruppo modificato',nome)}else{grps().push(Object.assign({id:uid(),nome,colore:o.colore},mod));log('Gruppo creato',nome)}
   await save();render();setTimeout(A.grpManage,30)}}
 A.grpNew=()=>formModal('Nuovo gruppo',GRP_F(),{colore:GRP_COLORI[grps().length%GRP_COLORI.length][0]},grpSave(null));
-A.grpEdit=d=>{const g=grpById(d.id);if(g)formModal('Modifica gruppo',GRP_F(),{nome:g.nome,colore:g.colore},grpSave(g))};
+A.grpEdit=d=>{const g=grpById(d.id);if(g)formModal('Modifica gruppo',GRP_F(),{nome:g.nome,colore:g.colore,intest:g.intest,dest:g.dest,firma:g.firma},grpSave(g))};
 A.grpDel=async d=>{const g=grpById(d.id);if(!g)return;
   if(!await ask('<p>Eliminare il gruppo <b>'+esc(g.nome)+'</b>? I '+grpCount(g.id)+' pazienti che contiene restano in archivio, senza gruppo.</p>',{ok:'Elimina il gruppo'}))return;
   act().forEach(p=>{if(p.gid===g.id)p.gid=''});D().groups=grps().filter(x=>x!==g);if(S.f.gid===g.id)S.f.gid='';
@@ -6917,6 +6941,376 @@ function grpEnsure(nome){
   let g=grps().find(x=>x.nome.toLowerCase()===nome.toLowerCase());
   if(!g){g={id:uid(),nome,colore:GRP_COLORI[grps().length%GRP_COLORI.length][0]};grps().push(g);log('Gruppo creato (da importazione)',nome)}
   return g.id}
+
+/* ---------- Da fare e percorsi di valutazione ----------
+   D().tasks = [{id,pid,testo,scad,fatto,dataFatto}]   compiti per paziente, con scadenza facoltativa
+   D().paths = [{id,pid,nome,tappe:[{id,nome,stato:'da fare'|'in corso'|'fatta',data}]}]   percorsi con tappe
+   Nessun promemoria clinico automatico: sono elenchi tuoi, che compaiono nella scheda e nella home. */
+const tasksDb=()=>D().tasks||(D().tasks=[]);
+const pathsDb=()=>D().paths||(D().paths=[]);
+const PATH_MODELLI=[
+  ['eta','Valutazione in età evolutiva',['Colloquio con i genitori','Incontro con il minore','Somministrazione dei test','Scoring e correzione','Restituzione ai genitori','Referto']],
+  ['adulti','Valutazione psicodiagnostica adulti',['Colloquio iniziale','Somministrazione dei test','Scoring e correzione','Restituzione','Referto']],
+  ['neuro','Valutazione neuropsicologica',['Colloquio e anamnesi','Somministrazione dei test','Scoring e correzione','Restituzione','Referto']],
+  ['libero','Percorso personalizzato (scrivo io le tappe)',[]]];
+const PATH_STATI=['da fare','in corso','fatta'];
+const taskOpen=p=>tasksDb().filter(t=>t.pid===p.id&&!t.fatto);
+const pathLive=pa=>pa.tappe.some(t=>t.stato!=='fatta');
+const faresCount=p=>taskOpen(p).length+pathsDb().filter(pa=>pa.pid===p.id&&pathLive(pa)).length;
+const taskCmp=(a,b)=>(a.scad||'9999').localeCompare(b.scad||'9999')||a.testo.localeCompare(b.testo);
+const taskScadBadge=t=>{if(t.fatto||!t.scad)return t.scad?'<span class="small mut">entro '+fd(t.scad)+'</span>':'';
+  const o=today();return t.scad<o?'<span class="badge bad">in ritardo · '+fd(t.scad)+'</span>':t.scad===o?'<span class="badge warn">oggi</span>':'<span class="small mut">entro '+fd(t.scad)+'</span>'};
+
+function taskRowHTML(t,conPaz){
+  const p=pat(t.pid);
+  return '<div class="taskrow'+(t.fatto?' done':'')+'"><button class="btn sm" data-act="taskDone" data-id="'+t.id+'" aria-label="'+(t.fatto?'Riapri':'Segna come fatto')+'">'+(t.fatto?'↺':'✓')+'</button>'+
+    '<div class="grow"><div>'+esc(t.testo)+'</div><div>'+taskScadBadge(t)+(conPaz&&p?' <a href="#" data-act="openFare" data-id="'+p.id+'">'+esc(nm(p))+'</a>':'')+'</div></div>'+
+    '<button class="btn sm" data-act="taskEdit" data-id="'+t.id+'">Modifica</button><button class="btn sm danger" data-act="taskDel" data-id="'+t.id+'">Elimina</button></div>';
+}
+function pathHTML(pa){
+  const nx=pa.tappe.find(t=>t.stato!=='fatta'),fatte=pa.tappe.filter(t=>t.stato==='fatta').length;
+  return '<div class="card pathc"><div class="bar"><h3 style="margin:0">'+esc(pa.nome)+'</h3><span class="small mut">'+fatte+' di '+pa.tappe.length+' tappe'+(nx?'':' · <b>completato</b>')+'</span></div>'+
+    '<div class="steps">'+pa.tappe.map(t=>'<button class="step st-'+t.stato.replace(' ','')+'" data-act="pathStep" data-p="'+pa.id+'" data-id="'+t.id+'" title="Tocca per cambiare lo stato">'+
+      '<span class="sdot"></span><span class="grow">'+esc(t.nome)+'</span><span class="small">'+esc(t.stato)+(t.stato==='fatta'&&t.data?' · '+fd(t.data):'')+'</span></button>').join('')+'</div>'+
+    '<div class="row end"><button class="btn sm" data-act="pathAdd" data-id="'+pa.id+'">+ Tappa</button><button class="btn sm danger" data-act="pathDel" data-id="'+pa.id+'">Elimina il percorso</button></div></div>';
+}
+function tFare(p){
+  const T=tasksDb().filter(t=>t.pid===p.id).sort((a,b)=>(a.fatto-b.fatto)||taskCmp(a,b)),P=pathsDb().filter(x=>x.pid===p.id);
+  return '<div class="bar"><h2>Da fare prima della prossima seduta</h2><button class="btn pri" data-act="taskNew">+ Compito</button></div>'+
+    '<div class="card">'+(T.length?T.map(t=>taskRowHTML(t,false)).join(''):'<p class="mut" style="margin:0">Nessun compito. Aggiungi per esempio «scrivere il referto» o «chiedere la relazione della scuola».</p>')+'</div>'+
+    '<div class="bar"><h2>Percorsi di valutazione</h2><button class="btn" data-act="pathNew">+ Percorso</button></div>'+
+    (P.length?P.map(pathHTML).join(''):'<div class="card"><p class="mut" style="margin:0">Nessun percorso. Un percorso ti mostra a che punto è una valutazione: colloquio, test, restituzione, referto.</p></div>');
+}
+A.openFare=d=>{S.pid=d.id;S.view='pat';S.tab='fare';render()};
+const TASK_F=()=>[{k:'testo',l:'Cosa devi fare',req:1},{k:'scad',l:'Entro il (facoltativo)',t:'date'}];
+const taskSave=(t,pid)=>async o=>{
+  const testo=String(o.testo||'').trim().slice(0,200);if(!testo)throw new Error('Scrivi che cosa devi fare.');
+  if(t){t.testo=testo;t.scad=o.scad||''}else{tasksDb().push({id:uid(),pid,testo,scad:o.scad||'',fatto:false});log('Compito aggiunto','',pid)}
+  await save();render()};
+A.taskNew=()=>{const p=pat(S.pid);if(p)formModal('Nuovo compito per '+nm(p),TASK_F(),{},taskSave(null,p.id))};
+A.taskEdit=d=>{const t=tasksDb().find(x=>x.id===d.id);if(t)formModal('Modifica compito',TASK_F(),{testo:t.testo,scad:t.scad},taskSave(t,t.pid))};
+A.taskDone=async d=>{const t=tasksDb().find(x=>x.id===d.id);if(!t)return;t.fatto=!t.fatto;t.dataFatto=t.fatto?today():'';await save();render()};
+A.taskDel=async d=>{const t=tasksDb().find(x=>x.id===d.id);if(!t)return;
+  if(!await ask('<p>Eliminare il compito «'+esc(t.testo)+'»?</p>',{ok:'Elimina'}))return;
+  D().tasks=tasksDb().filter(x=>x!==t);await save();render()};
+
+const pathNewTappe=o=>{
+  const m=PATH_MODELLI.find(x=>x[0]===o.modello)||PATH_MODELLI[0];
+  const nomi=m[0]==='libero'?String(o.tappe||'').split('\n').map(s=>s.trim()).filter(Boolean):m[2];
+  if(!nomi.length)throw new Error('Scrivi almeno una tappa (una per riga).');
+  return {nome:m[0]==='libero'?(String(o.nome||'').trim()||'Percorso'):m[1],tappe:nomi.slice(0,20).map(n=>({id:uid(),nome:String(n).slice(0,80),stato:'da fare',data:''}))}};
+A.pathNew=()=>{const p=pat(S.pid);if(!p)return;
+  formModal('Nuovo percorso per '+nm(p),[{k:'modello',l:'Tipo di percorso',t:'select',o:PATH_MODELLI.map(m=>[m[0],m[1]])},
+    {k:'nome',l:'Nome (solo per il percorso personalizzato)'},{k:'tappe',l:'Tappe, una per riga (solo per il percorso personalizzato)',t:'textarea',r:5}],{modello:'eta'},async o=>{
+    const x=pathNewTappe(o);pathsDb().push(Object.assign({id:uid(),pid:p.id},x));log('Percorso creato',x.nome,p.id);await save();render()})};
+A.pathStep=async d=>{const pa=pathsDb().find(x=>x.id===d.p),t=pa&&pa.tappe.find(x=>x.id===d.id);if(!t)return;
+  t.stato=PATH_STATI[(PATH_STATI.indexOf(t.stato)+1)%3];t.data=t.stato==='fatta'?today():'';await save();render()};
+A.pathAdd=d=>{const pa=pathsDb().find(x=>x.id===d.id);if(!pa)return;
+  formModal('Nuova tappa',[{k:'nome',l:'Nome della tappa',req:1}],{},async o=>{pa.tappe.push({id:uid(),nome:o.nome.slice(0,80),stato:'da fare',data:''});await save();render()})};
+A.pathDel=async d=>{const pa=pathsDb().find(x=>x.id===d.id);if(!pa)return;
+  if(!await ask('<p>Eliminare il percorso <b>'+esc(pa.nome)+'</b>? I dati clinici del paziente non cambiano.</p>',{ok:'Elimina il percorso'}))return;
+  D().paths=pathsDb().filter(x=>x!==pa);await save();render()};
+
+/* riepilogo nella home: compiti in ritardo, di oggi e dei prossimi 7 giorni + percorsi in corso */
+function fareHomeHTML(){
+  const vivi=pid=>{const p=pat(pid);return p&&!p.deletedAt},o=today(),lim=new Date(Date.now()+7*86400000),lm=lim.getFullYear()+'-'+p2(lim.getMonth()+1)+'-'+p2(lim.getDate());
+  const T=tasksDb().filter(t=>!t.fatto&&vivi(t.pid)&&(!t.scad||t.scad<=lm)).sort(taskCmp).slice(0,8);
+  const P=pathsDb().filter(pa=>vivi(pa.pid)&&pathLive(pa)).slice(0,6);
+  if(!T.length&&!P.length)return '';
+  return '<div class="card"><h3>Da fare</h3>'+(T.length?T.map(t=>taskRowHTML(t,true)).join(''):'')+
+    (P.length?'<div class="small mut" style="margin-top:8px">Percorsi in corso</div>'+P.map(pa=>{const nx=pa.tappe.find(t=>t.stato!=='fatta'),n=pa.tappe.filter(t=>t.stato==='fatta').length;
+      return '<div class="taskrow"><div class="grow"><a href="#" data-act="openFare" data-id="'+pa.pid+'">'+esc(nm(pat(pa.pid)))+'</a> · '+esc(pa.nome)+'<div class="small mut">prossima tappa: '+esc(nx.nome)+' ('+n+'/'+pa.tappe.length+')</div></div></div>'}).join(''):'')+'</div>';
+}
+(()=>{const _a=apptTodayHTML;apptTodayHTML=function(){return _a()+fareHomeHTML()}})();
+
+/* ---------- Controllo dei dati prima di un resoconto ----------
+   Non blocca nulla: elenca ciò che manca o non torna, e lascia a te la scelta di procedere. */
+function reportCheck(p){
+  const L=[],o=today(),S0=byP(D().sessions,p.id),E0=byP(D().episodes,p.id),T0=byP(D().tests,p.id),C0=byP(D().scales,p.id);
+  if(!E0.length)L.push('Non è registrata nessuna domanda (motivo della richiesta): nel resoconto comparirà «[non registrato]».');
+  else if(E0.some(e=>!String(e.motivo||'').trim()))L.push('Una domanda non ha il motivo della richiesta.');
+  if(!S0.length)L.push('Non ci sono sedute registrate.');
+  if(p.presa&&p.presa>o)L.push('La data di presa in carico ('+fd(p.presa)+') è nel futuro.');
+  if(p.stato==='concluso'&&!p.dataConcl)L.push('Il paziente è concluso ma manca la data di conclusione.');
+  if(p.presa&&p.dataConcl&&p.dataConcl<p.presa)L.push('La conclusione ('+fd(p.dataConcl)+') è precedente alla presa in carico ('+fd(p.presa)+').');
+  const prima=S0.filter(s=>p.presa&&s.data<p.presa);if(prima.length)L.push(prima.length+(prima.length===1?' seduta è datata':' sedute sono datate')+' prima della presa in carico.');
+  const fut=S0.filter(s=>s.data>o);if(fut.length)L.push(fut.length+(fut.length===1?' seduta è datata':' sedute sono datate')+' nel futuro.');
+  if(p.nascita&&p.nascita>o)L.push('La data di nascita è nel futuro.');
+  if(isMinor(p)&&!p.tutore)L.push('Paziente minorenne: manca il nome del responsabile genitoriale.');
+  T0.forEach(t=>{const ins=D().instr.find(i=>i.id===t.instrId);
+    if(!ins){L.push('Un risultato (del '+fd(t.data)+') usa uno strumento che non esiste più.');return}
+    const vuoti=ins.sub.filter(s=>!t.vals||t.vals[s.id]==null||t.vals[s.id]==='');
+    if(vuoti.length===ins.sub.length)L.push(instrName(t.instrId)+' del '+fd(t.data)+': nessun punteggio inserito.');
+    else if(vuoti.length)L.push(instrName(t.instrId)+' del '+fd(t.data)+': mancano '+vuoti.length+' di '+ins.sub.length+' punteggi ('+vuoti.slice(0,4).map(s=>s.nome).join(', ')+(vuoti.length>4?'…':'')+').');
+    if(t.data&&t.data>o)L.push(instrName(t.instrId)+': data nel futuro ('+fd(t.data)+').')});
+  C0.forEach(c=>{if(c.punti==null||c.punti==='')L.push(c.scala+' del '+fd(c.data)+': punteggio mancante.')});
+  const vivo=id=>D().patients.some(x=>x.id===id);
+  const orf=D().tests.filter(t=>!vivo(t.pid)).length+D().scales.filter(c=>!vivo(c.pid)).length;
+  if(orf)L.push('Nell’archivio ci sono '+orf+' risultati di test non collegati a nessun paziente (non entrano in questo resoconto).');
+  return L;
+}
+const _newReportSenzaControllo=A.newReport;
+A.newReport=async()=>{
+  const p=pat(S.pid);if(!p)return;
+  const L=reportCheck(p);
+  if(L.length&&!await ask('<h3>Controllo prima del resoconto</h3><p class="small mut">Ho trovato '+L.length+(L.length===1?' cosa da guardare':' cose da guardare')+'. Puoi correggerle ora oppure preparare il resoconto lo stesso.</p><ul>'+L.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>',{ok:'Prepara comunque'}))return;
+  _newReportSenzaControllo();
+};
+
+/* ---------- Resoconto mensile per gruppo ----------
+   Solo conteggi: nessun nome di paziente. Si può copiare, stampare o salvare come ogni altro resoconto. */
+const MESI_NOMI=['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+const mensileEtichetta=m=>MESI_NOMI[Number(m.slice(5,7))-1]+' '+m.slice(0,4);
+function mensileDati(mese,gid){
+  const vivo=pid=>{const p=pat(pid);return p&&!p.deletedAt&&grpMatch(p,gid)};
+  const inMese=d=>typeof d==='string'&&d.slice(0,7)===mese;
+  const S1=D().sessions.filter(s=>inMese(s.data)&&vivo(s.pid)),A1=D().appts.filter(a=>inMese(a.data)&&vivo(a.pid)),
+    T1=D().tests.filter(t=>inMese(t.data)&&vivo(t.pid)),C1=D().scales.filter(c=>inMese(c.data)&&vivo(c.pid)),
+    N1=act().filter(p=>inMese(p.presa)&&grpMatch(p,gid)),Z1=act().filter(p=>p.stato==='concluso'&&inMese(p.dataConcl)&&grpMatch(p,gid));
+  const min=S1.reduce((a,s)=>a+(Number(s.durata)>0?Number(s.durata):0),0),senza=S1.filter(s=>!(Number(s.durata)>0)).length;
+  const per={};T1.forEach(t=>{const n=instrName(t.instrId);per[n]=(per[n]||0)+1});C1.forEach(c=>{per[c.scala]=(per[c.scala]||0)+1});
+  const stati={};A1.forEach(a=>{stati[a.stato]=(stati[a.stato]||0)+1});
+  return {visti:new Set(S1.map(s=>s.pid)).size,sedute:S1.length,min,senza,nuovi:N1.length,conclusi:Z1.length,test:T1.length+C1.length,per,stati};
+}
+function mensileTesto(mese,gid){
+  const g=gid==='_none'?null:grpById(gid),nomeG=!gid?'tutti i pazienti':gid==='_none'?'pazienti senza gruppo':(g?g.nome:'gruppo');
+  const righe=d=>['Pazienti visti: '+d.visti,'Sedute: '+d.sedute,'Ore di seduta: '+(d.min/60).toFixed(1).replace('.',',')+(d.senza?' (esclusa '+d.senza+(d.senza===1?' seduta':' sedute')+' senza durata)':''),
+    'Nuovi pazienti presi in carico: '+d.nuovi,'Percorsi conclusi: '+d.conclusi,'Test e scale registrati: '+d.test+(d.test?' ('+Object.keys(d.per).sort().map(k=>k+' '+d.per[k]).join('; ')+')':''),
+    'Appuntamenti: '+(Object.keys(d.stati).length?Object.keys(d.stati).sort().map(k=>k+' '+d.stati[k]).join('; '):'nessuno')];
+  const out=['RESOCONTO MENSILE – '+mensileEtichetta(mese).toUpperCase(),'Ambito: '+nomeG,'Data: '+fd(today()),''].concat(righe(mensileDati(mese,gid)));
+  if(!gid&&grps().length){out.push('','PER GRUPPO');
+    grps().concat([{id:'_none',nome:'Senza gruppo'}]).forEach(x=>{const d=mensileDati(mese,x.id);if(d.sedute||d.nuovi||d.test)out.push(x.nome+': '+d.visti+' pazienti, '+d.sedute+' sedute, '+(d.min/60).toFixed(1).replace('.',',')+' ore, '+d.nuovi+' nuovi, '+d.test+' test')})}
+  out.push('','Solo conteggi dei dati registrati: nessun nome di paziente.','',D().set.firma||'[firma]');
+  return out.join('\n');
+}
+A.mensile=()=>{
+  const m=today().slice(0,7),G=[['','Tutti i pazienti']].concat(grps().map(g=>[g.id,g.nome]),grps().length?[['_none','Senza gruppo']]:[]);
+  formModal('Resoconto mensile',[{k:'mese',l:'Mese',t:'month',req:1},{k:'gid',l:'Gruppo',t:'select',o:G}],{mese:m,gid:S.f&&S.f.gid||''},async o=>{
+    if(!/^\d{4}-\d{2}$/.test(o.mese))throw new Error('Scegli il mese.');
+    log('Resoconto mensile preparato',o.mese);saveSoon();
+    setTimeout(()=>showOut({kind:'rpt',title:'Resoconto mensile · '+mensileEtichetta(o.mese),body:mensileTesto(o.mese,o.gid),rows:20,banner:'Contiene solo conteggi, senza nomi di pazienti.'}),30)});
+};
+
+/* ---------- Bozza di «Leggi dal foglio» ----------
+   Mentre correggi i numeri letti, l'app salva (cifrata, dentro l'archivio) una bozza: valori, ritagli della foto e contesto.
+   Se l'app si blocca o viene chiusa, la bozza si riprende da un avviso. Si cancella quando salvi il risultato o la scarti.
+   Una bozza ripresa non ha più la foto: si possono correggere i numeri e salvare, ma non tornare all'allineamento. */
+let fvBozzaTimer=null;
+function fvBozzaSalva(){
+  const f=S.fv;if(!f||!f.res)return;
+  const r=f.res,inputs={};document.querySelectorAll('[data-fv]').forEach(e=>{inputs[e.dataset.fv]=String(e.value||'')});
+  const cells={};Object.keys(r.cells).forEach(id=>{cells[id]={slash:!!(r.cells[id]&&r.cells[id].slash)}});
+  const crops={};Object.keys(r.cells).forEach(id=>{const u=fvCropURL(r,id);if(u)crops[id]=u});
+  try{D().bozzaFv={t:new Date().toISOString(),ctx:JSON.parse(JSON.stringify(f.ctx)),val:r.val,flag:r.flag,cells,crops,inputs,orig:f.bozzaOrig||null}}catch(e){return}
+  saveSoon()}
+function fvBozzaScarta(){clearTimeout(fvBozzaTimer);if(D()&&D().bozzaFv){delete D().bozzaFv;saveSoon()}}
+document.addEventListener('input',e=>{const t=e.target;if(t&&t.dataset&&t.dataset.fv&&S.fv){clearTimeout(fvBozzaTimer);fvBozzaTimer=setTimeout(fvBozzaSalva,900)}});
+
+function fvBozzaBanner(){
+  const b=S.db&&D().bozzaFv;if(!b||S.fv)return '';
+  const n=Object.keys(b.inputs||{}).length;
+  return '<div class="banner warn"><b>Lettura da foglio interrotta</b> (salvata il '+esc(new Date(b.t).toLocaleString('it-IT',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'}))+', '+n+' caselle). '+
+    '<div class="row" style="margin-top:6px"><button class="btn sm pri" data-act="bozzaRiprendi">Riprendi la correzione</button><button class="btn sm danger" data-act="bozzaScarta">Scarta</button></div></div>';
+}
+A.bozzaRiprendi=()=>{
+  const b=D().bozzaFv;if(!b)return;
+  S.fv={ctx:b.ctx,im:null,qA:null,qB:null,z:1,bozza:true,res:{cells:b.cells,val:b.val,flag:b.flag,crops:b.crops}};
+  fvReviewView();
+  Object.keys(b.inputs).forEach(id=>{const e=document.querySelector('[data-fv="'+id+'"]');if(e&&e.value!==b.inputs[id]){e.value=b.inputs[id];e.classList.remove('dubbio','manca')}});
+  fvLive()};
+A.bozzaScarta=async()=>{
+  if(!await ask('<p>Scartare la lettura interrotta? Le correzioni fatte finora andranno perse; la foto resta in «Da foglio».</p>',{ok:'Scarta la bozza'}))return;
+  fvBozzaScarta();render()};
+const _compViewBozza=compView;
+compView=function(v){return (v==='cfog'||v==='cnew'||!v?fvBozzaBanner():'')+_compViewBozza.apply(this,arguments)};
+
+/* ---------- Libreria PDF (DSM-5-TR, ICD…) con ricerca nel testo ----------
+   Solo telefono. I PDF restano in un database del telefono a parte («archivio-libreria»): non entrano nell'archivio clinico,
+   nei backup né in GitHub. Il testo di ogni pagina si estrae una volta sola (lettore PDF open source in web/vendor, caricato
+   solo quando serve) e poi la ricerca è una semplice scansione del testo in memoria: istantanea, anche per migliaia di pagine.
+   Se il PDF è una scansione senza testo, la ricerca non può funzionare (non c'è riconoscimento ottico dei caratteri). */
+COMP_V.push('clib');
+const LIB_MAX_MB=500,LIB_SALVA_OGNI=40,LIB_RISULTATI=60;
+const LIB={idx:null,prog:null,q:'',libro:'',doc:null,docId:null,pdfjs:null,stop:false};
+
+/* ---- database proprio ---- */
+let _libDb=null;
+function libOpen(){return _libDb||(_libDb=new Promise((res,rej)=>{const r=indexedDB.open('archivio-libreria',1);
+  r.onupgradeneeded=()=>{['meta','testo','pdf'].forEach(s=>r.result.createObjectStore(s))};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}))}
+async function libTx(store,mode,fn){const d=await libOpen();return new Promise((res,rej)=>{const t=d.transaction(store,mode),rq=fn(t.objectStore(store));
+  t.oncomplete=()=>res(rq&&rq.result);t.onerror=()=>rej(t.error);t.onabort=()=>rej(t.error||new Error('Operazione annullata'))})}
+const libGet=(s,k)=>libTx(s,'readonly',o=>o.get(k));
+const libPut=(s,k,v)=>libTx(s,'readwrite',o=>o.put(v,k));
+const libDelKey=(s,k)=>libTx(s,'readwrite',o=>o.delete(k));
+const libMetas=async()=>(await libTx('meta','readonly',o=>o.getAll())||[]).sort((a,b)=>a.t-b.t);
+
+/* ---- testo: estrazione e normalizzazione ---- */
+const LIB_LIGATURE={'ﬁ':'fi','ﬂ':'fl','ﬀ':'ff','ﬃ':'ffi','ﬄ':'ffl'};
+function libTestoPagina(items){
+  let s='';for(const it of items){if(it.str!=null)s+=it.str;if(it.hasEOL)s+='\n'}
+  return s.replace(/[ﬁﬂﬀﬃﬄ]/g,c=>LIB_LIGATURE[c]).replace(/(\p{L})-\n(\p{L})/gu,'$1$2').replace(/[ \t ]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim()}
+/* minuscolo, senza accenti, spazi uniformi: SEMPRE della stessa lunghezza dell'originale, così le posizioni coincidono */
+const _libFoldMap={};
+function libFold(s){let o='';
+  for(let i=0;i<s.length;i++){const c=s[i];let f=_libFoldMap[c];
+    if(f===undefined){let x=/\s/.test(c)?' ':c.normalize('NFD')[0].toLowerCase();if(x.length!==1)x=c;f=_libFoldMap[c]=x}
+    o+=f}
+  return o}
+
+/* ---- lettore PDF (caricato solo qui) ---- */
+async function libPdfjs(){
+  if(LIB.pdfjs)return LIB.pdfjs;
+  if(!/^https?:$/.test(location.protocol))throw new Error('La libreria funziona nell’app installata sul telefono, non da un file aperto direttamente.');
+  const base=new URL('vendor/',document.baseURI).href,m=await import(base+'pdf.min.mjs');
+  m.GlobalWorkerOptions.workerSrc=base+'pdf.worker.min.mjs';return LIB.pdfjs=m}
+async function libApri(blob){
+  const pdfjs=await libPdfjs();
+  try{return await pdfjs.getDocument({data:new Uint8Array(await blob.arrayBuffer()),isEvalSupported:false}).promise}
+  catch(e){
+    if(e&&e.name==='PasswordException')throw new Error('Il PDF è protetto da password: togli la protezione (per esempio salvandone una copia da Anteprima o dall’app File) e riprova.');
+    throw new Error('Non riesco ad aprire questo PDF. Potrebbe avere una protezione: prova a stamparlo in un nuovo PDF e a caricare quello.')}}
+
+/* ---- indicizzazione (a blocchi, riprendibile) ---- */
+function libProgUI(){const p=LIB.prog,b=$('#libprog');if(!b)return;
+  b.innerHTML=p?'<div class="libbar"><i style="width:'+Math.round(100*p.p/Math.max(1,p.n))+'%"></i></div><small>Leggo «'+esc(p.nome)+'»: pagina '+p.p+' di '+p.n+'. Tieni l’app aperta e lo schermo acceso.</small><button class="btn sm" data-act="libStop">Metti in pausa</button>':''}
+async function libIndicizza(id){
+  if(LIB.prog)return;
+  const meta=await libGet('meta',id);if(!meta)return;
+  let wake=null;try{wake=navigator.wakeLock&&await navigator.wakeLock.request('screen')}catch(e){}
+  LIB.stop=false;LIB.prog={id,nome:meta.nome,p:meta.fatte||0,n:meta.n||0};libProgUI();
+  let doc=null;
+  try{
+    doc=await libApri(await libGet('pdf',id));
+    meta.n=doc.numPages;LIB.prog.n=meta.n;await libPut('meta',id,meta);
+    const pagine=(await libGet('testo',id))||[];
+    for(let p=pagine.length+1;p<=meta.n&&!LIB.stop;p++){
+      const pg=await doc.getPage(p),tc=await pg.getTextContent();pagine.push(libTestoPagina(tc.items));pg.cleanup();
+      LIB.prog.p=p;if(p%3===0){libProgUI();await new Promise(r=>setTimeout(r,0))}
+      if(p%LIB_SALVA_OGNI===0){meta.fatte=p;await libPut('testo',id,pagine);await libPut('meta',id,meta)}}
+    meta.fatte=pagine.length;await libPut('testo',id,pagine);
+    if(meta.fatte>=meta.n){const car=pagine.reduce((a,t)=>a+t.length,0);meta.senzaTesto=car/Math.max(1,meta.n)<40}
+    await libPut('meta',id,meta);
+  }catch(e){toast(e.message||'Lettura del PDF non riuscita.');meta.errore=e.message||'errore';try{await libPut('meta',id,meta)}catch(_){}}
+  finally{try{doc&&doc.destroy()}catch(e){}try{wake&&wake.release()}catch(e){}LIB.prog=null;LIB.idx=null;if(S.view==='clib')render()}}
+A.libStop=()=>{LIB.stop=true};
+
+/* ---- indice in memoria per la ricerca ---- */
+async function libCarica(){
+  if(LIB.idx)return LIB.idx;
+  const out=[];
+  for(const m of await libMetas()){if(!m.fatte)continue;const pages=(await libGet('testo',m.id))||[],norm=[];
+    for(let i=0;i<pages.length;i++){norm.push(libFold(pages[i]));if(i%80===79)await new Promise(r=>setTimeout(r,0))}
+    out.push({id:m.id,nome:m.nome,n:m.n,pages,norm})}
+  return LIB.idx=out}
+const libTermini=q=>{q=q.trim();const fr=/^"(.+)"$/.exec(q);if(fr)return [libFold(fr[1].trim())];
+  const t=Array.from(new Set(libFold(q).split(' ').filter(Boolean)));return t.length>1?t.filter(x=>x.length>1):t};
+function libConta(pg,t,cap){let n=0,i=-1,first=-1;while(n<cap&&(i=pg.indexOf(t,i+1))>=0){if(first<0)first=i;n++}return [n,first]}
+function libCerca(q,libroId){
+  const T=libTermini(q);if(!T.length||!LIB.idx)return {T,res:[],parziale:false};
+  const run=tutti=>{const res=[];
+    for(const b of LIB.idx){if(libroId&&b.id!==libroId)continue;
+      for(let i=0;i<b.norm.length;i++){const pg=b.norm[i];let sc=0,hit=0,first=-1;
+        for(const t of T){const [n,f]=libConta(pg,t,8);if(n){hit++;sc+=n+(f<120?3:0);if(first<0||f<first)first=f}}
+        if(!hit||(tutti&&hit<T.length))continue;
+        if(T.length>1){const ph=pg.indexOf(T.join(' '));if(ph>=0){sc+=8;first=ph}}
+        res.push({b,i,sc:sc+hit*4,first})}}
+    return res.sort((a,c)=>c.sc-a.sc||a.i-c.i)};
+  let res=run(true),parziale=false;if(!res.length&&T.length>1){res=run(false);parziale=true}
+  return {T,res,parziale,tot:res.length}}
+/* testo con le parole cercate in evidenza (da..a = parte da mostrare) */
+function libMarca(orig,norm,T,da,a){
+  const R=[];for(const t of T){let i=da-1;while((i=norm.indexOf(t,i+1))>=0&&i<a){R.push([i,Math.min(a,i+t.length)])}}
+  R.sort((x,y)=>x[0]-y[0]);const M=[];for(const r of R){const l=M[M.length-1];if(l&&r[0]<=l[1])l[1]=Math.max(l[1],r[1]);else M.push(r.slice())}
+  let h='',p=da;for(const r of M){h+=esc(orig.slice(p,r[0]))+'<mark>'+esc(orig.slice(r[0],r[1]))+'</mark>';p=r[1]}
+  return h+esc(orig.slice(p,a))}
+function libSnippet(r,T){
+  const o=r.b.pages[r.i],n=r.b.norm[r.i];let da=Math.max(0,r.first-80),a=Math.min(o.length,r.first+170);
+  while(da>0&&o[da-1]!==' '&&o[da-1]!=='\n'&&r.first-da<110)da--;
+  return (da>0?'… ':'')+libMarca(o,n,T,da,a).replace(/\s*\n\s*/g,' ')+(a<o.length?' …':'')}
+
+/* ---- schermata ---- */
+const libNomeFile=n=>String(n||'PDF').replace(/\.pdf$/i,'').replace(/[_]+/g,' ').trim().slice(0,80)||'PDF';
+function vCLib(){
+  setTimeout(libPopola,0);
+  return '<h1>Libreria</h1><p class="small mut">Qui carichi i tuoi PDF (per esempio DSM-5-TR e ICD). Restano <b>solo su questo telefono</b>, separati dall’archivio clinico: non vanno nei backup né in GitHub. Dopo una lettura iniziale, la ricerca nel testo è immediata.</p>'+
+   '<div class="libsearch"><input id="libq" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" placeholder="Cerca (es. disturbo di panico, F41.0, «lutto prolungato»)" value="'+esc(LIB.q)+'"></div>'+
+   '<div id="libfil"></div><div id="libres" class="libres"></div><div id="libprog" class="libprog"></div>'+
+   '<h3 class="libh">I tuoi PDF</h3><div id="libbooks"></div>'+
+   '<label class="btn pri libadd"><input id="libfile" type="file" accept="application/pdf,.pdf" hidden>+ Aggiungi un PDF</label>'}
+async function libPopola(){
+  if(S.view!=='clib')return;
+  const M=await libMetas(),bk=$('#libbooks');if(!bk)return;
+  bk.innerHTML=M.length?M.map(m=>{const inCorso=LIB.prog&&LIB.prog.id===m.id,finito=m.n&&m.fatte>=m.n;
+    return '<div class="libbook"><div class="grow"><b>'+esc(m.nome)+'</b><div class="small mut">'+(m.n?m.n+' pagine · ':'')+(m.senzaTesto?'<span class="libwarn">scansione senza testo: la ricerca non può funzionare</span>':finito?'pronto per la ricerca':inCorso?'lettura in corso…':m.errore?'<span class="libwarn">non riuscito</span>':'lettura da completare ('+(m.fatte||0)+'/'+(m.n||'?')+')')+' · '+(m.size/1048576).toFixed(0)+' MB</div></div>'+
+     (!finito&&!inCorso&&!m.senzaTesto?'<button class="btn sm pri" data-act="libRiprendi" data-id="'+m.id+'">'+(m.fatte?'Riprendi':'Leggi')+'</button>':'')+
+     '<button class="btn sm" data-act="libRinomina" data-id="'+m.id+'">Nome</button><button class="btn sm danger" data-act="libDel" data-id="'+m.id+'">Elimina</button></div>'}).join(''):'<p class="mut small">Nessun PDF. Aggiungi il tuo DSM-5-TR o l’ICD: la lettura iniziale richiede alcuni minuti, una volta sola.</p>';
+  const pr=M.filter(m=>m.fatte);const fil=$('#libfil');
+  if(fil)fil.innerHTML=pr.length>1?'<div class="fogcats"><button class="npchip'+(!LIB.libro?' on':'')+'" data-act="libFiltro" data-id="">Tutti</button>'+pr.map(m=>'<button class="npchip'+(LIB.libro===m.id?' on':'')+'" data-act="libFiltro" data-id="'+m.id+'">'+esc(m.nome)+'</button>').join('')+'</div>':'';
+  libProgUI();await libRisultati()}
+let _libT=null;
+async function libRisultati(){
+  const box=$('#libres');if(!box)return;
+  if(!LIB.q.trim()){box.innerHTML='';return}
+  if(!LIB.idx)box.innerHTML='<p class="small mut">Preparo la ricerca…</p>';
+  await libCarica();if(!$('#libres')||$('#libres')!==box)return;
+  if(!LIB.idx.length){box.innerHTML='<p class="small mut">Non c’è ancora nessun PDF pronto per la ricerca.</p>';return}
+  const r=libCerca(LIB.q,LIB.libro);
+  box.innerHTML=!r.res.length?'<p class="small mut">Nessun risultato per «'+esc(LIB.q)+'».</p>':
+    '<p class="small mut">'+(r.parziale?'Nessuna pagina contiene tutte le parole: ecco quelle con almeno una. ':'')+(r.tot>LIB_RISULTATI?'Prime '+LIB_RISULTATI+' pagine su '+r.tot+'. Aggiungi una parola per restringere.':r.tot+(r.tot===1?' pagina':' pagine'))+'</p>'+
+    r.res.slice(0,LIB_RISULTATI).map(x=>'<button class="libr" data-act="libPagina" data-id="'+x.b.id+'" data-p="'+(x.i+1)+'"><span class="libr-h">'+esc(x.b.nome)+' · pag. '+(x.i+1)+'</span><span class="libr-s">'+libSnippet(x,r.T)+'</span></button>').join('')}
+document.addEventListener('input',e=>{const t=e.target;if(t&&t.id==='libq'){LIB.q=t.value;clearTimeout(_libT);_libT=setTimeout(libRisultati,160)}});
+A.libFiltro=d=>{LIB.libro=d.id||'';libPopola()};
+
+/* ---- aggiunta, ripresa, nome, eliminazione ---- */
+document.addEventListener('change',async e=>{
+  const t=e.target;if(!t||t.id!=='libfile')return;const f=t.files&&t.files[0];t.value='';if(!f)return;
+  if(f.size>LIB_MAX_MB*1048576){toast('Il PDF è troppo grande (massimo '+LIB_MAX_MB+' MB).');return}
+  if(!/\.pdf$/i.test(f.name)&&f.type!=='application/pdf'){toast('Scegli un file PDF.');return}
+  const M=await libMetas();if(M.some(m=>m.size===f.size&&m.nome===libNomeFile(f.name))){toast('Questo PDF è già nella libreria.');return}
+  try{
+    const id=uid();await libPut('pdf',id,f);await libPut('meta',id,{id,nome:libNomeFile(f.name),size:f.size,n:0,fatte:0,t:Date.now()});
+    try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(_){}
+    LIB.idx=null;render();libIndicizza(id)}
+  catch(err){toast('Non riesco a salvare il PDF su questo telefono (spazio insufficiente?).')}});
+A.libRiprendi=d=>{const m=d.id;libGet('meta',m).then(x=>{if(x){delete x.errore;libPut('meta',m,x).then(()=>{render();libIndicizza(m)})}})};
+A.libRinomina=async d=>{const m=await libGet('meta',d.id);if(!m)return;
+  formModal('Nome del PDF',[{k:'nome',l:'Nome',req:1}],{nome:m.nome},async o=>{m.nome=o.nome.slice(0,80);await libPut('meta',m.id,m);LIB.idx=null;render()})};
+A.libDel=async d=>{const m=await libGet('meta',d.id);if(!m)return;
+  if(!await ask('<p>Eliminare <b>'+esc(m.nome)+'</b> dalla libreria? Il file e il testo letto vengono tolti da questo telefono; potrai caricarlo di nuovo.</p>',{ok:'Elimina'}))return;
+  if(LIB.prog&&LIB.prog.id===m.id)LIB.stop=true;
+  if(LIB.docId===m.id)libChiudiDoc();
+  for(const s of ['meta','testo','pdf'])await libDelKey(s,m.id);
+  if(LIB.libro===m.id)LIB.libro='';LIB.idx=null;render()};
+
+/* ---- una pagina: testo con evidenza e, se serve, la pagina come nel PDF ---- */
+function libChiudiDoc(){try{LIB.doc&&LIB.doc.destroy()}catch(e){}LIB.doc=null;LIB.docId=null}
+async function libPaginaView(id,p){
+  await libCarica();const b=LIB.idx.find(x=>x.id===id);if(!b)return;
+  p=Math.max(1,Math.min(b.pages.length,p));S.libv={id,p};
+  const T=libTermini(LIB.q),o=b.pages[p-1],n=b.norm[p-1];
+  modal('<h3>'+esc(b.nome)+' · pagina '+p+' di '+b.pages.length+'</h3>'+
+   '<div class="libpg">'+(o?libMarca(o,n,T,0,o.length):'<span class="mut">Questa pagina non ha testo.</span>')+'</div>'+
+   '<div class="row libnav"><button class="btn" data-act="libVai" data-d="-1"'+(p<=1?' disabled':'')+'>‹ Precedente</button><button class="btn" data-act="libVai" data-d="1"'+(p>=b.pages.length?' disabled':'')+'>Successiva ›</button></div>'+
+   '<div class="row"><input id="libgo" type="number" inputmode="numeric" min="1" max="'+b.pages.length+'" placeholder="Vai a pagina…"><button class="btn" data-act="libGo">Vai</button></div>'+
+   '<div id="libcv" class="libcv"></div>'+
+   '<div class="row end"><button class="btn" data-act="libVedi">Mostra la pagina come nel PDF</button><button class="btn pri" data-act="close">Chiudi</button></div>',true)}
+A.libPagina=d=>libPaginaView(d.id,+d.p);
+A.libVai=d=>{const v=S.libv;if(v)libPaginaView(v.id,v.p+(+d.d))};
+A.libGo=()=>{const v=S.libv,x=parseInt(($('#libgo')||{}).value,10);if(v&&x>0)libPaginaView(v.id,x)};
+A.libVedi=async()=>{
+  const v=S.libv,box=$('#libcv');if(!v||!box)return;box.innerHTML='<p class="small mut">Carico la pagina…</p>';
+  try{
+    if(LIB.docId!==v.id){libChiudiDoc();LIB.doc=await libApri(await libGet('pdf',v.id));LIB.docId=v.id}
+    const pg=await LIB.doc.getPage(v.p),w=Math.max(280,box.clientWidth||320),dpr=Math.min(2,window.devicePixelRatio||1),vp0=pg.getViewport({scale:1}),sc=w/vp0.width,vp=pg.getViewport({scale:sc*dpr});
+    const cv=document.createElement('canvas');cv.width=Math.floor(vp.width);cv.height=Math.floor(vp.height);cv.style.width='100%';
+    await pg.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;box.innerHTML='';box.appendChild(cv)}
+  catch(e){box.innerHTML='<p class="small libwarn">'+esc(e.message||'Non riesco a mostrare la pagina.')+'</p>'}};
+
+/* ---- entrata nella schermata «Nuovo» e nel menu ---- */
+const _cvLib=compView;
+compView=function(v){return v==='clib'?vCLib():_cvLib.apply(this,arguments)};
+const _vCNewLib=vCNew;
+vCNew=function(){return _vCNewLib.apply(this,arguments).replace('<div class="ctiles">','<button class="cfogb" data-act="cgo" data-v="clib"><span class="ctile-i">'+svgI(FIC.dir)+'</span><span><b>Libreria</b><small>DSM-5-TR, ICD e altri PDF: cerca una parola e vai alla pagina</small></span><span class="cfogc">'+svgI(CI.chev)+'</span></button><div class="ctiles">')};
 
 /* ---------- Coda dei fogli e controllo delle variazioni ----------
    Più foto di test in una volta, lette una dopo l'altra (strumento ricordato), con riepilogo finale.
