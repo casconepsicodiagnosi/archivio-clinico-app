@@ -3550,10 +3550,11 @@ function impPlan(it,all){
   let pid=it.pid,pnew=null;
   if(IMP_NEED(it.type)){
     if(!pid&&it.cand.length===1)pid=it.cand[0];
+    if(!pid&&it.cod){const nw=all.find(o=>o!==it&&o.type==='nuovo'&&o.cod===it.cod);if(nw){pid='new:'+nw.id;pnew=nw}}
     if(!pid){const s=nz(it.nameT.join(' ')),nw=all.find(o=>o!==it&&o.type==='nuovo'&&s&&nz(o.nameT.join(' '))===s);if(nw){pid='new:'+nw.id;pnew=nw}}
     if(!pid)return fail(it.cand.length>1?'Più pazienti con questo nome: scegli quello giusto qui a destra (meglio usare il codice PZ-… nel nome del file).':'Paziente non trovato'+(it.nameT.length||it.cod?' («'+(it.cod||it.nameT.join(' '))+'»)':' nel nome del file')+'. Scegli il paziente a destra.');
   }
-  const p=pid&&!pid.startsWith('new:')?pat(pid):null,who=p?nm(p):(pnew?'(nuovo) '+it.nameT.join(' '):'');
+  const p=pid&&!pid.startsWith('new:')?pat(pid):null,who=p?nm(p):(pnew?'(nuovo) '+(pnew.cod||it.nameT.join(' ')):'');
   const attachNeeded=it.text==null,txt=it.text||'';
   const dupDoc=p&&D().docs.some(d=>d.pid===p.id&&d.hash===it.hash);
   P.attach=false;
@@ -3563,9 +3564,11 @@ function impPlan(it,all){
      if(!cg!==!no)return fail('Cognome e nome vanno scritti insieme (oppure nessuno dei due: il paziente resta senza nome): usa NUOVO_Cognome_Nome_AAAA-MM-GG o «Cognome:» e «Nome:» nel file.');
      if(!nasc)return fail('Manca la data di nascita: aggiungila nel nome del file (AAAA-MM-GG) o nel testo («Data di nascita: …»).');
      if(nasc>today())return fail('La data di nascita è nel futuro.');
-     const rec={cognome:cg,nome:no,nascita:nasc,genere:kv.genere||'',tel:kv.tel||'',email:kv.email||'',tutore:kv.tutore||'',tutoreContatto:kv.tutoreContatto||'',presa:kv.presa||today(),stato:kv.stato||'in carico',dataConcl:kv.dataConcl||'',esito:kv.esito||'',tags:(kv.tags||'').split(',').map(x=>x.trim()).filter(Boolean),note:kv.note||'',gruppo:String(kv.gruppo||'').trim().slice(0,60)};
+     const cod=it.cod&&!D().patients.some(x=>x.cod===it.cod)?it.cod:'';
+     if(it.cod&&!cod)A_('Il codice '+it.cod+' è già di un altro paziente: ne assegno uno nuovo.');
+     const rec={cod,cognome:cg,nome:no,nascita:nasc,genere:kv.genere||'',tel:kv.tel||'',email:kv.email||'',tutore:kv.tutore||'',tutoreContatto:kv.tutoreContatto||'',presa:kv.presa||today(),stato:kv.stato||'in carico',dataConcl:kv.dataConcl||'',esito:kv.esito||'',tags:(kv.tags||'').split(',').map(x=>x.trim()).filter(Boolean),note:kv.note||'',gruppo:String(kv.gruppo||'').trim().slice(0,60)};
      const d=dupOf(rec);if(d){P.skip=true;A_('Esiste già una scheda con stesso nome e data di nascita ('+nm(d)+'): non è selezionata.')}
-     P.rec=rec;P.attach=true;P.sum='Nuovo paziente: '+(cg?cg+' '+no:'senza nome (si riconosce dal codice)')+(rec.gruppo?' · gruppo «'+rec.gruppo+'»':'')+', nato/a il '+fd(nasc)+(Object.keys(kv).length?' · campi letti dal file: '+Object.keys(kv).map(k=>IMP_KL[k]||k).join(', '):'')+' · il file va in Documenti';break}
+     P.rec=rec;P.attach=true;P.sum='Nuovo paziente '+(cod||'(codice nuovo)')+': '+(cg?cg+' '+no:'senza nome (si riconosce dal codice)')+(rec.gruppo?' · gruppo «'+rec.gruppo+'»':'')+', nato/a il '+fd(nasc)+(Object.keys(kv).length?' · campi letti dal file: '+Object.keys(kv).map(k=>IMP_KL[k]||k).join(', '):'')+' · il file va in Documenti';break}
    case 'seduta':{
      if(!date)return fail('Manca la data della seduta nel nome del file (AAAA-MM-GG).');
      if(date>today())A_('La data è futura.');
@@ -3638,11 +3641,11 @@ async function impAttach(pid,it,tipo,dataDoc){
   const buf=await it.f.arrayBuffer(),id=uid();await idbPut('docs',id,await encB(S.key,buf));
   D().docs.push({id,pid,nome:it.name,tipo,dataDoc:dataDoc||today(),dataCarico:today(),size:it.f.size,mime:it.f.type,hash:it.hash});return id}
 async function impApply(it,made){
-  const P=it.pl;let pid=it.pid||(it.cand.length===1?it.cand[0]:'');if(!pid&&P.who&&/^\(nuovo\)/.test(P.who)){const nw=S.imp.find(o=>o.type==='nuovo'&&nz(o.nameT.join(' '))===nz(it.nameT.join(' ')));if(nw)pid='new:'+nw.id}
+  const P=it.pl;let pid=it.pid||(it.cand.length===1?it.cand[0]:'');if(!pid&&it.cod&&it.type!=='nuovo'){const nw=S.imp.find(o=>o.type==='nuovo'&&o.cod===it.cod);if(nw)pid='new:'+nw.id}if(!pid&&P.who&&/^\(nuovo\)/.test(P.who)){const nw=S.imp.find(o=>o.type==='nuovo'&&nz(o.nameT.join(' '))===nz(it.nameT.join(' ')));if(nw)pid='new:'+nw.id}
   if(pid&&pid.startsWith('new:'))pid=made[pid.slice(4)];
   const p=pid?pat(pid):null;
   switch(it.type){
-   case 'nuovo':{const {gruppo,...campi}=P.rec,rec=Object.assign({id:uid(),creato:today(),rid:newRid(),cod:nextCod(D()),gid:grpEnsure(gruppo)},campi);D().patients.push(rec);made[it.id]=rec.id;await impAttach(rec.id,it,'scheda anamnestica',today());log('Nuovo paziente (da file)',nm(rec),rec.id);return 'Creato '+nm(rec)+' ('+rec.cod+')'}
+   case 'nuovo':{const {gruppo,cod,...campi}=P.rec,rec=Object.assign({id:uid(),creato:today(),rid:newRid(),cod:cod&&!D().patients.some(x=>x.cod===cod)?cod:nextCod(D()),gid:grpEnsure(gruppo)},campi);D().patients.push(rec);made[it.id]=rec.id;await impAttach(rec.id,it,'scheda anamnestica',today());log('Nuovo paziente (da file)',nm(rec),rec.id);return 'Creato '+nm(rec)+' ('+rec.cod+')'}
    case 'seduta':D().sessions.push({id:uid(),pid,data:P.data,durata:P.dur,tipo:'individuale',epId:'',kw:[],nota:P.nota});if(P.attach)await impAttach(pid,it,'altro',P.data);log('Seduta importata da file',nm(p),pid);return 'Seduta del '+fd(P.data)+' aggiunta';
    case 'nota':p.note=(p.note?p.note+'\n\n':'')+'['+fd(today())+' · da file] '+P.nota;if(P.attach)await impAttach(pid,it,'altro',today());log('Nota importata da file',nm(p),pid);return 'Nota aggiunta alle note anagrafiche';
    case 'episodio':D().episodes.push(Object.assign({id:uid(),pid,kw:[],inquadramento:'',obiettivi:'',piano:'',dataChiusura:'',esito:''},P.rec));if(P.attach)await impAttach(pid,it,'altro',P.rec.dataApertura);log('Domanda importata da file',nm(p),pid);return 'Domanda aggiunta';
@@ -4407,9 +4410,9 @@ const CT={
   f:()=>[PZF,{k:'nota',l:'Nota',t:'textarea',r:7,req:1}],name:(v,z)=>'NOTA_'+z,text:v=>v.nota,sum:v=>oneL(v.nota).slice(0,48)},
  nuovo:{l:'Nuovo paziente',s:'Anagrafica di chi inizia il percorso',ic:'M9 11a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM2.5 20c0-3.3 2.9-6 6.5-6s6.5 2.7 6.5 6M18 8v6M15 11h6',
   f:()=>[{k:'gruppo',l:'Gruppo (reparto, servizio…)',h:'Facoltativo. Sul Mac il paziente va nel gruppo con questo nome (se non c’è, lo crea).'},{k:'cognome',l:'Cognome (si può aggiungere dopo)'},{k:'nome',l:'Nome (si può aggiungere dopo)'},{k:'nascita',l:'Data di nascita',t:'date',req:1},{k:'genere',l:'Genere (facoltativo)',t:'select',o:['','donna','uomo','altro / non indicato']},{k:'tel',l:'Telefono',t:'tel'},{k:'email',l:'Email',t:'email'},{k:'tutore',l:'Responsabile genitoriale (se minorenne)'},{k:'tutoreContatto',l:'Contatti del responsabile'},{k:'note',l:'Note',t:'textarea',r:3}],
-  name:v=>{const n=[fz(v.cognome),fz(v.nome)].filter(Boolean);return n.length?'NUOVO_'+n.join('_')+'_'+v.nascita:'NUOVO_'+v.nascita+'_senza-nome'},
-  text:v=>lineKV([['Gruppo',v.gruppo],['Cognome',v.cognome],['Nome',v.nome],['Data di nascita',v.nascita],['Genere',v.genere],['Telefono',v.tel],['Email',v.email],['Responsabile genitoriale',v.tutore],['Contatti tutore',v.tutoreContatto],['Note',v.note]]),
-  chk:v=>v.nascita>today()?'La data di nascita è nel futuro.':'',sum:v=>((v.cognome||'')+' '+(v.nome||'')).trim()||('Paziente senza nome'+(v.gruppo?' · '+v.gruppo:''))},
+  name:v=>{const n=[fz(v.cognome),fz(v.nome)].filter(Boolean),c=v.cod?v.cod+'_':'';return n.length?'NUOVO_'+c+n.join('_')+'_'+v.nascita:'NUOVO_'+c+v.nascita+'_senza-nome'},
+  text:v=>lineKV([['Codice',v.cod],['Gruppo',v.gruppo],['Cognome',v.cognome],['Nome',v.nome],['Data di nascita',v.nascita],['Genere',v.genere],['Telefono',v.tel],['Email',v.email],['Responsabile genitoriale',v.tutore],['Contatti tutore',v.tutoreContatto],['Note',v.note]]),
+  chk:v=>v.nascita>today()?'La data di nascita è nel futuro.':'',sum:v=>(v.cod?v.cod+' · ':'')+(((v.cognome||'')+' '+(v.nome||'')).trim()||('senza nome'+(v.gruppo?' · '+v.gruppo:'')))},
  episodio:{l:'Domanda',s:'Motivo della richiesta',ic:'M12 21s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 11c0 5.5-7 10-7 10z',pz:1,
   f:()=>[PZF,DTF('data','Data di apertura'),{k:'cat',l:'Categoria',t:'select',o:CATS},{k:'motivo',l:'Motivo della richiesta',t:'textarea',r:6,req:1}],
   name:(v,z)=>'EPISODIO_'+z+'_'+v.data+'_'+fz(v.cat),text:v=>v.motivo,sum:v=>fd(v.data)+' · '+v.cat},
@@ -4442,7 +4445,7 @@ function pzLabel(pz){if(!pz)return '';const e=PLI().pz.find(x=>x.c===pz);return 
 function pzOptions(){
   const o=[],seen=new Set();
   PLI().pz.forEach(x=>{if(!seen.has(x.c)){seen.add(x.c);o.push('<option value="'+esc(x.c)+'" label="'+esc(x.i)+'"></option>')}});
-  OUT().filter(i=>i.type==='nuovo').forEach(i=>{const n=fz(i.v.cognome)+' '+fz(i.v.nome);if(!seen.has(n)){seen.add(n);o.push('<option value="'+esc(n)+'" label="nuovo, da importare"></option>')}});
+  OUT().filter(i=>i.type==='nuovo').forEach(i=>{const n=i.v.cod||(fz(i.v.cognome)+' '+fz(i.v.nome));if(!seen.has(n)){seen.add(n);o.push('<option value="'+esc(n)+'" label="nuovo, da importare"></option>')}});
   return o.join('')}
 
 /* foto: ridotta (max 1800 px) e salvata cifrata */
@@ -4478,6 +4481,7 @@ function ctOpen(type,it){
 }
 async function ctSave(type,o,editId){
   const T=CT[type];if(!T)throw new Error('Tipo non valido');
+  if(type==='nuovo')o=pzConCodice(o,editId); /* codice PZ automatico: js_codici.js */
   const v={};Object.keys(o).forEach(k=>{if(k!=='foto'&&k!=='pz')v[k]=typeof o[k]==='string'?o[k].trim():o[k]});
   const fl=T.f();
   const miss=fl.filter(f=>f.req&&f.k!=='pz'&&f.t!=='file'&&(v[f.k]==null||v[f.k]===''));
@@ -4493,6 +4497,7 @@ async function ctSave(type,o,editId){
   const it=old||{id:uid(),type,t:new Date().toISOString()};
   it.v=v;it.pz=pz;it.photo=photo||null;it.batch=null;it.sentAt=null;
   if(!old)OUT().push(it);
+  if(type==='nuovo'&&v.cod&&!pzUsatiTel().includes(v.cod))pzUsatiTel().push(v.cod);
   log(old?'Voce modificata':'Voce aggiunta',T.l);
   await save();render();toast('In uscita: '+T.l.toLowerCase());
 }
@@ -4578,7 +4583,7 @@ function plApply(p){
   const s=x=>String(x==null?'':x).slice(0,40);
   const pz=(Array.isArray(p.pz)?p.pz:[]).slice(0,5000).map(x=>({c:s(x.c),i:s(x.i)})).filter(x=>/^PZ-\d+$/.test(x.c));
   const ag=(Array.isArray(p.ag)?p.ag:[]).slice(0,3000).map(x=>({d:s(x.d),o:s(x.o),u:Number(x.u)||50,c:s(x.c),i:s(x.i)})).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x.d));
-  D().plist={at:today(),pz,ag};log('Elenco dal Mac caricato',pz.length+' codici');return save().then(()=>{render();toast('Elenco caricato: '+pz.length+' pazienti, '+ag.length+' appuntamenti')})}
+  D().plist={at:today(),pz,ag,blocchi:pzBlocchiDa(p)};log('Elenco dal Mac caricato',pz.length+' codici');return save().then(()=>{render();toast('Elenco caricato: '+pz.length+' pazienti, '+ag.length+' appuntamenti')})}
 A.plPick=()=>pickFile('.acpk',async f=>{
   const text=await f.text();let h;try{h=pkHead(text)}catch(e){pkErr(e.message);return}
   if(pkIsKey(h)){try{await plApply(await pkOpenK(h))}catch(e){pkErr(e.message)}return}
@@ -4592,7 +4597,7 @@ function plistPayload(){
   const pz=A_.map(p=>({c:p.cod,i:ini(p)})).sort((a,b)=>a.c.localeCompare(b.c));
   const lim=new Date(Date.now()+120*86400000).toISOString().slice(0,10);
   const ag=D().appts.filter(a=>a.stato==='previsto'&&a.data>=today()&&a.data<=lim&&by[a.pid]).map(a=>({d:a.data,o:a.ora||'',u:a.durata||50,c:by[a.pid].cod,i:ini(by[a.pid])})).sort((a,b)=>(a.d+a.o).localeCompare(b.d+b.o));
-  return {kind:'elenco',t:new Date().toISOString(),pz,ag}}
+  return {kind:'elenco',t:new Date().toISOString(),pz,ag,blocco:pzBloccoTelefono()}}
 A.pkgPlist=async()=>{
   if(!D().set.tk){await A.pkgKey();toast('Prima metti questa chiave sul telefono, poi crea l’elenco.');return}
   const pl=plistPayload(),sealed=await pkSealK(D().set.tk,pl);
@@ -4696,7 +4701,7 @@ function vCSet(){
   const P=PLI(),ex=OUT().filter(x=>x.batch).length,s=D().set,cur=s.idleMin||5,opts=IDLE_OPT.indexOf(cur)<0?IDLE_OPT.concat([cur]).sort((a,b)=>a-b):IDLE_OPT;
   return '<h1>Impostazioni</h1>'+
    '<div class="card"><h3>Chiave di trasferimento</h3><p class="small mut">'+(s.tk?'<b>Impostata.</b> Esporti senza password. Se la cambi sul Mac, inserisci qui la nuova.':'Non ancora impostata. Serve una sola volta: la crei sul Mac (Importa › Chiave per il telefono) e la incolli qui.')+'</p><button class="btn'+(s.tk?'':' pri')+'" data-act="tkSet">'+(s.tk?'Cambia la chiave':'Inserisci la chiave')+'</button></div>'+
-   '<div class="card"><h3>Pazienti e agenda dal Mac</h3><p class="small mut">'+(P.at?'Caricato il '+fd(P.at)+': <b>'+P.pz.length+'</b> pazienti (solo codice e iniziali), <b>'+P.ag.length+'</b> appuntamenti.':'Nessun elenco caricato. Senza elenco scrivi tu il codice PZ-… ogni volta, ed è la scelta più riservata.')+'</p><button class="btn" data-act="plPick">'+(P.at?'Aggiorna l’elenco':'Carica l’elenco dal Mac')+'</button></div>'+
+   '<div class="card"><h3>Pazienti e agenda dal Mac</h3>'+pzCodiciCardHTML()+'<p class="small mut">'+(P.at?'Caricato il '+fd(P.at)+': <b>'+P.pz.length+'</b> pazienti (solo codice e iniziali), <b>'+P.ag.length+'</b> appuntamenti.':'Nessun elenco caricato. Senza elenco scrivi tu il codice PZ-… ogni volta, ed è la scelta più riservata.')+'</p><button class="btn" data-act="plPick">'+(P.at?'Aggiorna l’elenco':'Carica l’elenco dal Mac')+'</button></div>'+
    '<div class="card"><h3>Svuota il telefono</h3><p class="small mut">Dopo aver importato sul Mac, apri la ricevuta che il Mac ti ha dato: il telefono cancella da solo le voci importate.</p><div class="row"><button class="btn pri" data-act="crcPick">Apri la ricevuta</button><button class="btn" data-act="cclear"'+(ex?'':' disabled')+'>Cancella le '+ex+' già esportate</button></div></div>'+
    '<div class="card"><h3>Blocco automatico</h3><form data-form="lockset"><div class="grid">'+fieldHTML({k:'idleMin',l:'Blocca dopo',t:'select',o:opts.map(m=>[String(m),m===1?'1 minuto':m+' minuti'])},String(cur))+fieldHTML({k:'pw',l:'Password per confermare',t:'password',req:1})+'</div>'+
    '<label class="chkrow"><input type="checkbox" name="hideLock"'+(s.hideLock!==false?' checked':'')+'> Blocca anche se l’app resta in secondo piano per più di un minuto</label>'+
@@ -6996,6 +7001,41 @@ function grpEnsure(nome){
   if(!g){g={id:uid(),nome,colore:GRP_COLORI[grps().length%GRP_COLORI.length][0]};grps().push(g);log('Gruppo creato (da importazione)',nome)}
   return g.id}
 
+/* ---------- Codici paziente automatici anche sul telefono, senza doppioni con il Mac ----------
+   Il Mac e il telefono non si parlano: per non creare due volte lo stesso PZ, il Mac RISERVA al telefono un blocco
+   di codici (per esempio PZ-0041…PZ-0070) e lo manda dentro l'ELENCO per il telefono; da quel momento il Mac,
+   per i pazienti creati da lui, salta quei numeri. Il telefono assegna da solo il primo codice libero del blocco a ogni
+   «Nuovo paziente» e lo scrive nella voce esportata; il Mac, importando, usa proprio quel codice.
+   Se per errore un codice fosse già occupato, il Mac ne assegna un altro e lo dice nell'anteprima dell'importazione. */
+const PZ_BLOCCO=30,PZ_RIMANDA=10;
+const pzNum=c=>parseInt(String(c||'').replace(/\D/g,''),10)||0;
+const pzCod=n=>'PZ-'+String(n).padStart(4,'0');
+/* lato Mac: blocco da mandare con l'elenco. Si rimanda lo stesso finché ha almeno 10 codici non ancora arrivati */
+function pzBloccoTelefono(){
+  const s=D().set,usati=new Set(D().patients.map(p=>pzNum(p.cod))),b=s.bloccoTel;
+  if(b){let liberi=0;for(let n=b.da;n<=b.a;n++)if(!usati.has(n))liberi++;if(liberi>=PZ_RIMANDA)return {da:b.da,a:b.a}}
+  const max=Math.max(s.nextCod||0,...D().patients.map(p=>pzNum(p.cod)));
+  const nb={da:max+1,a:max+PZ_BLOCCO};s.nextCod=nb.a;s.bloccoTel=nb;
+  log('Codici riservati al telefono',pzCod(nb.da)+' – '+pzCod(nb.a));saveSoon();return nb}
+/* lato telefono: blocchi ricevuti (si sommano, così un codice di un blocco vecchio non torna mai libero) */
+function pzBlocchiDa(p){const old=(D().plist&&D().plist.blocchi)||[],b=p&&p.blocco;
+  const ok=b&&Number.isInteger(b.da)&&Number.isInteger(b.a)&&b.da>0&&b.a>=b.da&&b.a-b.da<=200;
+  return ok&&!old.some(x=>x.da===b.da&&x.a===b.a)?old.concat([{da:b.da,a:b.a}]).slice(-20):old}
+const pzUsatiTel=()=>D().pzUsati||(D().pzUsati=[]);
+function pzLiberiTel(){
+  const usati=new Set(pzUsatiTel().concat(PLI().pz.map(x=>x.c),OUT().filter(i=>i.type==='nuovo'&&i.v.cod).map(i=>i.v.cod))),L=[];
+  for(const b of PLI().blocchi||[])for(let n=b.da;n<=b.a;n++){const c=pzCod(n);if(!usati.has(c))L.push(c)}
+  return L}
+/* chiamata da ctSave per «Nuovo paziente»: il codice c'è sempre, anche senza nome */
+function pzConCodice(o,editId){
+  const old=editId&&OUT().find(x=>x.id===editId);
+  if(old&&old.v&&old.v.cod)return Object.assign({},o,{cod:old.v.cod});
+  const c=pzLiberiTel()[0];
+  if(!c)throw new Error((PLI().blocchi||[]).length?'Hai usato tutti i codici riservati al telefono. Esporta le voci, importale sul Mac e carica qui un nuovo elenco: arriveranno altri codici.':'Per assegnare il codice (PZ-…) serve l’elenco dal Mac: sul Mac crea l’«Elenco per il telefono» e caricalo qui in Impostazioni. Contiene i codici riservati al telefono.');
+  return Object.assign({},o,{cod:c})}
+function pzCodiciCardHTML(){const L=pzLiberiTel(),B=PLI().blocchi||[];
+  return '<p class="small mut">Codici per i nuovi pazienti: '+(B.length?'<b>'+L.length+'</b> ancora liberi'+(L.length?' (il prossimo è <b>'+esc(L[0])+'</b>)':'')+'.':'nessuno: carica l’elenco dal Mac.')+'</p>'}
+
 /* ---------- Da fare e percorsi di valutazione ----------
    D().tasks = [{id,pid,testo,scad,fatto,dataFatto}]   compiti per paziente, con scadenza facoltativa
    D().paths = [{id,pid,nome,tappe:[{id,nome,stato:'da fare'|'in corso'|'fatta',data}]}]   percorsi con tappe
@@ -7537,8 +7577,11 @@ const DET_SEZ=[ /* dalla più lunga alla più corta: «nota personale» prima di
   ['relazione',['relazione']],
   ['test',['test e scale','test','scale']],
   ['nota',['nota','note','appunto','appunti']],
+  ['impegno',['impegno personale','impegno','impegni']],
+  ['appuntamento',['appuntamento','appuntamenti']],
+  ['formazione',['formazione','corso','supervisione']],
   ['paziente',['paziente']]];
-const DET_TIPI=[['seduta','Seduta'],['episodio','Domanda'],['diagnosi','Diagnosi'],['nota','Nota'],['notap','Nota personale'],['relazione','Relazione'],['','Non creare (scarta)']];
+const DET_TIPI=[['seduta','Seduta'],['episodio','Domanda'],['diagnosi','Diagnosi'],['nota','Nota'],['notap','Nota personale'],['relazione','Relazione'],['impegno','Impegno personale'],['appuntamento','Appuntamento'],['formazione','Formazione'],['','Non creare (scarta)']];
 const DET_CAT=[['Ansia',['ansia','panico','fobi']],['Umore',['umore','depress','tristezza']],['Relazioni e famiglia',['famiglia','relazion','coppia','genitori']],['Trauma e stress',['trauma','stress']],
   ['Lavoro e studio',['lavoro','studio','scuola','universit']],['Lutto e perdita',['lutto','perdita']],['Sviluppo e infanzia',['sviluppo','infanzia','bambin']]];
 const detRe=(()=>{const k=[].concat(...DET_SEZ.map(s=>s[1])).sort((a,b)=>b.length-a.length).map(x=>x.replace(/ /g,'\\s+'));
@@ -7568,8 +7611,45 @@ function detPrepara(tipo,s,pz,data){
     if(c){g.codice=c[4]?c[4].toUpperCase():(c[1].toUpperCase()+c[2]+(c[3]?'.'+c[3]:''));g.testo=detPulisci(s.replace(c[0],''))}
     const fs=libFold(g.testo);g.stato=/\bconfermat/.test(fs)?'confermata':/\bin remission/.test(fs)?'in remissione':/\besclus/.test(fs)?'esclusa':'ipotesi';
     if(!g.codice)g.avviso='Non ho trovato il codice (per esempio F41.1): scrivilo tu.'}
+  if(tipo==='impegno'||tipo==='formazione'||tipo==='appuntamento'){
+    const t=detTempo(s);Object.assign(g,{data:t.data||g.data,dataFine:t.dataFine||'',ora:t.ora||'',oraFine:t.oraFine||''});let resto=t.resto;
+    if(tipo==='appuntamento'){const c=/\b(?:con\s+)?p\s?z[\s\-]*(\d{1,6})\b/i.exec(resto);if(c){g.pz=normPz('PZ-'+c[1]);resto=resto.replace(c[0],' ')}
+      const d=/\b(?:durata\s*(?:di\s*)?|di\s+)(\d{1,3})\s*minut[io]\b/i.exec(resto);if(d){g.durata=+d[1];resto=resto.replace(d[0],' ')}
+      if(!g.ora)g.avviso='Manca l’ora dell’appuntamento: scrivila tu.'}
+    g.testo=detPulisci(detRipulisci(resto));
+    if(!t.data)g.avviso=(g.avviso?g.avviso+' ':'')+'Non ho trovato la data: ho messo quella in alto, controllala.'}
   if(tipo==='episodio'){const fs=libFold(s);const c=DET_CAT.find(x=>x[1].some(k=>fs.includes(k)));if(c)g.cat=c[0]}
   return g}
+/* ---- date e ore dette a voce: «giovedì alle 15:30», «domani alle 9», «il 3 novembre dalle 15 alle 17», «dal 3 al 5 novembre» ---- */
+const DET_CAL=['impegno','appuntamento','formazione'];
+const DET_GIORNI=['domenica','lunedi','martedi','mercoledi','giovedi','venerdi','sabato'];
+const DET_MESI=['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','agosto','settembre','ottobre','novembre','dicembre'];
+const detYmd=d=>d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
+function detTempo(s){
+  const f=libFold(s),via=[],oggi=new Date();oggi.setHours(12,0,0,0);
+  const prendi=m=>{via.push([m.index,m.index+m[0].length]);return m};
+  const gm=(g,mi,a)=>{const anno=a?(+a<100?2000+(+a):+a):oggi.getFullYear();let d=new Date(anno,mi,g,12);if(d.getMonth()!==mi)return null;if(!a&&d<oggi)d=new Date(anno+1,mi,g,12);return detYmd(d)};
+  const mesi=DET_MESI.join('|'),num=x=>x==='primo'?1:+x;let data=null,dataFine=null,m;
+  if((m=new RegExp("\\bdal(?:l')?\\s*(\\d{1,2}|primo)°?(?:\\s+("+mesi+"))?\\s+al(?:l')?\\s*(\\d{1,2})°?\\s+("+mesi+")(?:\\s+(\\d{4}))?\\b").exec(f))){prendi(m);
+    const m2=DET_MESI.indexOf(m[4]),m1=m[2]?DET_MESI.indexOf(m[2]):m2;data=gm(num(m[1]),m1,m[5]);dataFine=gm(+m[3],m2,m[5]||(data?data.slice(0,4):''))}
+  else if((m=new RegExp("\\b(?:(?:il|l')\\s*)?(\\d{1,2}|primo)°?\\s+("+mesi+")(?:\\s+(\\d{4}))?\\b").exec(f))){prendi(m);data=gm(num(m[1]),DET_MESI.indexOf(m[2]),m[3])}
+  else if((m=/\b(?:il\s+)?(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?\b/.exec(f))){prendi(m);data=gm(+m[1],+m[2]-1,m[3])}
+  else if((m=/\b(dopodomani|domani|oggi)\b/.exec(f))){prendi(m);const d=new Date(oggi);d.setDate(d.getDate()+(m[1]==='oggi'?0:m[1]==='domani'?1:2));data=detYmd(d)}
+  else if((m=new RegExp('\\b(?:(?:il|questo|prossimo)\\s+)?('+DET_GIORNI.join('|')+')(?:\\s+prossimo)?\\b').exec(f))){prendi(m);const d=new Date(oggi);let k=(DET_GIORNI.indexOf(m[1])-d.getDay()+7)%7;if(!k)k=7;d.setDate(d.getDate()+k);data=detYmd(d)}
+  const H="(\\d{1,2})(?:[:.](\\d{2})|\\s+e\\s+(mezza|un quarto|tre quarti|\\d{1,2}))?";
+  const hh=(h,mm,e)=>{let mi=mm?+mm:e==='mezza'?30:e==='un quarto'?15:e==='tre quarti'?45:e?+e:0;h=+h;return h<=23&&mi<=59?{h,mi}:null};
+  let a=null,b=null;
+  if((m=new RegExp('\\bdalle\\s+'+H+'\\s+alle\\s+'+H).exec(f))){prendi(m);a=hh(m[1],m[2],m[3]);b=hh(m[4],m[5],m[6])}
+  else if((m=new RegExp('\\b(?:alle ore|alle|ore|per le)\\s+'+H).exec(f))){prendi(m);a=hh(m[1],m[2],m[3])}
+  if((m=/\b(del pomeriggio|di pomeriggio|di sera|della sera)\b/.exec(f))){prendi(m);if(a&&a.h<12)a.h+=12;if(b&&b.h<12)b.h+=12}
+  if(a&&!b&&(m=/\bper\s+(un'?\s*ora|(\d)\s+ore|mezz'?\s*ora)\b/.exec(f))){prendi(m);const min=/mezz/.test(m[1])?30:m[2]?+m[2]*60:60,t=a.h*60+a.mi+min;if(t<24*60)b={h:Math.floor(t/60),mi:t%60}}
+  if(a&&b&&b.h*60+b.mi<=a.h*60+a.mi&&b.h<12)b.h+=12;
+  const fmt=x=>x?p2(x.h)+':'+p2(x.mi):'';
+  let resto='',p=0;via.sort((x,y)=>x[0]-y[0]).forEach(v=>{resto+=s.slice(p,v[0])+' ';p=v[1]});resto+=s.slice(p);
+  return {data,dataFine,ora:fmt(a),oraFine:fmt(b),resto}}
+const detRipulisci=t=>{t=String(t||'').replace(/\s+/g,' ').trim();let x;
+  do{x=t;t=t.replace(/^[,:;\-–]\s*/,'').replace(/^l'\s*/i,'').replace(/^(?:il|lo|la|alle|dalle|di|per|a|ore|e)(?:\s+|$)/i,'').replace(/\s*[,:;.\-–]$/,'').replace(/\s+(?:il|alle|dalle|di|per|a|ore|e)$/i,'').trim()}while(x!==t);return t};
+
 /* dalla sezione alla voce «In uscita» */
 function detVoce(g){
   const b={pz:g.pz,data:g.data};
@@ -7579,7 +7659,10 @@ function detVoce(g){
     case 'diagnosi':return Object.assign(b,{codice:g.codice,stato:g.stato||'ipotesi',nota:g.testo});
     case 'nota':return {pz:g.pz,nota:g.testo};
     case 'notap':return Object.assign(b,{titolo:'',nota:g.testo});
-    case 'relazione':return Object.assign(b,{testo:g.testo})}
+    case 'relazione':return Object.assign(b,{testo:g.testo});
+    case 'impegno':return {titolo:g.testo,data:g.data,dataFine:g.dataFine||'',ora:g.ora||'',oraFine:g.oraFine||''};
+    case 'formazione':return {titolo:g.testo,data:g.data,dataFine:g.dataFine||'',ora:g.ora||'',oraFine:g.oraFine||'',ente:''};
+    case 'appuntamento':return Object.assign(b,{ora:g.ora||'',durata:g.durata||50})}
   return null}
 
 /* la dettatura in corso resta nell'archivio cifrato finché non crei le voci o la svuoti */
@@ -7595,11 +7678,13 @@ function vCDet(){
      st.segs.map((g,i)=>{const k=f=>'data-dk="'+i+':'+f+'"',inp=(f,l,t)=>fld(l,'<input '+k(f)+(t?' type="'+t+'"':'')+' value="'+esc(g[f]==null?'':g[f])+'">');
       const sel=(f,l,o)=>fld(l,'<select '+k(f)+'>'+o.map(x=>{x=Array.isArray(x)?x:[x,x];return '<option value="'+esc(x[0])+'"'+(String(g[f])===String(x[0])?' selected':'')+'>'+esc(x[1])+'</option>'}).join('')+'</select>');
       return '<div class="card detseg'+(g.err?' deterr':'')+'">'+(g.err?'<div class="banner bad small">'+esc(g.err)+'</div>':g.avviso?'<div class="banner warn small">'+esc(g.avviso)+'</div>':'')+
-       sel('tipo','Sezione',DET_TIPI)+(g.tipo?'<div class="detrow">'+(g.tipo!=='nota'?inp('data','Data','date'):'')+inp('pz',g.tipo==='notap'?'Paziente (facoltativo)':'Paziente')+'</div>':'')+
+       sel('tipo','Sezione',DET_TIPI)+(g.tipo&&!DET_CAL.includes(g.tipo)?'<div class="detrow">'+(g.tipo!=='nota'?inp('data','Data','date'):'')+inp('pz',g.tipo==='notap'?'Paziente (facoltativo)':'Paziente')+'</div>':'')+
+       (g.tipo==='appuntamento'?'<div class="detrow">'+inp('pz','Paziente')+inp('data','Data','date')+'</div><div class="detrow">'+inp('ora','Ora','time')+inp('durata','Durata (minuti)','number')+'</div>':'')+
+       (g.tipo==='impegno'||g.tipo==='formazione'?'<div class="detrow">'+inp('data','Dal','date')+inp('dataFine','Al (se più giorni)','date')+'</div><div class="detrow">'+inp('ora','Dalle','time')+inp('oraFine','Alle','time')+'</div>':'')+
        (g.tipo==='seduta'?inp('durata','Durata (minuti)','number'):'')+
        (g.tipo==='diagnosi'?'<div class="detrow">'+inp('codice','Codice')+sel('stato','Stato',['ipotesi','confermata','in remissione','esclusa'])+'</div>':'')+
        (g.tipo==='episodio'?sel('cat','Categoria',CATS):'')+
-       fld(g.tipo==='diagnosi'?'Nota (facoltativa)':'Testo','<textarea '+k('testo')+' rows="5">'+esc(g.testo)+'</textarea>')+'</div>'}).join('')+
+       (g.tipo==='appuntamento'?(g.testo?'<p class="small mut">Testo dettato (non va nell’appuntamento): '+esc(g.testo)+'</p>':''):fld(g.tipo==='diagnosi'?'Nota (facoltativa)':g.tipo==='impegno'||g.tipo==='formazione'?'Titolo':'Testo','<textarea '+k('testo')+' rows="'+(DET_CAL.includes(g.tipo)?2:5)+'">'+esc(g.testo)+'</textarea>'))+'</div>'}).join('')+
      (st.segs.some(g=>g.tipo)?'<button class="btn pri detgo" data-act="detCrea">Crea '+st.segs.filter(g=>g.tipo).length+' voci in «In uscita»</button>':'')}
   return h}
 document.addEventListener('input',detCampo);document.addEventListener('change',detCampo);
