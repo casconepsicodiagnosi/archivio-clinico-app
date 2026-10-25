@@ -1708,7 +1708,7 @@ html[data-eff=dark] .nqs .nq.cam .ctile-i{background:#40261C;color:#E9A98B}
 <div id="root"></div><div id="modal"></div><div id="print"></div><div id="toast" role="status" aria-live="polite"></div>
 <noscript>Questa applicazione richiede JavaScript.</noscript>
 <script>
-const APP_VER='2026-10-25 · f15f9a0';
+const APP_VER='2026-10-25 · ff45cf6';
 'use strict';
 /* =====================================================================
    ARCHIVIO CLINICO  v0.3  -  file unico, offline, dati cifrati nel browser
@@ -4531,6 +4531,7 @@ async function ctSave(type,o,editId){
   const it=old||{id:uid(),type,t:new Date().toISOString()};
   it.v=v;it.pz=pz;it.photo=photo||null;it.batch=null;it.sentAt=null;
   if(!old)OUT().push(it);
+  await risAllegaFoto(it);
   if(type==='nuovo'&&v.cod&&!pzUsatiTel().includes(v.cod))pzUsatiTel().push(v.cod);
   log(old?'Voce modificata':'Voce aggiunta',T.l);
   await save();render();toast('In uscita: '+T.l.toLowerCase());
@@ -4539,7 +4540,7 @@ A.cnewT=d=>ctOpen(d.t);
 A.cedit=d=>{const it=OUT().find(x=>x.id===d.id);if(it&&!it.batch)ctOpen(it.type,it)};
 async function ctDrop(pred){
   const L=OUT(),gone=L.filter(pred);
-  for(const it of gone){if(it.photo){try{await idbDel('docs',it.photo.id)}catch(e){}}}
+  for(const it of gone){for(const a of [it.photo,it.allegato])if(a){try{await idbDel('docs',a.id)}catch(e){}}}
   D().out=L.filter(x=>!pred(x));
   try{await idbClear('snap')}catch(e){}
   log('Voci cancellate dal telefono',String(gone.length));await save();return gone.length}
@@ -4564,9 +4565,9 @@ async function ctFiles(items){
       const txt=String(T.text(it.v)||'').replace(/^(\s*)\/\//gm,'$1/ /');
       bytes=new TextEncoder().encode(txt);
     }
-    let n=base,k=1;while(used.has((n+ext).toLowerCase())){k++;n=base+'_'+k}
-    used.add((n+ext).toLowerCase());
-    files.push({n:n+ext,m:mime,d:b64(bytes),i:it.id});
+    const nome=(b,e)=>{let n=b,k=1;while(used.has((n+e).toLowerCase())){k++;n=b+'_'+k}used.add((n+e).toLowerCase());return n+e};
+    files.push({n:nome(base,ext),m:mime,d:b64(bytes),i:it.id});
+    const fo=await risFotoFile(it,z);if(fo)files.push({n:nome(fo.base,fo.ext),m:fo.mime,d:b64(fo.bytes),i:it.id}); /* foto del foglio: js_foto_test.js */
   }
   return files}
 async function ctBuild(pw,all){
@@ -4578,8 +4579,8 @@ async function ctBuild(pw,all){
   const name='Raccolta_'+today()+'_'+p2_(t.getHours())+p2_(t.getMinutes())+'.acpk';
   const file=new File([sealed],name,{type:'application/octet-stream'});
   items.forEach(it=>{it.batch=batch;it.sentAt=t.toISOString()});
-  log('Pacchetto di raccolta creato',files.length+' voci');await save();
-  S.pkg={file,batch,n:files.length};return S.pkg}
+  log('Pacchetto di raccolta creato',items.length+' voci');await save();
+  S.pkg={file,batch,n:items.length};return S.pkg}
 forms.cexp=async f=>{
   const err=f.querySelector('.err');err.textContent='';
   const prev=D().set.tk;let typed=null;
@@ -4818,7 +4819,7 @@ function sanitizeDb(d){
     if(typeof x.cod==='string'&&x.cod!==''&&!PZ_RE.test(x.cod)){x.cod='';fixed++}
   };
   ['patients','episodes','sessions','docs','scales','consents','events','dx','appts','tests','tasks','paths','instr','tpls','views','formaz','inbox','customScales','vocab','out','notes','npCats'].forEach(c=>{if(Array.isArray(d[c]))d[c].forEach(fix)});
-  if(Array.isArray(d.out))d.out.forEach(it=>{if(it&&it.v)fix(it.v);if(it&&it.photo)fix(it.photo)});
+  if(Array.isArray(d.out))d.out.forEach(it=>{if(it&&it.v)fix(it.v);if(it&&it.photo)fix(it.photo);if(it&&it.allegato)fix(it.allegato)});
   if(d.prot&&Array.isArray(d.prot.items))d.prot.items.forEach(fix);
   [].concat(d.notes||[],(d.docs||[]).filter(x=>x&&x.np)).forEach(x=>{if(x&&typeof x.cat==='string'){const c=cleanId(x.cat);if(c!==x.cat){x.cat=c;fixed++}}});
   return fixed}
@@ -6358,7 +6359,7 @@ const _cv40=compView;
 compView=function(v){return v==='cfog'?vCFog():_cv40.apply(this,arguments)};
 function vCFog(){
   const f=S.ffc||'',L=FOG().filter(x=>!f||(f==='-'?!x.cat:x.cat===f)).sort((a,b)=>(b.t||'').localeCompare(a.t||'')),cats=FCAT();
-  let h='<h1>Da foglio</h1><p class="small mut">Le foto restano <b>cifrate in questa app</b>: non finiscono nella libreria Foto né su iCloud e non si esportano. Le trascrivi tu, anche con «Scansiona testo» di iPhone; la trascrizione si esporta come le altre voci.</p>'+
+  let h='<h1>Da foglio</h1><p class="small mut">Le foto restano <b>cifrate in questa app</b>: non finiscono nella libreria Foto né su iCloud. La foto di un test va al Mac, cifrata, insieme al risultato che ne ricavi; le altre non si esportano. Le trascrivi tu, anche con «Scansiona testo» di iPhone; la trascrizione si esporta come le altre voci.</p>'+
    '<div class="pcadd"><button class="btn pri" data-act="fogNew" data-k="app">+ Foto di appunti</button><button class="btn" data-act="fogNew" data-k="test">+ Foto di un test</button>'+fqButtons()+'</div>'+
    '<div class="fogcats"><button class="npchip'+(!f?' on':'')+'" data-act="fogCat" data-c="">Tutte · '+FOG().length+'</button>'+cats.map(c=>'<button class="npchip'+(f===c.id?' on':'')+'" data-act="fogCat" data-c="'+c.id+'">'+esc(c.nome)+' · '+FOG().filter(x=>x.cat===c.id).length+'</button>').join('')+
    (FOG().some(x=>!x.cat)?'<button class="npchip'+(f==='-'?' on':'')+'" data-act="fogCat" data-c="-">Senza cartella</button>':'')+'<button class="npchip add" data-act="fogCatNew">+ Cartella</button>'+(f&&f!=='-'?'<button class="npchip add" data-act="fogCatEdit" data-c="'+f+'">Rinomina / elimina</button>':'')+'</div>';
@@ -7071,6 +7072,22 @@ function pzConCodice(o,editId){
   const cod=old&&old.v&&old.v.cod?old.v.cod:pzProssimoTel();
   return Object.assign({},o,{cod})}
 function pzCodiciCardHTML(){return '<p class="small mut">I pazienti nuovi creati qui ricevono da soli un codice del telefono: il prossimo è <b>'+esc(pzProssimoTel())+'</b>.</p>'}
+
+/* ---------- Foto del foglio insieme al risultato del test ----------
+   Quando un risultato nasce da una foto di «Da foglio», al salvataggio l'app ne tiene una copia cifrata legata alla voce
+   (così non si perde se poi elimini la foto da «Da foglio»). Nell'esportazione la foto va nello stesso pacchetto cifrato,
+   con un nome che il Mac riconosce come documento di tipo «test» del paziente: TEST_PZ-0001_2026-10-23_foglio WISC-IV.jpg. */
+async function risAllegaFoto(it){
+  if(!it||it.type!=='risultato'||it.allegato||!it.v||!it.v.sheet)return;
+  const f=FOG().find(x=>x.id===it.v.sheet);if(!f||!f.ph)return;
+  try{const p=await idbGet('docs',f.ph.id);if(!p)return;const id=uid();await idbPut('docs',id,p); /* stessa cifratura, copia indipendente */
+    it.allegato={id,mime:f.ph.mime,ext:f.ph.ext}}catch(e){}}
+/* file in più per il pacchetto: la foto del foglio (se c'è) */
+async function risFotoFile(it,z){
+  if(it.type!=='risultato')return null;
+  let a=it.allegato;if(!a&&it.v&&it.v.sheet){const f=FOG().find(x=>x.id===it.v.sheet);if(f&&f.ph)a=f.ph}
+  if(!a)return null;const p=await idbGet('docs',a.id);if(!p)return null;
+  return {base:'TEST_'+z+'_'+it.v.data+'_foglio '+fz(it.v.nome+(it.v.versione?' '+it.v.versione:'')),ext:'.'+a.ext,mime:a.mime,bytes:new Uint8Array(await decB(S.key,p))}}
 
 /* ---------- Da fare e percorsi di valutazione ----------
    D().tasks = [{id,pid,testo,scad,fatto,dataFatto}]   compiti per paziente, con scadenza facoltativa
