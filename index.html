@@ -7163,8 +7163,10 @@ function libFold(s){let o='';
 async function libPdfjs(){
   if(LIB.pdfjs)return LIB.pdfjs;
   if(!/^https?:$/.test(location.protocol))throw new Error('La libreria funziona nell’app installata sul telefono, non da un file aperto direttamente.');
-  const base=new URL('vendor/',document.baseURI).href,m=await import(base+'pdf.min.mjs');
-  m.GlobalWorkerOptions.workerSrc=base+'pdf.worker.min.mjs';return LIB.pdfjs=m}
+  const base=new URL('vendor/',document.baseURI).href;
+  await import(base+'stream-iter.mjs'); /* compatibilità con Safari, prima del lettore */
+  const m=await import(base+'pdf.min.mjs');
+  m.GlobalWorkerOptions.workerSrc=base+'pdf.worker.avvio.mjs';return LIB.pdfjs=m}
 async function libApri(blob){
   const pdfjs=await libPdfjs();
   try{return await pdfjs.getDocument({data:new Uint8Array(await blob.arrayBuffer()),isEvalSupported:false}).promise}
@@ -7243,7 +7245,7 @@ async function libPopola(){
   if(S.view!=='clib')return;
   const M=await libMetas(),bk=$('#libbooks');if(!bk)return;
   bk.innerHTML=M.length?M.map(m=>{const inCorso=LIB.prog&&LIB.prog.id===m.id,finito=m.n&&m.fatte>=m.n;
-    return '<div class="libbook"><div class="grow"><b>'+esc(m.nome)+'</b><div class="small mut">'+(m.n?m.n+' pagine · ':'')+(m.senzaTesto?'<span class="libwarn">scansione senza testo: la ricerca non può funzionare</span>':finito?'pronto per la ricerca':inCorso?'lettura in corso…':m.errore?'<span class="libwarn">non riuscito</span>':'lettura da completare ('+(m.fatte||0)+'/'+(m.n||'?')+')')+' · '+(m.size/1048576).toFixed(0)+' MB</div></div>'+
+    return '<div class="libbook"><div class="grow"><b>'+esc(m.nome)+'</b><div class="small mut">'+(m.n?m.n+' pagine · ':'')+(m.senzaTesto?'<span class="libwarn">scansione senza testo: la ricerca non può funzionare</span>':finito?'pronto per la ricerca':inCorso?'lettura in corso…':m.errore?'<span class="libwarn">non riuscito: '+esc(m.errore)+'</span>':'lettura da completare ('+(m.fatte||0)+'/'+(m.n||'?')+')')+' · '+(m.size/1048576).toFixed(0)+' MB</div></div>'+
      (!finito&&!inCorso&&!m.senzaTesto?'<button class="btn sm pri" data-act="libRiprendi" data-id="'+m.id+'">'+(m.fatte?'Riprendi':'Leggi')+'</button>':'')+
      '<button class="btn sm" data-act="libRinomina" data-id="'+m.id+'">Nome</button><button class="btn sm danger" data-act="libDel" data-id="'+m.id+'">Elimina</button></div>'}).join(''):'<p class="mut small">Nessun PDF. Aggiungi il tuo DSM-5-TR o l’ICD: la lettura iniziale richiede alcuni minuti, una volta sola.</p>';
   const pr=M.filter(m=>m.fatte);const fil=$('#libfil');
