@@ -1246,17 +1246,69 @@ html:root .nqs .nq.cam .ctile-i{background:var(--terra-bg);color:var(--terra-dar
 .step.st-incorso .sdot{background:#c9a227;border-color:#c9a227}.step.st-fatta .sdot{background:#4f6b2c;border-color:#4f6b2c}.step.st-fatta{opacity:.75}
 /* libreria PDF */
 .libsearch input{width:100%;font-size:16px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
-.libres{margin:10px 0}.libr{display:block;width:100%;text-align:left;margin:8px 0;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;cursor:pointer}
-.libr-h{display:block;font-weight:600;font-size:13.5px;color:var(--gtx);margin-bottom:4px}.libr-s{display:block;font-size:14px;line-height:1.45}
 mark{background:#f3d77a;color:#222;border-radius:3px;padding:0 1px}
 .libh{margin:20px 0 8px}.libbook{display:flex;gap:8px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}.libbook .grow{flex:1;min-width:0}.libwarn{color:#a2553b}
 .libadd{display:inline-block;margin:12px 0;cursor:pointer}
 .libprog{margin:10px 0}.libbar{height:8px;border-radius:6px;background:var(--line);overflow:hidden;margin:6px 0}.libbar i{display:block;height:100%;background:#4f6b2c}
-.libpg{white-space:pre-wrap;font-size:15px;line-height:1.55;max-height:46vh;overflow:auto;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin:8px 0}
-.libnav{margin:8px 0}.libcv{margin:8px 0}.libcv canvas{border:1px solid var(--line);border-radius:8px;background:#fff}
 /* dettatura */
 .detrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}.detseg{margin:10px 0}.deterr{border-color:#a2553b}.detgo{width:100%;margin:10px 0 20px}
 #det-t{font-size:16px;line-height:1.5}
+/* benvenuto DWARF */
+.wl{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;background:radial-gradient(900px 600px at 80% -10%,rgba(239,160,122,.35),transparent 60%),#F1E9DC;color:#414625;font-family:var(--f-d);transition:opacity .6s ease,transform .6s ease}
+.wl.wl-out{opacity:0;transform:scale(1.03);pointer-events:none}
+.wl-sun{position:absolute;width:150vmax;height:150vmax;left:50%;top:118%;border-radius:50%;background:#4E5A2D;transform:translate(-50%,-50%) scale(.2);opacity:.12;animation:wlSun 1.6s cubic-bezier(.2,.8,.2,1) forwards}
+.wl-thread{position:absolute;left:0;right:0;bottom:5%;width:100%;height:120px}
+.wl-thread path{fill:none;stroke:#AC5437;stroke-width:2;stroke-linecap:round;stroke-dasharray:640;stroke-dashoffset:640;animation:wlDraw 1.4s ease-out 1.1s forwards;opacity:.7}
+.wl-in{position:relative;text-align:center;padding:0 24px}
+.wl-mascot{width:min(46vw,190px);height:auto;transform:translateY(40px) scale(.85);opacity:0;animation:wlUp .9s cubic-bezier(.2,1.4,.4,1) .25s forwards;filter:drop-shadow(0 14px 20px rgba(65,70,37,.22))}
+.wl-word{display:flex;justify-content:center;gap:.06em;font-size:clamp(40px,12vw,64px);font-weight:500;letter-spacing:.16em;padding-left:.16em;margin:6px 0 10px;color:#414625}
+.wl-word span{display:inline-block;opacity:0;transform:translateY(-26px) rotate(-6deg);animation:wlDrop .55s cubic-bezier(.2,1.5,.4,1) calc(.75s + var(--i)*.09s) forwards}
+.wl-word span:nth-child(3){color:#AC5437}
+.wl-t{font-size:clamp(22px,6vw,30px);font-weight:300;opacity:0;animation:wlFade .7s ease 1.35s forwards}.wl-t em{font-style:normal;color:#8F4527;font-weight:400}
+.wl-s{font-family:var(--f-b);font-size:15px;color:#6E6A5E;margin-top:4px;opacity:0;animation:wlFade .7s ease 1.65s forwards}
+.wl-lock{display:inline-flex;align-items:center;gap:8px;margin-top:22px;padding:8px 14px 8px 10px;border-radius:99px;background:rgba(255,253,248,.75);border:1px solid rgba(205,191,166,.7);font-family:var(--f-b);font-size:12.5px;color:#565C38;opacity:0;animation:wlFade .6s ease 2s forwards}
+.wl-lock svg{width:18px;height:18px;fill:none;stroke:#414625;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+.wl-shackle{transform:translateY(-3px);animation:wlClose .4s cubic-bezier(.3,1.6,.5,1) 2.35s forwards}
+@keyframes wlSun{to{transform:translate(-50%,-50%) scale(1);opacity:.1}}
+@keyframes wlDraw{to{stroke-dashoffset:0}}
+@keyframes wlUp{to{transform:none;opacity:1}}
+@keyframes wlDrop{to{opacity:1;transform:none}}
+@keyframes wlFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes wlClose{to{transform:none}}
+@media (prefers-reduced-motion:reduce){.wl *{animation:none!important;opacity:1!important;transform:none!important}.wl-thread path{stroke-dashoffset:0}}
+.lk-go.lk-pulse{animation:lkPulse 1.2s ease 2}
+@keyframes lkPulse{0%,100%{box-shadow:0 0 0 0 rgba(124,143,74,0)}50%{box-shadow:0 0 0 8px rgba(124,143,74,.28)}}
+/* libreria: risultati come l'indice di un libro */
+.lxbook{--lx-serif:'Iowan Old Style','Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;background:#FBF7EE;border:1px solid #E6DAC4;border-radius:6px 14px 14px 6px;box-shadow:inset 6px 0 10px -8px rgba(65,70,37,.35),0 10px 24px -14px rgba(65,70,37,.35);padding:6px 16px 14px 20px;font-family:var(--lx-serif);color:#2E2A22}
+.lx{padding:10px 0 4px}.lx+.lx{border-top:1px solid #E6DAC4}
+.lx-h{font:600 11.5px/1 var(--f-b);letter-spacing:.16em;text-transform:uppercase;color:#8F4527;margin:8px 0 6px}.lx-h span{color:#9B917C;font-weight:500;letter-spacing:0}
+.lx-e{display:block;width:100%;text-align:left;background:none;border:0;padding:9px 0;color:inherit;font:inherit;cursor:pointer;border-radius:6px}.lx-e:active{background:rgba(172,84,55,.06)}
+.lx-r{display:flex;align-items:baseline;gap:6px}.lx-t{font-size:17px;line-height:1.3}.lx-dots{flex:1;border-bottom:1.5px dotted #B9AD94;transform:translateY(-4px);min-width:16px}.lx-n{font-size:16px;font-variant-numeric:oldstyle-nums;color:#414625}
+.lx-w{display:block;font:500 11px/1.4 var(--f-b);letter-spacing:.08em;text-transform:uppercase;color:#8A8270;margin-top:2px}
+.lx-s{display:block;font-size:14.5px;line-height:1.5;font-style:italic;color:#4A453A;margin-top:4px}
+.lx-cap{padding:12px 0}.lx-k{display:block;font:500 11px/1.3 var(--f-b);letter-spacing:.1em;text-transform:uppercase;color:#8A8270}.lx-ct{display:block;font-size:24px;line-height:1.2;margin:2px 0;color:#414625}
+.lxbook mark{background:linear-gradient(transparent 55%,rgba(239,160,122,.55) 55%);color:inherit;padding:0}
+.lx-more{margin:6px 0 2px;font-family:var(--f-b)}
+/* lettore a libro, a schermo intero */
+.lrd{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;background:#E9E1D2;padding-top:env(safe-area-inset-top,0px)}
+.lrd-top{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#F1E9DC;border-bottom:1px solid #DDD0B8}
+.lrd-x{border:0;background:none;color:#414625;font:600 15px var(--f-b);padding:6px 4px;cursor:pointer}.lrd-tit{flex:1;min-width:0;text-align:center}.lrd-tit b,.lrd-tit small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrd-tit b{font:600 14px var(--f-d);color:#414625}.lrd-tit small{font-size:11.5px;color:#8A8270}.lrd-n{font:500 13px var(--f-b);color:#8F4527;white-space:nowrap}
+.lrd-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:14px 10px 18px}
+.lrd-sheet{margin:0 auto;max-width:760px}.lrd-in-r{animation:lrdR .28s ease}.lrd-in-l{animation:lrdL .28s ease}
+@keyframes lrdR{from{opacity:0;transform:translateX(40px) rotateY(-8deg)}to{opacity:1;transform:none}}@keyframes lrdL{from{opacity:0;transform:translateX(-40px) rotateY(8deg)}to{opacity:1;transform:none}}
+.lrd-page{position:relative;margin:0 auto;background:#fff;box-shadow:0 1px 0 #d8ccb5,0 3px 0 -1px #fff,0 4px 0 -1px #d8ccb5,0 14px 30px -12px rgba(43,46,23,.45);border-radius:2px}
+.lrd-page canvas{display:block}.lrd-mark{position:absolute;background:rgba(239,160,122,.45);mix-blend-mode:multiply;border-radius:2px;pointer-events:none;animation:lrdMk 1.2s ease 2}
+@keyframes lrdMk{50%{background:rgba(172,84,55,.55)}}
+.lrd-text{background:#FBF7EE;padding:26px 24px 30px;border-radius:2px;box-shadow:0 14px 30px -12px rgba(43,46,23,.45);font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;color:#2E2A22;font-size:17px;line-height:1.6;text-align:justify;hyphens:auto}
+.lrd-text h3{font-size:24px;font-weight:600;color:#414625;text-align:left;margin:16px 0 8px;line-height:1.2}.lrd-text h4{font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:#8F4527;text-align:left;margin:16px 0 4px}
+.lrd-text p{margin:0 0 10px}.lrd-text mark{background:linear-gradient(transparent 55%,rgba(239,160,122,.6) 55%);color:inherit}
+.lrd-run{font:500 11px var(--f-b);letter-spacing:.14em;text-transform:uppercase;color:#9B917C;text-align:center;border-bottom:1px solid #E6DAC4;padding-bottom:8px;margin-bottom:12px}
+.lrd-foot{text-align:center;color:#9B917C;margin-top:18px;font-variant-numeric:oldstyle-nums}.lrd-vuota{text-align:center;color:#8A8270;padding:40px 0}
+.lrd-bot{display:flex;align-items:center;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));background:#F1E9DC;border-top:1px solid #DDD0B8}
+.lrd-ar{width:44px;height:40px;border-radius:12px;border:1px solid #DDD0B8;background:#FFFDF8;color:#414625;font-size:24px;line-height:1;cursor:pointer}.lrd-ar:disabled{opacity:.35}
+.lrd-seg{flex:1;display:flex}.lrd-seg button{flex:1}.libres{margin:10px 0}
+.lrd-bot input{width:76px;padding:8px 6px;border-radius:10px;border:1px solid #DDD0B8;font-size:16px}
 
 /* tema scuro */
 html[data-eff=dark]{--glass:32,36,26;--glass2:19,21,14;--green:#3B4122;--green-deep:#2A2E17;--green-soft:#7F8A56;--gtx:#CBD39E;--cream:#13150E;--cream-2:#1C1F14;--paper:#1A1D13;--card:#20241A;--hero:#1E2216;--terra:#D27C58;--terra-dark:#E5A07F;--terra-light:#C0724F;--terra-bg:#3A261C;--ink:#EEE7D7;--body:#D3CCBA;--mut:#B5AB96;--line:#363B2B;--sand:#4C5239;--pri2:#2C3220;--ok:#BDD596;--ok2:#27311B;--warn:#EBC57E;--warn2:#3A2F15;--bad:#F3A898;--bad2:#40211B;color-scheme:dark}
@@ -7126,16 +7178,17 @@ A.bozzaScarta=async()=>{
 const _compViewBozza=compView;
 compView=function(v){return (v==='cfog'||v==='cnew'||!v?fvBozzaBanner():'')+_compViewBozza.apply(this,arguments)};
 
-/* ---------- Libreria PDF (DSM-5-TR, ICD…) con ricerca nel testo ----------
+/* ---------- Libreria PDF (DSM-5-TR, ICD…): archivio dei PDF e lettura del testo ----------
    Solo telefono. I PDF restano in un database del telefono a parte («archivio-libreria»): non entrano nell'archivio clinico,
-   nei backup né in GitHub. Il testo di ogni pagina si estrae una volta sola (lettore PDF open source in web/vendor, caricato
-   solo quando serve) e poi la ricerca è una semplice scansione del testo in memoria: istantanea, anche per migliaia di pagine.
+   nei backup né in GitHub. La prima volta l'app legge il testo e la struttura di ogni pagina (titoli, numero di pagina stampato,
+   pagine di indice) con il lettore PDF open source in web/vendor, caricato solo quando serve.
+   Ricerca: js_libreria_ricerca.js · Lettura a libro: js_libreria_lettore.js.
    Se il PDF è una scansione senza testo, la ricerca non può funzionare (non c'è riconoscimento ottico dei caratteri). */
 COMP_V.push('clib');
-const LIB_MAX_MB=500,LIB_SALVA_OGNI=40,LIB_RISULTATI=60;
-const LIB={idx:null,prog:null,q:'',libro:'',doc:null,docId:null,pdfjs:null,stop:false};
+const LIB_MAX_MB=500,LIB_SALVA_OGNI=40,LIB_VERSIONE=2; /* 2 = testo + struttura (titoli, numeri di pagina, indici) */
+const LIB={idx:null,prog:null,q:'',libro:'',doc:null,docId:null,pdfjs:null,stop:false,tutte:false};
 
-/* ---- database proprio ---- */
+/* ---- database proprio: meta (scheda del PDF), testo (pagine; «id:s» = struttura), pdf (il file) ---- */
 let _libDb=null;
 function libOpen(){return _libDb||(_libDb=new Promise((res,rej)=>{const r=indexedDB.open('archivio-libreria',1);
   r.onupgradeneeded=()=>{['meta','testo','pdf'].forEach(s=>r.result.createObjectStore(s))};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}))}
@@ -7146,18 +7199,48 @@ const libPut=(s,k,v)=>libTx(s,'readwrite',o=>o.put(v,k));
 const libDelKey=(s,k)=>libTx(s,'readwrite',o=>o.delete(k));
 const libMetas=async()=>(await libTx('meta','readonly',o=>o.getAll())||[]).sort((a,b)=>a.t-b.t);
 
-/* ---- testo: estrazione e normalizzazione ---- */
-const LIB_LIGATURE={'ﬁ':'fi','ﬂ':'fl','ﬀ':'ff','ﬃ':'ffi','ﬄ':'ffl'};
-function libTestoPagina(items){
-  let s='';for(const it of items){if(it.str!=null)s+=it.str;if(it.hasEOL)s+='\n'}
-  return s.replace(/[ﬁﬂﬀﬃﬄ]/g,c=>LIB_LIGATURE[c]).replace(/(\p{L})-\n(\p{L})/gu,'$1$2').replace(/[ \t ]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim()}
-/* minuscolo, senza accenti, spazi uniformi: SEMPRE della stessa lunghezza dell'originale, così le posizioni coincidono */
+/* ---- normalizzazione: minuscolo, senza accenti, spazi uniformi, SEMPRE della stessa lunghezza (le posizioni coincidono) ---- */
 const _libFoldMap={};
 function libFold(s){let o='';
   for(let i=0;i<s.length;i++){const c=s[i];let f=_libFoldMap[c];
     if(f===undefined){let x=/\s/.test(c)?' ':c.normalize('NFD')[0].toLowerCase();if(x.length!==1)x=c;f=_libFoldMap[c]=x}
     o+=f}
   return o}
+
+/* ---- una pagina: testo a righe, titoli, numero stampato, pagina di indice ---- */
+const LIB_LIGATURE={'ﬁ':'fi','ﬂ':'fl','ﬀ':'ff','ﬃ':'ffi','ﬄ':'ffl'};
+/* nomi delle sezioni dei capitoli del DSM (inglese e italiano), riconosciuti come titoli di paragrafo */
+const LIB_SEZIONI=['diagnostic criteria','diagnostic features','associated features','prevalence','development and course','risk and prognostic factors',
+  'culture-related diagnostic issues','sex- and gender-related diagnostic issues','diagnostic markers','association with suicidal thoughts or behavior',
+  'functional consequences','differential diagnosis','comorbidity','specifiers','recording procedures','subtypes','coding note',
+  'criteri diagnostici','caratteristiche diagnostiche','caratteristiche associate','prevalenza','sviluppo e decorso','fattori di rischio e prognostici',
+  'aspetti diagnostici correlati alla cultura','aspetti diagnostici correlati al sesso e al genere','aspetti diagnostici correlati al genere','marker diagnostici',
+  'associazione con pensieri o comportamenti suicidari','conseguenze funzionali','diagnosi differenziale','comorbilita','comorbidita','specificatori',
+  'procedure di registrazione','sottotipi','nota per la codifica'];
+const libSezione=s=>{const f=libFold(s).replace(/[\s:.]+$/,'');return LIB_SEZIONI.some(n=>f.startsWith(n)&&f.length<=n.length+40)};
+const LIB_FINE_NUM=/(?:\.{2,}|\s)\d{1,4}(?:\s*[–-]\s*\d{1,4})?(?:\s*,\s*\d{1,4}(?:\s*[–-]\s*\d{1,4})?)*\s*$/;
+function libAnalizza(items){
+  const righe=[];let r={s:'',h:0,n:0};
+  for(const it of items){let s=it.str||'';if(s){s=s.replace(/[ﬁﬂﬀﬃﬄ]/g,c=>LIB_LIGATURE[c]);r.s+=s;
+      const h=it.height||Math.hypot((it.transform||[])[2]||0,(it.transform||[])[3]||0);if(s.trim()){r.h=Math.max(r.h,h);r.n+=s.trim().length}}
+    if(it.hasEOL){righe.push(r);r={s:'',h:0,n:0}}}
+  if(r.s)righe.push(r);
+  const R=righe.map(x=>({s:x.s.replace(/\s+/g,' ').trim(),h:x.h,n:x.n})).filter(x=>x.s);
+  /* corpo del testo: altezza più frequente, pesata per numero di caratteri */
+  const w={};R.forEach(x=>{const k=Math.round(x.h*2)/2;w[k]=(w[k]||0)+x.n});
+  const corpo=+(Object.keys(w).sort((a,b)=>w[b]-w[a])[0]||0);
+  let t='';const heads=[];let numRighe=0;
+  R.forEach((x,i)=>{
+    let o;if(/\p{L}-$/u.test(t)&&/^\p{Ll}/u.test(x.s)){t=t.slice(0,-1);o=t.length}else{if(t)t+='\n';o=t.length}
+    t+=x.s;if(LIB_FINE_NUM.test(x.s)&&x.s.length<160)numRighe++;
+    if(x.s.length>=2&&x.s.length<=100&&!/[.;,]$/.test(x.s)&&!/^\d+$/.test(x.s)){
+      const z=corpo?x.h/corpo:1;
+      if(z>=1.18)heads.push({o,t:x.s,k:'big',z:+z.toFixed(2)});
+      else if(libSezione(x.s))heads.push({o,t:x.s.replace(/[\s:.]+$/,''),k:'sez'})}});
+  /* numero stampato: prima o ultima riga fatta solo di un numero (o titolo corrente + numero) */
+  let pn=null;const prova=s=>{const m=/^(\d{1,4})$/.exec(s)||/^(\d{1,4})\s+\D.{0,80}$/.exec(s)||/^\D.{0,80}\s(\d{1,4})$/.exec(s);return m?+m[1]:null};
+  if(R.length){pn=prova(R[R.length-1].s);if(pn==null)pn=prova(R[0].s)}
+  return {t,heads,pn,toc:R.length>=8&&numRighe/R.length>=0.4}}
 
 /* ---- lettore PDF (caricato solo qui) ---- */
 async function libPdfjs(){
@@ -7173,8 +7256,15 @@ async function libApri(blob){
   catch(e){
     if(e&&e.name==='PasswordException')throw new Error('Il PDF è protetto da password: togli la protezione (per esempio salvandone una copia da Anteprima o dall’app File) e riprova.');
     throw new Error('Non riesco ad aprire questo PDF. Potrebbe avere una protezione: prova a stamparlo in un nuovo PDF e a caricare quello.')}}
+/* segnalibri del PDF (indice digitale): [{t,p,l}] con p = pagina (da 0) e l = livello */
+async function libSegnalibri(doc){
+  const out=[];let tree=null;try{tree=await doc.getOutline()}catch(e){}
+  const giro=async(L,l)=>{for(const x of L||[]){if(out.length>3000)return;let p=null;
+    try{let d=x.dest;if(typeof d==='string')d=await doc.getDestination(d);if(Array.isArray(d)&&d[0]!=null)p=typeof d[0]==='number'?d[0]:await doc.getPageIndex(d[0])}catch(e){}
+    if(p!=null&&x.title)out.push({t:String(x.title).replace(/\s+/g,' ').trim(),p,l});await giro(x.items,l+1)}};
+  await giro(tree,0);return out}
 
-/* ---- indicizzazione (a blocchi, riprendibile) ---- */
+/* ---- lettura iniziale (a blocchi, riprendibile) ---- */
 function libProgUI(){const p=LIB.prog,b=$('#libprog');if(!b)return;
   b.innerHTML=p?'<div class="libbar"><i style="width:'+Math.round(100*p.p/Math.max(1,p.n))+'%"></i></div><small>Leggo «'+esc(p.nome)+'»: pagina '+p.p+' di '+p.n+'. Tieni l’app aperta e lo schermo acceso.</small><button class="btn sm" data-act="libStop">Metti in pausa</button>':''}
 async function libIndicizza(id){
@@ -7185,84 +7275,44 @@ async function libIndicizza(id){
   let doc=null;
   try{
     doc=await libApri(await libGet('pdf',id));
-    meta.n=doc.numPages;LIB.prog.n=meta.n;await libPut('meta',id,meta);
-    const pagine=(await libGet('testo',id))||[];
-    for(let p=pagine.length+1;p<=meta.n&&!LIB.stop;p++){
-      const pg=await doc.getPage(p),tc=await pg.getTextContent();pagine.push(libTestoPagina(tc.items));pg.cleanup();
-      LIB.prog.p=p;if(p%3===0){libProgUI();await new Promise(r=>setTimeout(r,0))}
-      if(p%LIB_SALVA_OGNI===0){meta.fatte=p;await libPut('testo',id,pagine);await libPut('meta',id,meta)}}
-    meta.fatte=pagine.length;await libPut('testo',id,pagine);
-    if(meta.fatte>=meta.n){const car=pagine.reduce((a,t)=>a+t.length,0);meta.senzaTesto=car/Math.max(1,meta.n)<40}
+    meta.n=doc.numPages;LIB.prog.n=meta.n;
+    if((meta.v||1)<LIB_VERSIONE){meta.fatte=0;meta.v=LIB_VERSIONE;await libDelKey('testo',id)}
     await libPut('meta',id,meta);
+    const pagine=(await libGet('testo',id))||[],st=(await libGet('testo',id+':s'))||{heads:[],pn:[],toc:[],outline:null};
+    if(!st.outline)st.outline=await libSegnalibri(doc);
+    const salva=async()=>{meta.fatte=pagine.length;await libPut('testo',id,pagine);await libPut('testo',id+':s',st);await libPut('meta',id,meta)};
+    for(let p=pagine.length+1;p<=meta.n&&!LIB.stop;p++){
+      const pg=await doc.getPage(p),tc=await pg.getTextContent(),a=libAnalizza(tc.items);pg.cleanup();
+      pagine.push(a.t);st.heads.push(a.heads);st.pn.push(a.pn);st.toc.push(a.toc);
+      LIB.prog.p=p;if(p%3===0){libProgUI();await new Promise(r=>setTimeout(r,0))}
+      if(p%LIB_SALVA_OGNI===0)await salva()}
+    if(meta.fatte>=meta.n||pagine.length>=meta.n){const car=pagine.reduce((a,t)=>a+t.length,0);meta.senzaTesto=car/Math.max(1,meta.n)<40}
+    await salva();
   }catch(e){toast(e.message||'Lettura del PDF non riuscita.');meta.errore=e.message||'errore';try{await libPut('meta',id,meta)}catch(_){}}
   finally{try{doc&&doc.destroy()}catch(e){}try{wake&&wake.release()}catch(e){}LIB.prog=null;LIB.idx=null;if(S.view==='clib')render()}}
 A.libStop=()=>{LIB.stop=true};
-
-/* ---- indice in memoria per la ricerca ---- */
-async function libCarica(){
-  if(LIB.idx)return LIB.idx;
-  const out=[];
-  for(const m of await libMetas()){if(!m.fatte)continue;const pages=(await libGet('testo',m.id))||[],norm=[];
-    for(let i=0;i<pages.length;i++){norm.push(libFold(pages[i]));if(i%80===79)await new Promise(r=>setTimeout(r,0))}
-    out.push({id:m.id,nome:m.nome,n:m.n,pages,norm})}
-  return LIB.idx=out}
-const libTermini=q=>{q=q.trim();const fr=/^"(.+)"$/.exec(q);if(fr)return [libFold(fr[1].trim())];
-  const t=Array.from(new Set(libFold(q).split(' ').filter(Boolean)));return t.length>1?t.filter(x=>x.length>1):t};
-function libConta(pg,t,cap){let n=0,i=-1,first=-1;while(n<cap&&(i=pg.indexOf(t,i+1))>=0){if(first<0)first=i;n++}return [n,first]}
-function libCerca(q,libroId){
-  const T=libTermini(q);if(!T.length||!LIB.idx)return {T,res:[],parziale:false};
-  const run=tutti=>{const res=[];
-    for(const b of LIB.idx){if(libroId&&b.id!==libroId)continue;
-      for(let i=0;i<b.norm.length;i++){const pg=b.norm[i];let sc=0,hit=0,first=-1;
-        for(const t of T){const [n,f]=libConta(pg,t,8);if(n){hit++;sc+=n+(f<120?3:0);if(first<0||f<first)first=f}}
-        if(!hit||(tutti&&hit<T.length))continue;
-        if(T.length>1){const ph=pg.indexOf(T.join(' '));if(ph>=0){sc+=8;first=ph}}
-        res.push({b,i,sc:sc+hit*4,first})}}
-    return res.sort((a,c)=>c.sc-a.sc||a.i-c.i)};
-  let res=run(true),parziale=false;if(!res.length&&T.length>1){res=run(false);parziale=true}
-  return {T,res,parziale,tot:res.length}}
-/* testo con le parole cercate in evidenza (da..a = parte da mostrare) */
-function libMarca(orig,norm,T,da,a){
-  const R=[];for(const t of T){let i=da-1;while((i=norm.indexOf(t,i+1))>=0&&i<a){R.push([i,Math.min(a,i+t.length)])}}
-  R.sort((x,y)=>x[0]-y[0]);const M=[];for(const r of R){const l=M[M.length-1];if(l&&r[0]<=l[1])l[1]=Math.max(l[1],r[1]);else M.push(r.slice())}
-  let h='',p=da;for(const r of M){h+=esc(orig.slice(p,r[0]))+'<mark>'+esc(orig.slice(r[0],r[1]))+'</mark>';p=r[1]}
-  return h+esc(orig.slice(p,a))}
-function libSnippet(r,T){
-  const o=r.b.pages[r.i],n=r.b.norm[r.i];let da=Math.max(0,r.first-80),a=Math.min(o.length,r.first+170);
-  while(da>0&&o[da-1]!==' '&&o[da-1]!=='\n'&&r.first-da<110)da--;
-  return (da>0?'… ':'')+libMarca(o,n,T,da,a).replace(/\s*\n\s*/g,' ')+(a<o.length?' …':'')}
 
 /* ---- schermata ---- */
 const libNomeFile=n=>String(n||'PDF').replace(/\.pdf$/i,'').replace(/[_]+/g,' ').trim().slice(0,80)||'PDF';
 function vCLib(){
   setTimeout(libPopola,0);
-  return '<h1>Libreria</h1><p class="small mut">Qui carichi i tuoi PDF (per esempio DSM-5-TR e ICD). Restano <b>solo su questo telefono</b>, separati dall’archivio clinico: non vanno nei backup né in GitHub. Dopo una lettura iniziale, la ricerca nel testo è immediata.</p>'+
-   '<div class="libsearch"><input id="libq" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" placeholder="Cerca (es. disturbo di panico, F41.0, «lutto prolungato»)" value="'+esc(LIB.q)+'"></div>'+
+  return '<h1>Libreria</h1><p class="small mut">I tuoi PDF (DSM-5-TR, ICD…) restano <b>solo su questo telefono</b>, separati dall’archivio clinico: non vanno nei backup né in GitHub.</p>'+
+   '<div class="libsearch"><input id="libq" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" placeholder="Cerca: panic disorder, F41.0, «lutto prolungato»" value="'+esc(LIB.q)+'"></div>'+
    '<div id="libfil"></div><div id="libres" class="libres"></div><div id="libprog" class="libprog"></div>'+
    '<h3 class="libh">I tuoi PDF</h3><div id="libbooks"></div>'+
    '<label class="btn pri libadd"><input id="libfile" type="file" accept="application/pdf,.pdf" hidden>+ Aggiungi un PDF</label>'}
 async function libPopola(){
   if(S.view!=='clib')return;
   const M=await libMetas(),bk=$('#libbooks');if(!bk)return;
-  bk.innerHTML=M.length?M.map(m=>{const inCorso=LIB.prog&&LIB.prog.id===m.id,finito=m.n&&m.fatte>=m.n;
-    return '<div class="libbook"><div class="grow"><b>'+esc(m.nome)+'</b><div class="small mut">'+(m.n?m.n+' pagine · ':'')+(m.senzaTesto?'<span class="libwarn">scansione senza testo: la ricerca non può funzionare</span>':finito?'pronto per la ricerca':inCorso?'lettura in corso…':m.errore?'<span class="libwarn">non riuscito: '+esc(m.errore)+'</span>':'lettura da completare ('+(m.fatte||0)+'/'+(m.n||'?')+')')+' · '+(m.size/1048576).toFixed(0)+' MB</div></div>'+
-     (!finito&&!inCorso&&!m.senzaTesto?'<button class="btn sm pri" data-act="libRiprendi" data-id="'+m.id+'">'+(m.fatte?'Riprendi':'Leggi')+'</button>':'')+
+  bk.innerHTML=M.length?M.map(m=>{const inCorso=LIB.prog&&LIB.prog.id===m.id,vecchio=m.fatte&&(m.v||1)<LIB_VERSIONE,finito=m.n&&m.fatte>=m.n&&!vecchio;
+    return '<div class="libbook"><div class="grow"><b>'+esc(m.nome)+'</b><div class="small mut">'+(m.n?m.n+' pagine · ':'')+
+      (m.senzaTesto?'<span class="libwarn">scansione senza testo: la ricerca non può funzionare</span>':inCorso?'lettura in corso…':m.errore?'<span class="libwarn">non riuscito: '+esc(m.errore)+'</span>':
+       vecchio?'<span class="libwarn">da rileggere una volta per la ricerca per capitoli</span>':finito?'pronto per la ricerca':'lettura da completare ('+(m.fatte||0)+'/'+(m.n||'?')+')')+' · '+(m.size/1048576).toFixed(0)+' MB</div></div>'+
+     (!finito&&!inCorso&&!m.senzaTesto?'<button class="btn sm pri" data-act="libRiprendi" data-id="'+m.id+'">'+(vecchio?'Rileggi':m.fatte?'Riprendi':'Leggi')+'</button>':'')+
      '<button class="btn sm" data-act="libRinomina" data-id="'+m.id+'">Nome</button><button class="btn sm danger" data-act="libDel" data-id="'+m.id+'">Elimina</button></div>'}).join(''):'<p class="mut small">Nessun PDF. Aggiungi il tuo DSM-5-TR o l’ICD: la lettura iniziale richiede alcuni minuti, una volta sola.</p>';
   const pr=M.filter(m=>m.fatte);const fil=$('#libfil');
   if(fil)fil.innerHTML=pr.length>1?'<div class="fogcats"><button class="npchip'+(!LIB.libro?' on':'')+'" data-act="libFiltro" data-id="">Tutti</button>'+pr.map(m=>'<button class="npchip'+(LIB.libro===m.id?' on':'')+'" data-act="libFiltro" data-id="'+m.id+'">'+esc(m.nome)+'</button>').join('')+'</div>':'';
   libProgUI();await libRisultati()}
-let _libT=null;
-async function libRisultati(){
-  const box=$('#libres');if(!box)return;
-  if(!LIB.q.trim()){box.innerHTML='';return}
-  if(!LIB.idx)box.innerHTML='<p class="small mut">Preparo la ricerca…</p>';
-  await libCarica();if(!$('#libres')||$('#libres')!==box)return;
-  if(!LIB.idx.length){box.innerHTML='<p class="small mut">Non c’è ancora nessun PDF pronto per la ricerca.</p>';return}
-  const r=libCerca(LIB.q,LIB.libro);
-  box.innerHTML=!r.res.length?'<p class="small mut">Nessun risultato per «'+esc(LIB.q)+'».</p>':
-    '<p class="small mut">'+(r.parziale?'Nessuna pagina contiene tutte le parole: ecco quelle con almeno una. ':'')+(r.tot>LIB_RISULTATI?'Prime '+LIB_RISULTATI+' pagine su '+r.tot+'. Aggiungi una parola per restringere.':r.tot+(r.tot===1?' pagina':' pagine'))+'</p>'+
-    r.res.slice(0,LIB_RISULTATI).map(x=>'<button class="libr" data-act="libPagina" data-id="'+x.b.id+'" data-p="'+(x.i+1)+'"><span class="libr-h">'+esc(x.b.nome)+' · pag. '+(x.i+1)+'</span><span class="libr-s">'+libSnippet(x,r.T)+'</span></button>').join('')}
-document.addEventListener('input',e=>{const t=e.target;if(t&&t.id==='libq'){LIB.q=t.value;clearTimeout(_libT);_libT=setTimeout(libRisultati,160)}});
 A.libFiltro=d=>{LIB.libro=d.id||'';libPopola()};
 
 /* ---- aggiunta, ripresa, nome, eliminazione ---- */
@@ -7272,47 +7322,206 @@ document.addEventListener('change',async e=>{
   if(!/\.pdf$/i.test(f.name)&&f.type!=='application/pdf'){toast('Scegli un file PDF.');return}
   const M=await libMetas();if(M.some(m=>m.size===f.size&&m.nome===libNomeFile(f.name))){toast('Questo PDF è già nella libreria.');return}
   try{
-    const id=uid();await libPut('pdf',id,f);await libPut('meta',id,{id,nome:libNomeFile(f.name),size:f.size,n:0,fatte:0,t:Date.now()});
+    const id=uid();await libPut('pdf',id,f);await libPut('meta',id,{id,nome:libNomeFile(f.name),size:f.size,n:0,fatte:0,v:LIB_VERSIONE,t:Date.now()});
     try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(_){}
     LIB.idx=null;render();libIndicizza(id)}
   catch(err){toast('Non riesco a salvare il PDF su questo telefono (spazio insufficiente?).')}});
-A.libRiprendi=d=>{const m=d.id;libGet('meta',m).then(x=>{if(x){delete x.errore;libPut('meta',m,x).then(()=>{render();libIndicizza(m)})}})};
+A.libRiprendi=async d=>{const x=await libGet('meta',d.id);if(!x)return;delete x.errore;await libPut('meta',d.id,x);render();libIndicizza(d.id)};
 A.libRinomina=async d=>{const m=await libGet('meta',d.id);if(!m)return;
   formModal('Nome del PDF',[{k:'nome',l:'Nome',req:1}],{nome:m.nome},async o=>{m.nome=o.nome.slice(0,80);await libPut('meta',m.id,m);LIB.idx=null;render()})};
 A.libDel=async d=>{const m=await libGet('meta',d.id);if(!m)return;
   if(!await ask('<p>Eliminare <b>'+esc(m.nome)+'</b> dalla libreria? Il file e il testo letto vengono tolti da questo telefono; potrai caricarlo di nuovo.</p>',{ok:'Elimina'}))return;
   if(LIB.prog&&LIB.prog.id===m.id)LIB.stop=true;
   if(LIB.docId===m.id)libChiudiDoc();
-  for(const s of ['meta','testo','pdf'])await libDelKey(s,m.id);
+  for(const k of [['meta',m.id],['testo',m.id],['testo',m.id+':s'],['pdf',m.id]])await libDelKey(k[0],k[1]);
   if(LIB.libro===m.id)LIB.libro='';LIB.idx=null;render()};
-
-/* ---- una pagina: testo con evidenza e, se serve, la pagina come nel PDF ---- */
-function libChiudiDoc(){try{LIB.doc&&LIB.doc.destroy()}catch(e){}LIB.doc=null;LIB.docId=null}
-async function libPaginaView(id,p){
-  await libCarica();const b=LIB.idx.find(x=>x.id===id);if(!b)return;
-  p=Math.max(1,Math.min(b.pages.length,p));S.libv={id,p};
-  const T=libTermini(LIB.q),o=b.pages[p-1],n=b.norm[p-1];
-  modal('<h3>'+esc(b.nome)+' · pagina '+p+' di '+b.pages.length+'</h3>'+
-   '<div class="libpg">'+(o?libMarca(o,n,T,0,o.length):'<span class="mut">Questa pagina non ha testo.</span>')+'</div>'+
-   '<div class="row libnav"><button class="btn" data-act="libVai" data-d="-1"'+(p<=1?' disabled':'')+'>‹ Precedente</button><button class="btn" data-act="libVai" data-d="1"'+(p>=b.pages.length?' disabled':'')+'>Successiva ›</button></div>'+
-   '<div class="row"><input id="libgo" type="number" inputmode="numeric" min="1" max="'+b.pages.length+'" placeholder="Vai a pagina…"><button class="btn" data-act="libGo">Vai</button></div>'+
-   '<div id="libcv" class="libcv"></div>'+
-   '<div class="row end"><button class="btn" data-act="libVedi">Mostra la pagina come nel PDF</button><button class="btn pri" data-act="close">Chiudi</button></div>',true)}
-A.libPagina=d=>libPaginaView(d.id,+d.p);
-A.libVai=d=>{const v=S.libv;if(v)libPaginaView(v.id,v.p+(+d.d))};
-A.libGo=()=>{const v=S.libv,x=parseInt(($('#libgo')||{}).value,10);if(v&&x>0)libPaginaView(v.id,x)};
-A.libVedi=async()=>{
-  const v=S.libv,box=$('#libcv');if(!v||!box)return;box.innerHTML='<p class="small mut">Carico la pagina…</p>';
-  try{
-    if(LIB.docId!==v.id){libChiudiDoc();LIB.doc=await libApri(await libGet('pdf',v.id));LIB.docId=v.id}
-    const pg=await LIB.doc.getPage(v.p),w=Math.max(280,box.clientWidth||320),dpr=Math.min(2,window.devicePixelRatio||1),vp0=pg.getViewport({scale:1}),sc=w/vp0.width,vp=pg.getViewport({scale:sc*dpr});
-    const cv=document.createElement('canvas');cv.width=Math.floor(vp.width);cv.height=Math.floor(vp.height);cv.style.width='100%';
-    await pg.render({canvasContext:cv.getContext('2d'),viewport:vp}).promise;box.innerHTML='';box.appendChild(cv)}
-  catch(e){box.innerHTML='<p class="small libwarn">'+esc(e.message||'Non riesco a mostrare la pagina.')+'</p>'}};
-
-/* ---- schermata (il riquadro «Libreria» è in «Nuovo», js_v17.js) ---- */
 const _cvLib=compView;
 compView=function(v){return v==='clib'?vCLib():_cvLib.apply(this,arguments)};
+
+/* ---------- Libreria: ricerca per struttura ----------
+   Ordine dei risultati, come si cerca in un manuale:
+   1. Indice     – segnalibri del PDF e righe del sommario / indice analitico che contengono le parole
+   2. Capitolo   – il titolo (scritto più grande, o segnalibro) che ne parla in modo specifico
+   3. Paragrafi  – le pagine di quel capitolo, con il nome del paragrafo (Diagnostic Features, Prevalence…)
+   4. Comorbidità e diagnosi differenziale – menzioni dentro questi paragrafi di altri capitoli
+   5. Altre pagine – le menzioni secondarie
+   Funziona bene quanto è ordinata la struttura del PDF: segnalibri e titoli più grandi del testo. */
+const LIB_ALTRE=25;
+
+/* ---- indice in memoria ---- */
+async function libCarica(){
+  if(LIB.idx)return LIB.idx;
+  const out=[];
+  for(const m of await libMetas()){if(!m.fatte||(m.v||1)<LIB_VERSIONE)continue;
+    const pages=(await libGet('testo',m.id))||[],st=(await libGet('testo',m.id+':s'))||{heads:[],pn:[],toc:[],outline:[]},norm=[];
+    for(let i=0;i<pages.length;i++){norm.push(libFold(pages[i]));if(i%80===79)await new Promise(r=>setTimeout(r,0))}
+    const b={id:m.id,nome:m.nome,n:pages.length,pages,norm,st,out:(st.outline||[]).filter(e=>e.p<pages.length)};
+    /* scarto tra pagina del PDF e numero stampato: il valore più frequente */
+    const cnt={};st.pn.forEach((x,i)=>{if(x!=null){const k=i+1-x;cnt[k]=(cnt[k]||0)+1}});
+    const best=Object.keys(cnt).sort((a,c)=>cnt[c]-cnt[a])[0];b.off=best!=null&&cnt[best]>=3?+best:null;
+    /* titolo e paragrafo attivi all'inizio di ogni pagina */
+    b.stato=[];let big=null,sez=null;
+    for(let i=0;i<pages.length;i++){b.stato.push({big,sez});for(const h of st.heads[i]||[]){if(h.k==='big'){big={p:i,o:h.o,t:h.t,z:h.z};sez=null}else sez={p:i,o:h.o,t:h.t}}}
+    out.push(b)}
+  return LIB.idx=out}
+function libCtx(b,i,o){let {big,sez}=b.stato[i]||{};for(const h of b.st.heads[i]||[]){if(h.o>o)break;if(h.k==='big'){big={p:i,o:h.o,t:h.t,z:h.z};sez=null}else sez={p:i,o:h.o,t:h.t}}return {big,sez}}
+/* numero di pagina come nel libro (stampato), altrimenti quello del PDF */
+function libNum(b,i){const pn=b.st.pn[i];if(pn!=null)return String(pn);if(b.off!=null&&i+1-b.off>0)return String(i+1-b.off);return null}
+const libPagTxt=(b,i)=>{const n=libNum(b,i);return n?'pag. '+n:'pag. '+(i+1)+' del PDF'};
+function libPercorso(b,i){const st=[];for(const e of b.out){if(e.p>i)break;st.length=e.l;st[e.l]=e.t}return st.filter(Boolean)}
+/* pagina del PDF (da 0) per un numero stampato */
+const libDaNum=(b,n)=>b.off!=null&&n+b.off-1>=0&&n+b.off-1<b.n?n+b.off-1:null;
+
+const libTermini=q=>{q=q.trim();const fr=/^["«“](.+)["»”]$/.exec(q);if(fr)return [libFold(fr[1].trim())];
+  const t=Array.from(new Set(libFold(q).split(' ').filter(Boolean)));return t.length>1?t.filter(x=>x.length>1):t};
+const libPulisciTit=s=>libFold(s).replace(/[^\p{L}\p{N} ]/gu,' ').replace(/\s+/g,' ').trim();
+
+function libCerca(q,libroId){
+  const T=libTermini(q),G={indice:[],capitolo:[],paragrafi:[],comorb:[],altre:[]};
+  if(!T.length||!LIB.idx)return {T,G,tot:0,parziale:false};
+  const P=T.join(' '),tutti=s=>T.every(t=>s.includes(t));
+  const run=or=>{
+   const ha=or?(s=>T.some(t=>s.includes(t))):tutti;
+   for(const b of LIB.idx){if(libroId&&b.id!==libroId)continue;
+    const princ=[],capPag=new Set();
+    /* 1. segnalibri */
+    b.out.forEach((e,k)=>{const f=libPulisciTit(e.t);if(!ha(f))return;
+      G.indice.push({b,i:e.p,o:0,tit:e.t,dove:'Segnalibri del PDF',sc:(f===P?100:60)-f.length/20});
+      let fine=b.n;for(let j=k+1;j<b.out.length;j++)if(b.out[j].l<=e.l){fine=b.out[j].p;break}
+      princ.push({i:e.p,o:0,fi:Math.max(fine,e.p+1),fo:0,tit:e.t,da:'seg'})});
+    /* 1. righe di sommario / indice analitico */
+    b.st.toc.forEach((isToc,i)=>{if(!isToc)return;const o=b.pages[i],n=b.norm[i];let a=0;
+      for(const ro of o.split('\n')){const da=a;a+=ro.length+1;const riga=n.slice(da,da+ro.length);if(!ha(riga))continue;
+        const orig=o.slice(da,da+riga.length),m=LIB_FINE_NUM.exec(orig);const num=m?+(/\d{1,4}/.exec(m[0])[0]):null;
+        const dest=num!=null?libDaNum(b,num):null,tit=(m?orig.slice(0,m.index):orig).replace(/[.,;:\s]+$/,'');
+        G.indice.push({b,i:dest!=null?dest:i,o:dest!=null?0:da,tit:tit||orig,num,numTxt:m?m[0].replace(/^[.\s]+/,'').trim():null,dove:i<b.n*0.25?'Sommario':i>b.n*0.6?'Indice analitico':'Indice',sc:(libPulisciTit(tit)===P?90:40)-tit.length/20})}});
+    /* 2. titoli (scritti più grandi) */
+    b.st.heads.forEach((H,i)=>H.forEach((h,k)=>{if(h.k!=='big')return;const f=libPulisciTit(h.t);if(!ha(f))return;
+      let fi=b.n,fo=0;
+      cerca:for(let j=i;j<Math.min(b.n,i+80);j++)for(const x of b.st.heads[j]||[]){if(j===i&&x.o<=h.o)continue;if(x.k==='big'&&x.z>=h.z-0.05){fi=j;fo=x.o;break cerca}}
+      if(fi===b.n)fi=Math.min(b.n,i+80);
+      G.capitolo.push({b,i,o:h.o,tit:h.t,esatto:f===P,z:h.z});capPag.add(i);princ.push({i,o:h.o,fi,fo,tit:h.t,da:'tit',hl:h.t.length})}));
+    /* 2. un segnalibro senza titolo grande sulla sua pagina vale come capitolo */
+    princ.filter(x=>x.da==='seg'&&!capPag.has(x.i)).forEach(x=>{G.capitolo.push({b,i:x.i,o:0,tit:x.tit,esatto:libPulisciTit(x.tit)===P,z:1});capPag.add(x.i)});
+    /* 3-5. menzioni nel testo */
+    const dentro=(i,o)=>princ.some(x=>(i>x.i||(i===x.i&&o>=x.o))&&(i<x.fi||(i===x.fi&&o<x.fo)));
+    const nelTitolo=(i,o)=>princ.some(x=>x.da==='tit'&&x.i===i&&o>=x.o&&o<x.o+x.hl);
+    const gruppi=new Map();
+    for(let i=0;i<b.n;i++){if(b.st.toc[i])continue;const pg=b.norm[i];
+      let cerca=null;if(T.length>1&&pg.includes(P))cerca=P;else if(ha(pg))cerca=T.find(t=>pg.includes(t));if(!cerca)continue;
+      let pos=-1,k=0;while(k<12&&(pos=pg.indexOf(cerca,pos+1))>=0){k++;if(nelTitolo(i,pos))continue;
+        const c=libCtx(b,i,pos),inP=dentro(i,pos),sz=c.sez?libFold(c.sez.t):'';
+        const cls=inP?'paragrafi':/comorbid|differential|differenzial/.test(sz)?'comorb':'altre';
+        const key=cls+'|'+i+'|'+(c.sez?c.sez.t:'');const g=gruppi.get(key);
+        if(g)g.n++;else gruppi.set(key,{b,i,o:pos,cls,big:c.big&&c.big.t,sez:c.sez&&c.sez.t,n:1,frase:cerca===P})}}
+    gruppi.forEach(g=>G[g.cls].push(g))}};
+  run(false);let parziale=false;
+  if(!Object.values(G).some(x=>x.length)&&T.length>1){run(true);parziale=true}
+  G.indice.sort((a,c)=>c.sc-a.sc);G.indice=G.indice.filter((x,k,L)=>L.findIndex(y=>y.b===x.b&&y.i===x.i&&y.dove===x.dove&&libPulisciTit(y.tit)===libPulisciTit(x.tit))===k).slice(0,12);
+  G.capitolo.sort((a,c)=>(c.esatto-a.esatto)||(c.z-a.z)||(a.i-c.i));G.capitolo=G.capitolo.filter((x,k,L)=>L.findIndex(y=>y.b===x.b&&y.i===x.i)===k);
+  G.paragrafi.sort((a,c)=>a.b===c.b?a.i-c.i||a.o-c.o:0);G.comorb.sort((a,c)=>a.i-c.i);
+  G.altre.sort((a,c)=>(c.frase-a.frase)||(c.n-a.n)||(a.i-c.i));
+  return {T,G,parziale,tot:Object.values(G).reduce((s,x)=>s+x.length,0)}}
+
+/* ---- testo con le parole cercate in evidenza (da..a = parte da mostrare) ---- */
+function libMarca(orig,norm,T,da,a){
+  const R=[];for(const t of T){let i=da-1;while((i=norm.indexOf(t,i+1))>=0&&i<a){R.push([i,Math.min(a,i+t.length)])}}
+  R.sort((x,y)=>x[0]-y[0]);const M=[];for(const r of R){const l=M[M.length-1];if(l&&r[0]<=l[1])l[1]=Math.max(l[1],r[1]);else M.push(r.slice())}
+  let h='',p=da;for(const r of M){h+=esc(orig.slice(p,r[0]))+'<mark>'+esc(orig.slice(r[0],r[1]))+'</mark>';p=r[1]}
+  return h+esc(orig.slice(p,a))}
+function libSnippet(b,i,o,T,lun){
+  const t=b.pages[i],n=b.norm[i];let da=Math.max(0,o-70),a=Math.min(t.length,o+(lun||170));
+  while(da>0&&!/\s/.test(t[da-1])&&o-da<100)da--;
+  return (da>0?'… ':'')+libMarca(t,n,T,da,a).replace(/\s*\n\s*/g,' ')+(a<t.length?' …':'')}
+
+/* ---- risultati, impaginati come l'indice di un libro ---- */
+function libVoce(x,T,tipo){
+  const pag=libNum(x.b,x.i),dati=' data-act="libApriPag" data-id="'+x.b.id+'" data-p="'+(x.i+1)+'"',libro=LIB.idx.length>1?' · '+esc(x.b.nome):'';
+  if(tipo==='indice')return '<button class="lx-e lx-idx"'+dati+'><span class="lx-r"><span class="lx-t">'+libMarca(x.tit,libFold(x.tit),T,0,x.tit.length)+'</span><span class="lx-dots"></span><span class="lx-n">'+esc(x.numTxt||(pag||x.i+1))+'</span></span><span class="lx-w">'+esc(x.dove)+libro+'</span></button>';
+  if(tipo==='capitolo'){const per=libPercorso(x.b,x.i).filter(s=>s!==x.tit).slice(-2).join(' › ');
+    return '<button class="lx-e lx-cap"'+dati+'><span class="lx-k">'+esc(per||'Capitolo')+libro+'</span><span class="lx-ct">'+libMarca(x.tit,libFold(x.tit),T,0,x.tit.length)+'</span><span class="lx-w">'+esc(libPagTxt(x.b,x.i))+'</span><span class="lx-s">'+libSnippet(x.b,x.i,x.o+x.tit.length,T,220)+'</span></button>'}
+  const tit=x.sez||x.big||libPercorso(x.b,x.i).slice(-1)[0]||'Testo',sopra=x.sez&&x.big?x.big:(x.sez?libPercorso(x.b,x.i).slice(-1)[0]:'');
+  return '<button class="lx-e lx-par"'+dati+'><span class="lx-r"><span class="lx-t">'+esc(tit)+'</span><span class="lx-dots"></span><span class="lx-n">'+esc(pag||x.i+1)+'</span></span>'+
+    (sopra?'<span class="lx-w">'+esc(sopra)+libro+'</span>':libro?'<span class="lx-w">'+libro.slice(3)+'</span>':'')+'<span class="lx-s">'+libSnippet(x.b,x.i,x.o,T)+'</span></button>'}
+let _libT=null;
+async function libRisultati(){
+  const box=$('#libres');if(!box)return;
+  if(!LIB.q.trim()){box.innerHTML='';return}
+  if(!LIB.idx)box.innerHTML='<p class="small mut">Preparo la ricerca…</p>';
+  await libCarica();if($('#libres')!==box)return;
+  if(!LIB.idx.length){box.innerHTML='<p class="small mut">Non c’è ancora nessun PDF pronto per la ricerca.</p>';return}
+  const r=libCerca(LIB.q,LIB.libro);
+  if(!r.tot){box.innerHTML='<p class="small mut">Nessun risultato per «'+esc(LIB.q)+'».</p>';return}
+  const sez=(k,tit,L,lim)=>L.length?'<section class="lx lx-'+k+'"><h4 class="lx-h">'+tit+' <span>'+L.length+'</span></h4>'+L.slice(0,lim||L.length).map(x=>libVoce(x,r.T,k)).join('')+
+    (lim&&L.length>lim?'<button class="btn sm lx-more" data-act="libTutte">Mostra tutte le '+L.length+' pagine</button>':'')+'</section>':'';
+  box.innerHTML=(r.parziale?'<p class="small mut">Nessuna pagina contiene tutte le parole: ecco quelle con almeno una.</p>':'')+'<div class="lxbook">'+
+    sez('indice','Indice',r.G.indice)+sez('capitolo','Capitolo',r.G.capitolo)+sez('paragrafi','Paragrafi del capitolo',r.G.paragrafi)+
+    sez('comorb','Comorbidità e diagnosi differenziale',r.G.comorb)+sez('altre','Altre pagine',r.G.altre,LIB.tutte?0:LIB_ALTRE)+'</div>'}
+document.addEventListener('input',e=>{const t=e.target;if(t&&t.id==='libq'){LIB.q=t.value;LIB.tutte=false;clearTimeout(_libT);_libT=setTimeout(libRisultati,160)}});
+A.libTutte=()=>{LIB.tutte=true;libRisultati()};
+
+/* ---------- Libreria: lettura «a libro» ----------
+   A schermo intero: la pagina vera del PDF con le parole cercate evidenziate, si sfoglia con il dito o con le frecce.
+   «Testo» mostra la stessa pagina come testo da leggere (titoli e paragrafi), utile se il PDF è pesante. */
+const LRD={id:null,i:0,modo:'pagina',dir:0,tok:0};
+function libChiudiDoc(){try{LIB.doc&&LIB.doc.destroy()}catch(e){}LIB.doc=null;LIB.docId=null}
+async function libLettore(id,i){
+  await libCarica();const b=LIB.idx.find(x=>x.id===id);if(!b)return;
+  LRD.id=id;LRD.i=Math.max(0,Math.min(b.n-1,i));
+  let el=document.getElementById('lrd');
+  if(!el){el=document.createElement('div');el.id='lrd';el.className='lrd';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');document.body.appendChild(el);
+    document.documentElement.classList.add('mopen');libSfoglia(el)}
+  const per=libPercorso(b,LRD.i).slice(-2).join(' › ')||(libCtx(b,LRD.i,0).big||{}).t||'';
+  el.innerHTML='<div class="lrd-top"><button class="lrd-x" data-act="libChiudiLettore" aria-label="Chiudi">‹ Risultati</button><div class="lrd-tit"><b>'+esc(b.nome)+'</b><small>'+esc(per)+'</small></div><span class="lrd-n">'+esc(libPagTxt(b,LRD.i))+'</span></div>'+
+   '<div class="lrd-scroll" id="lrdsc"><div class="lrd-sheet'+(LRD.dir>0?' lrd-in-r':LRD.dir<0?' lrd-in-l':'')+'" id="lrdsheet"></div></div>'+
+   '<div class="lrd-bot"><button class="lrd-ar" data-act="libVai" data-d="-1" aria-label="Pagina precedente"'+(LRD.i<=0?' disabled':'')+'>‹</button>'+
+   '<div class="seg lrd-seg"><button class="'+(LRD.modo==='pagina'?'on':'')+'" data-act="libModo" data-m="pagina">Pagina</button><button class="'+(LRD.modo==='testo'?'on':'')+'" data-act="libModo" data-m="testo">Testo</button></div>'+
+   '<input id="libgo" type="number" inputmode="numeric" min="1" placeholder="'+(b.off!=null?'Pag.':'Pag. PDF')+'" aria-label="Vai alla pagina"><button class="btn sm" data-act="libGo">Vai</button>'+
+   '<button class="lrd-ar" data-act="libVai" data-d="1" aria-label="Pagina successiva"'+(LRD.i>=b.n-1?' disabled':'')+'>›</button></div>';
+  LRD.dir=0;
+  if(LRD.modo==='testo')libTestoLibro(b);else libDisegna(b)}
+/* pagina come testo da leggere: titoli riconosciuti in grande, parole cercate evidenziate */
+function libTestoLibro(b){
+  const sh=$('#lrdsheet');if(!sh)return;const i=LRD.i,t=b.pages[i],n=b.norm[i],T=libTermini(LIB.q),H=(b.st.heads[i]||[]);
+  if(!t){sh.innerHTML='<p class="lrd-vuota">Questa pagina non ha testo.</p>';return}
+  let h='',p=0;const pezzo=(da,a)=>libMarca(t,n,T,da,a).replace(/\n(?=\S)/g,' ').replace(/([.:;])\s(?=\p{Lu})/gu,'$1<br>');
+  for(const x of H){if(x.o>p)h+='<p>'+pezzo(p,x.o)+'</p>';h+=x.k==='big'?'<h3>'+pezzo(x.o,x.o+x.t.length)+'</h3>':'<h4>'+pezzo(x.o,x.o+x.t.length)+'</h4>';p=x.o+x.t.length}
+  if(p<t.length)h+='<p>'+pezzo(p,t.length)+'</p>';
+  sh.className='lrd-sheet lrd-text';sh.innerHTML='<div class="lrd-run">'+esc(((libCtx(b,i,0).big||{}).t)||b.nome)+'</div>'+h+'<div class="lrd-foot">'+esc(libNum(b,i)||String(i+1))+'</div>';
+  const m=sh.querySelector('mark');if(m)setTimeout(()=>{try{m.scrollIntoView({block:'center'})}catch(e){}},30)}
+/* pagina vera del PDF, con riquadri sulle parole cercate */
+async function libDisegna(b){
+  const sh=$('#lrdsheet');if(!sh)return;const tok=++LRD.tok,i=LRD.i;
+  sh.classList.add('lrd-pdf');sh.innerHTML='<p class="lrd-vuota">Apro la pagina…</p>';
+  try{
+    if(LIB.docId!==b.id){libChiudiDoc();LIB.doc=await libApri(await libGet('pdf',b.id));LIB.docId=b.id}
+    const pg=await LIB.doc.getPage(i+1);if(tok!==LRD.tok)return;
+    const w=Math.max(260,(sh.clientWidth||340)),dpr=Math.min(2.5,window.devicePixelRatio||1),v1=pg.getViewport({scale:1}),sc=w/v1.width,vp=pg.getViewport({scale:sc}),vr=pg.getViewport({scale:sc*dpr});
+    const cv=document.createElement('canvas');cv.width=Math.floor(vr.width);cv.height=Math.floor(vr.height);cv.style.width=vp.width+'px';cv.style.height=vp.height+'px';
+    await pg.render({canvasContext:cv.getContext('2d'),viewport:vr}).promise;if(tok!==LRD.tok)return;
+    const box=document.createElement('div');box.className='lrd-page';box.style.width=vp.width+'px';box.style.height=vp.height+'px';box.appendChild(cv);
+    const T=libTermini(LIB.q);
+    if(T.length){const tc=await pg.getTextContent(),U=LIB.pdfjs.Util;
+      for(const it of tc.items){const s=it.str||'';if(!s.trim())continue;const f=libFold(s);
+        for(const t of T){let k=-1;while((k=f.indexOf(t,k+1))>=0){
+          const tx=U.transform(vp.transform,it.transform),fh=Math.hypot(tx[2],tx[3]),wi=(it.width||0)*sc;
+          const mk=document.createElement('i');mk.className='lrd-mark';
+          mk.style.left=(tx[4]+wi*k/s.length-1)+'px';mk.style.top=(tx[5]-fh*0.95)+'px';mk.style.width=(wi*t.length/s.length+2)+'px';mk.style.height=(fh*1.2)+'px';box.appendChild(mk)}}}}
+    sh.innerHTML='';sh.appendChild(box);
+    const m=box.querySelector('.lrd-mark');if(m){const sc2=$('#lrdsc');if(sc2)sc2.scrollTop=Math.max(0,m.offsetTop-sc2.clientHeight/3)}
+  }catch(e){if(tok!==LRD.tok)return;LRD.modo='testo';libTestoLibro(b);toast((e&&e.message)||'Non riesco a mostrare la pagina: la vedi come testo.')}}
+/* sfogliare con il dito */
+function libSfoglia(el){let x0=null,y0=0;
+  el.addEventListener('touchstart',e=>{if(!e.target.closest('.lrd-scroll'))return;const t=e.touches[0];x0=t.clientX;y0=t.clientY},{passive:true});
+  el.addEventListener('touchend',e=>{if(x0==null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;
+    if(Math.abs(dx)>70&&Math.abs(dy)<60)A.libVai({d:dx<0?1:-1})},{passive:true})}
+A.libApriPag=d=>libLettore(d.id,(+d.p||1)-1);
+A.libVai=d=>{const b=LIB.idx&&LIB.idx.find(x=>x.id===LRD.id);if(!b)return;const j=LRD.i+(+d.d);if(j<0||j>=b.n)return;LRD.dir=+d.d;libLettore(b.id,j)};
+A.libGo=()=>{const b=LIB.idx&&LIB.idx.find(x=>x.id===LRD.id),n=parseInt(($('#libgo')||{}).value,10);if(!b||!(n>0))return;
+  const j=b.off!=null?libDaNum(b,n):n-1;if(j==null||j<0||j>=b.n){toast('Pagina fuori dal libro.');return}LRD.dir=j>LRD.i?1:-1;libLettore(b.id,j)};
+A.libModo=d=>{LRD.modo=d.m==='testo'?'testo':'pagina';libLettore(LRD.id,LRD.i)};
+A.libChiudiLettore=()=>{LRD.tok++;const el=document.getElementById('lrd');if(el)el.remove();document.documentElement.classList.remove('mopen')};
+document.addEventListener('keydown',e=>{if(!document.getElementById('lrd'))return;if(e.key==='Escape')A.libChiudiLettore();else if(e.key==='ArrowRight')A.libVai({d:1});else if(e.key==='ArrowLeft')A.libVai({d:-1})});
 
 /* ---------- Dettatura (telefono) ----------
    Detti con il microfono della tastiera di iPhone: l'app riceve solo testo (nessun audio, nessuna rete).
@@ -7411,6 +7620,51 @@ A.detCrea=async()=>{
   delete D().dettBozza;await save();S.view='cout';render();toast(n+(n===1?' voce creata':' voci create')+': le trovi qui, pronte da esportare.')};
 const _cvDet=compView;
 compView=function(v){return v==='cdet'?vCDet():_cvDet.apply(this,arguments)};
+
+/* ---------- Benvenuto animato all'apertura dell'app (tema DWARF) ----------
+   Solo aspetto: compare a ogni apertura, dura circa tre secondi, si salta toccando lo schermo.
+   Non tocca dati né accesso; con «riduci movimento» attivo è una semplice dissolvenza. */
+function benvenutoHTML(){
+  const h=new Date().getHours(),sal=h<5?'Buonanotte':h<13?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera';
+  return '<div class="wl-sun"></div><svg class="wl-thread" viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true"><path d="M-10 90 C 60 20, 120 120, 200 60 S 330 10, 410 70"/></svg>'+
+    '<div class="wl-in"><img class="wl-mascot" src="'+DW_IMG+'" alt="" width="720" height="720" decoding="async">'+
+    '<div class="wl-word">'+'DWARF'.split('').map((c,i)=>'<span style="--i:'+i+'">'+c+'</span>').join('')+'</div>'+
+    '<div class="wl-t">'+sal+', <em>Simone</em></div><div class="wl-s">Benvenuto nel tuo archivio privato</div>'+
+    '<div class="wl-lock"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="wl-shackle" d="M8 11V8a4 4 0 018 0v3"/><path d="M6 11h12v9H6z"/></svg><span>cifrato · solo su questo dispositivo</span></div></div>';
+}
+function benvenuto(){
+  if(document.getElementById('welcome'))return;
+  const el=document.createElement('div');el.id='welcome';el.className='wl';el.setAttribute('aria-hidden','true');el.innerHTML=benvenutoHTML();
+  document.body.appendChild(el);
+  let via=false;const chiudi=()=>{if(via)return;via=true;el.classList.add('wl-out');setTimeout(()=>el.remove(),650)};
+  el.addEventListener('pointerdown',chiudi);
+  let rid=false;try{rid=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}
+  setTimeout(chiudi,rid?1300:3300);
+}
+A.benvenuto=benvenuto;
+/* nelle prove automatiche (browser comandato da programma) non compare, per non coprire i pulsanti */
+/* dopo il resto del codice (la mascotte è definita più avanti) */
+try{if(!navigator.webdriver)setTimeout(benvenuto,0)}catch(e){}
+
+/* ---------- Accesso con Face ID / portachiavi di iPhone ----------
+   Quando la password arriva tutta insieme (riempimento automatico dopo Face ID), chiudo la tastiera,
+   rimetto la pagina al suo posto e porto in vista «Entra nell'archivio»: niente più pagina scivolata in alto. */
+function accessoRiempito(t){
+  try{t.blur()}catch(e){}
+  document.documentElement.classList.remove('typing','kb');
+  const sistema=()=>{try{scrollTo(0,0);const b=document.querySelector('.lk-go');if(b){b.scrollIntoView({block:'nearest'});b.classList.add('lk-pulse')}}catch(e){}};
+  sistema();setTimeout(sistema,250);setTimeout(sistema,600)}
+function accessoInput(e){
+  const t=e.target;if(!t||t.name!=='pw'||S.screen!=='lock')return;
+  const prima=t._lun||0,ora=t.value.length;t._lun=ora;
+  const auto=e.type==='change'?ora>0&&ora-prima>1:(e.inputType==='insertReplacementText'||!e.inputType||ora-prima>2);
+  if(auto&&ora)setTimeout(()=>accessoRiempito(t),60)}
+document.addEventListener('input',accessoInput,true);document.addEventListener('change',accessoInput,true);
+/* quando la tastiera si chiude sulla schermata di accesso, la pagina torna giù */
+try{if(window.visualViewport){let aperta=false;
+  visualViewport.addEventListener('resize',()=>{const kb=innerHeight-visualViewport.height>120;
+    if(aperta&&!kb&&S.screen==='lock')setTimeout(()=>{try{scrollTo(0,0);const b=document.querySelector('.lk-go');if(b)b.scrollIntoView({block:'nearest'})}catch(e){}},80);
+    aperta=kb})}}catch(e){}
 
 /* ---------- Coda dei fogli e controllo delle variazioni ----------
    Più foto di test in una volta, lette una dopo l'altra (strumento ricordato), con riepilogo finale.
