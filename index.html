@@ -1253,29 +1253,40 @@ mark{background:#f3d77a;color:#222;border-radius:3px;padding:0 1px}
 /* dettatura */
 .detrow{display:grid;grid-template-columns:1fr 1fr;gap:10px}.detseg{margin:10px 0}.deterr{border-color:#a2553b}.detgo{width:100%;margin:10px 0 20px}
 #det-t{font-size:16px;line-height:1.5}
-/* benvenuto DWARF */
-.wl{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;background:radial-gradient(900px 600px at 80% -10%,rgba(239,160,122,.35),transparent 60%),#F1E9DC;color:#414625;font-family:var(--f-d);transition:opacity .6s ease,transform .6s ease}
-.wl.wl-out{opacity:0;transform:scale(1.03);pointer-events:none}
-.wl-sun{position:absolute;width:150vmax;height:150vmax;left:50%;top:118%;border-radius:50%;background:#4E5A2D;transform:translate(-50%,-50%) scale(.2);opacity:.12;animation:wlSun 1.6s cubic-bezier(.2,.8,.2,1) forwards}
-.wl-thread{position:absolute;left:0;right:0;bottom:5%;width:100%;height:120px}
-.wl-thread path{fill:none;stroke:#AC5437;stroke-width:2;stroke-linecap:round;stroke-dasharray:640;stroke-dashoffset:640;animation:wlDraw 1.4s ease-out 1.1s forwards;opacity:.7}
-.wl-in{position:relative;text-align:center;padding:0 24px}
-.wl-mascot{width:min(46vw,190px);height:auto;transform:translateY(40px) scale(.85);opacity:0;animation:wlUp .9s cubic-bezier(.2,1.4,.4,1) .25s forwards;filter:drop-shadow(0 14px 20px rgba(65,70,37,.22))}
-.wl-word{display:flex;justify-content:center;gap:.06em;font-size:clamp(40px,12vw,64px);font-weight:500;letter-spacing:.16em;padding-left:.16em;margin:6px 0 10px;color:#414625}
-.wl-word span{display:inline-block;opacity:0;transform:translateY(-26px) rotate(-6deg);animation:wlDrop .55s cubic-bezier(.2,1.5,.4,1) calc(.75s + var(--i)*.09s) forwards}
-.wl-word span:nth-child(3){color:#AC5437}
-.wl-t{font-size:clamp(22px,6vw,30px);font-weight:300;opacity:0;animation:wlFade .7s ease 1.35s forwards}.wl-t em{font-style:normal;color:#8F4527;font-weight:400}
-.wl-s{font-family:var(--f-b);font-size:15px;color:#6E6A5E;margin-top:4px;opacity:0;animation:wlFade .7s ease 1.65s forwards}
-.wl-lock{display:inline-flex;align-items:center;gap:8px;margin-top:22px;padding:8px 14px 8px 10px;border-radius:99px;background:rgba(255,253,248,.75);border:1px solid rgba(205,191,166,.7);font-family:var(--f-b);font-size:12.5px;color:#565C38;opacity:0;animation:wlFade .6s ease 2s forwards}
-.wl-lock svg{width:18px;height:18px;fill:none;stroke:#414625;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
-.wl-shackle{transform:translateY(-3px);animation:wlClose .4s cubic-bezier(.3,1.6,.5,1) 2.35s forwards}
-@keyframes wlSun{to{transform:translate(-50%,-50%) scale(1);opacity:.1}}
-@keyframes wlDraw{to{stroke-dashoffset:0}}
-@keyframes wlUp{to{transform:none;opacity:1}}
-@keyframes wlDrop{to{opacity:1;transform:none}}
-@keyframes wlFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-@keyframes wlClose{to{transform:none}}
-@media (prefers-reduced-motion:reduce){.wl *{animation:none!important;opacity:1!important;transform:none!important}.wl-thread path{stroke-dashoffset:0}}
+/* benvenuto DWARF: lento, sobrio, solo opacità e trasformazioni */
+.wl{--ease:cubic-bezier(.22,1,.36,1);--soft:cubic-bezier(.4,0,.2,1);position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;background:#F3ECE0;color:#414625;font-family:var(--f-d);
+  transition:opacity .9s var(--soft),transform 1s var(--soft);-webkit-font-smoothing:antialiased}
+.wl.wl-out{opacity:0;transform:scale(1.025);pointer-events:none}
+.wl-glow{position:absolute;inset:-20%;background:radial-gradient(42% 34% at 50% 40%,rgba(255,252,246,.95),rgba(255,252,246,0) 70%),radial-gradient(60% 50% at 85% 0%,rgba(239,160,122,.16),transparent 70%);opacity:0}
+.wl-in{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 28px}
+.wl-fig{width:min(40vw,168px);aspect-ratio:1;margin-bottom:6px}
+.wl-mascot{width:100%;height:100%;object-fit:contain;opacity:0;transform:translateY(14px) scale(.94);filter:drop-shadow(0 18px 26px rgba(65,70,37,.16))}
+.wl-word{font-size:clamp(30px,9vw,44px);font-weight:400;line-height:1;color:#414625;margin-top:10px}
+.wl-word span{display:inline-block;letter-spacing:.62em;padding-left:.62em;opacity:0}
+.wl-rule{width:56px;height:1px;margin:22px 0 20px;background:rgba(65,70,37,.12);overflow:hidden}
+.wl-rule i{display:block;height:100%;width:100%;background:#AC5437;transform:scaleX(0);transform-origin:left center}
+.wl-t{font-size:clamp(21px,5.6vw,26px);font-weight:300;letter-spacing:.005em;opacity:0;transform:translateY(8px)}.wl-t em{font-style:normal;font-weight:400;color:#8F4527}
+.wl-s{font-family:var(--f-b);font-size:14px;letter-spacing:.02em;color:#7A7465;margin-top:6px;opacity:0;transform:translateY(6px)}
+.wl-lock{display:inline-flex;align-items:center;gap:8px;margin-top:34px;font-family:var(--f-b);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#8A8270;opacity:0}
+.wl-lock svg{width:15px;height:15px;fill:none;stroke:#565C38;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+.wl-shackle{transform:translateY(-2.5px)}
+.wl-go .wl-glow{animation:wlFade 2.4s var(--soft) forwards}
+.wl-go .wl-mascot{animation:wlRise 1.6s var(--ease) .15s forwards}
+.wl-go .wl-word span{animation:wlTrack 2s var(--ease) .65s forwards}
+.wl-go .wl-rule i{animation:wlLine 1.5s var(--ease) 1.45s forwards}
+.wl-go .wl-t{animation:wlUp 1.2s var(--ease) 1.7s forwards}
+.wl-go .wl-s{animation:wlUp 1.2s var(--ease) 2s forwards}
+.wl-go .wl-lock{animation:wlFade 1s var(--soft) 2.55s forwards}
+.wl-go .wl-shackle{animation:wlLock .7s var(--ease) 3.05s forwards}
+@keyframes wlFade{to{opacity:1}}
+@keyframes wlRise{to{opacity:1;transform:none}}
+@keyframes wlTrack{to{opacity:1;letter-spacing:.2em;padding-left:.2em}}
+@keyframes wlLine{to{transform:scaleX(1)}}
+@keyframes wlUp{to{opacity:1;transform:none}}
+@keyframes wlLock{to{transform:none}}
+@media (prefers-color-scheme:dark){.wl{background:#1E2016;color:#EDE4D3}.wl-word{color:#EDE4D3}.wl-t{color:#EDE4D3}.wl-t em{color:#EFA07A}.wl-s,.wl-lock{color:#A9A18F}.wl-lock svg{stroke:#C9BFA9}
+  .wl-glow{background:radial-gradient(42% 34% at 50% 40%,rgba(86,92,56,.45),transparent 70%)}.wl-rule{background:rgba(237,228,211,.15)}}
+@media (prefers-reduced-motion:reduce){.wl *{animation:none!important;transition:none!important;opacity:1!important;transform:none!important}.wl-word span{letter-spacing:.2em;padding-left:.2em}}
 .lk-go.lk-pulse{animation:lkPulse 1.2s ease 2}
 @keyframes lkPulse{0%,100%{box-shadow:0 0 0 0 rgba(124,143,74,0)}50%{box-shadow:0 0 0 8px rgba(124,143,74,.28)}}
 /* libreria: risultati come l'indice di un libro */
@@ -1679,7 +1690,7 @@ html[data-eff=dark] .nqs .nq.cam .ctile-i{background:#40261C;color:#E9A98B}
 <div id="root"></div><div id="modal"></div><div id="print"></div><div id="toast" role="status" aria-live="polite"></div>
 <noscript>Questa applicazione richiede JavaScript.</noscript>
 <script>
-const APP_VER='2026-10-25 · 1d248b3';
+const APP_VER='2026-10-25 · 7dbb65a';
 'use strict';
 /* =====================================================================
    ARCHIVIO CLINICO  v0.3  -  file unico, offline, dati cifrati nel browser
@@ -6188,7 +6199,7 @@ vCAg=function(){
   const dm=phoneDayMap(),sel=S.pcd||today(),L=pcItems(sel),dk=calDk();
   const title=d.toLocaleDateString('it-IT',{month:'long',year:'numeric'});
   let h='<h1>Calendario</h1><p class="small mut">Lo stesso calendario che vedi prima dell’accesso. Tocca un giorno per vedere o aggiungere impegni: arrivano sul Mac con l’esportazione.</p>'+
-   '<button class="btn pri detimpb" data-act="dettaImpegno">'+svgI(micIc)+' Detta un impegno</button>'+
+   '<button class="btn pri detimpb" data-act="dettaImpegno">'+svgI(micIc)+' Detta impegni</button>'+
    '<div class="card pcal"><div class="lc-h"><button type="button" class="lc-n" data-act="pcNav" data-n="-1" aria-label="Mese precedente"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><b>'+esc(title)+'</b><button type="button" class="lc-n" data-act="pcNav" data-n="1" aria-label="Mese successivo"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div>'+
    '<div class="lc-g">'+lcCells(cm,k=>dm[k],true,sel)+'</div><div class="lc-f">'+lcLeg(dk)+'</div></div>'+
    '<h3 class="csec">'+esc(new Date(sel+'T12:00:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'}))+'</h3>';
@@ -7677,7 +7688,7 @@ function vCDet(){
   let h='<h1>Dettatura</h1><p class="small mut">Tocca il riquadro e usa il <b>microfono della tastiera</b>. Prima di ogni parte di’ il nome della sezione: «Seduta…», «Domanda…», «Diagnosi F41.1 confermata…», «Nota…», «Nota personale…», «Relazione…». Per cambiare paziente: «Paziente PZ 3». La sezione si riconosce solo all’inizio di una frase. Controlli tutto prima di creare le voci.</p>'+
    '<datalist id="pzl">'+pzOptions()+'</datalist><div class="detrow">'+fld('Paziente','<input data-dk="pz" list="pzl" autocomplete="off" autocapitalize="characters" placeholder="PZ-0001" value="'+esc(st.pz)+'">')+fld('Data','<input data-dk="data" type="date" value="'+esc(st.data)+'">')+'</div>'+
    fld('Testo dettato','<textarea id="det-t" data-dk="testo" rows="10" placeholder="Seduta. Il paziente riferisce…">'+esc(st.testo)+'</textarea>')+
-   '<div class="row"><button class="btn pri" data-act="detDividi">Dividi in sezioni</button><button class="btn" data-act="detSvuota">Svuota</button><button class="btn" data-act="dettaImpegno">Solo un impegno</button></div>';
+   '<div class="row"><button class="btn pri" data-act="detDividi">Dividi in sezioni</button><button class="btn" data-act="detSvuota">Svuota</button><button class="btn" data-act="dettaImpegno">Solo impegni</button></div>';
   if(st.segs){
     h+='<h3 class="libh">'+(st.segs.length?st.segs.length+(st.segs.length===1?' sezione':' sezioni')+' da controllare':'Nessuna sezione')+'</h3>'+
      st.segs.map((g,i)=>{const k=f=>'data-dk="'+i+':'+f+'"',inp=(f,l,t)=>fld(l,'<input '+k(f)+(t?' type="'+t+'"':'')+' value="'+esc(g[f]==null?'':g[f])+'">');
@@ -7708,47 +7719,68 @@ A.detCrea=async()=>{
     try{await ctSave(g.tipo,detVoce(g),null);n++}catch(e){g.err=e.message||'Non salvato.';resto.push(g)}}
   if(resto.length){st.segs=resto;await save();render();toast(n+' voci create. '+resto.length+' da correggere (in rosso).');return}
   delete D().dettBozza;await save();S.view='cout';render();toast(n+(n===1?' voce creata':' voci create')+': le trovi qui, pronte da esportare.')};
-/* ---- un impegno solo, a voce: dall'Agenda o dalla Dettatura ---- */
+/* ---- impegni a voce, anche più di uno insieme: dall'Agenda o dalla Dettatura ----
+   «domani alle 9 riunione, poi alle 11 dentista. Venerdì alle 10 appuntamento PZ 4»: ogni parte è un impegno;
+   se una parte non dice il giorno, vale quello della parte prima. Uno solo → modulo già compilato; più di uno → revisione. */
+function detImpegni(testo){
+  const parti=String(testo||'').split(/\n+|[.;!?](?=\s|$)|,?\s+(?:e\s+)?poi\s+|,?\s+inoltre\s+/i) /* «15.30» non divide: dopo il punto non c'è spazio */.map(x=>x.trim()).filter(x=>x.length>1);
+  const out=[];let ultimaData=null;
+  for(let p of parti){
+    const f=libFold(p);let tipo='impegno';
+    if(/^(appuntamento|seduta)\b/.test(f)||/\bp\s?z[\s\-]*(c\s?l\s?l[\s\-]*)?\d|\bc\s?l\s?l[\s\-]*\d/.test(f))tipo='appuntamento';else if(/^(formazione|corso|supervisione)\b/.test(f))tipo='formazione';
+    p=p.replace(/^\s*(impegno personale|impegno|appuntamento|formazione)\b[\s:,.\-–]*/i,'');
+    const t=detTempo(p),g=detPrepara(tipo,p,'',ultimaData||today());
+    if(!t.data&&ultimaData){g.data=ultimaData;g.avviso=g.avviso.replace(/ ?Non ho trovato la data[^.]*\./,'')}
+    if(!g.avviso)delete g.avviso;
+    if((tipo==='impegno'||tipo==='formazione')&&!g.testo)g.testo='Impegno';
+    ultimaData=g.data;out.push(g)}
+  return out}
 A.dettaImpegno=()=>{
-  modal('<h3>Detta un impegno</h3><p class="small mut">Tocca il riquadro, poi il <b>microfono della tastiera</b>, e parla. Per esempio: «giovedì alle 15:30 dentista», «domani dalle 9 alle 11 riunione», «formazione dal 3 al 5 dicembre corso EMDR», «appuntamento venerdì alle 10 PZ 4».</p>'+
-   '<textarea id="detimp" rows="3" placeholder="giovedì alle 15:30 dentista"></textarea><div class="err" id="detimperr"></div>'+
+  modal('<h3>Detta impegni</h3><p class="small mut">Tocca il riquadro, poi il <b>microfono della tastiera</b>, e parla. Puoi dirne <b>più di uno</b>: separali con «poi» o con una pausa. Per esempio: «domani alle 9 riunione di équipe, poi alle 11 dentista. Venerdì dalle 15 alle 17 supervisione. Appuntamento lunedì alle 10 PZ 4».</p>'+
+   '<textarea id="detimp" rows="4" placeholder="domani alle 9 riunione, poi alle 11 dentista"></textarea><div class="err" id="detimperr"></div>'+
    '<div class="row end"><button class="btn" data-act="close">Annulla</button><button class="btn pri" data-act="dettaImpegnoOk">Continua</button></div>',true);
   setTimeout(()=>{const t=$('#detimp');if(t)t.focus()},60)};
 A.dettaImpegnoOk=()=>{
-  let s=String(($('#detimp')||{}).value||'').trim();if(!s){const e=$('#detimperr');if(e)e.textContent='Detta o scrivi l’impegno.';return}
-  const f=libFold(s);let tipo='impegno';
-  if(/^(appuntamento|seduta)\b/.test(f)||/\bp\s?z[\s\-]*(c\s?l\s?l[\s\-]*)?\d|\bc\s?l\s?l[\s\-]*\d/.test(f))tipo='appuntamento';else if(/^(formazione|corso|supervisione)\b/.test(f))tipo='formazione';
-  s=s.replace(/^\s*(impegno personale|impegno|appuntamento|formazione)\b[\s:,.\-–]*/i,'');
-  const g=detPrepara(tipo,s,'',today()),T=CT[tipo],v=detVoce(g);
-  if(tipo==='impegno'||tipo==='formazione')v.titolo=v.titolo||'Impegno';
-  formModal(T.l+' · controlla e salva',T.f(),v,async o=>{await ctSave(tipo,o,null);render();toast(T.l+' aggiunto: arriva sul Mac con l’esportazione.')},
-    '<datalist id="pzl">'+pzOptions()+'</datalist>'+(g.avviso?'<div class="banner warn small">'+esc(g.avviso)+'</div>':''))};
+  const s=String(($('#detimp')||{}).value||'').trim();if(!s){const e=$('#detimperr');if(e)e.textContent='Detta o scrivi almeno un impegno.';return}
+  const G=detImpegni(s);if(!G.length)return;
+  if(G.length===1){const g=G[0],tipo=g.tipo,T=CT[tipo];
+    formModal(T.l+' · controlla e salva',T.f(),detVoce(g),async o=>{await ctSave(tipo,o,null);render();toast(T.l+' aggiunto: arriva sul Mac con l’esportazione.')},
+      '<datalist id="pzl">'+pzOptions()+'</datalist>'+(g.avviso?'<div class="banner warn small">'+esc(g.avviso)+'</div>':''));return}
+  /* più impegni: la stessa revisione della Dettatura, già divisa */
+  D().dettBozza={testo:s,pz:'',data:today(),segs:G};closeModal();save().then(()=>{S.view='cdet';render();try{scrollTo(0,0)}catch(e){}toast(G.length+' impegni da controllare: poi «Crea».')})};
 const _cvDet=compView;
 compView=function(v){return v==='cdet'?vCDet():_cvDet.apply(this,arguments)};
 
-/* ---------- Benvenuto animato all'apertura dell'app (tema DWARF) ----------
-   Solo aspetto: compare a ogni apertura, dura circa tre secondi, si salta toccando lo schermo.
-   Non tocca dati né accesso; con «riduci movimento» attivo è una semplice dissolvenza. */
+/* ---------- Benvenuto all'apertura dell'app (tema DWARF) ----------
+   Solo aspetto: compare a ogni apertura, circa quattro secondi e mezzo, si salta toccando lo schermo.
+   Movimenti lenti e sobri (dissolvenze, lieve ingrandimento, spaziatura delle lettere che si stringe), solo opacità e
+   trasformazioni: scorre fluido anche sul telefono. Le animazioni partono quando l'immagine è pronta, per non scattare.
+   Con «riduci movimento» attivo è una semplice dissolvenza. Non tocca dati né accesso. */
 function benvenutoHTML(){
   const h=new Date().getHours(),sal=h<5?'Buonanotte':h<13?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera';
-  return '<div class="wl-sun"></div><svg class="wl-thread" viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true"><path d="M-10 90 C 60 20, 120 120, 200 60 S 330 10, 410 70"/></svg>'+
-    '<div class="wl-in"><img class="wl-mascot" src="'+DW_IMG+'" alt="" width="720" height="720" decoding="async">'+
-    '<div class="wl-word">'+'DWARF'.split('').map((c,i)=>'<span style="--i:'+i+'">'+c+'</span>').join('')+'</div>'+
-    '<div class="wl-t">'+sal+', <em>Simone</em></div><div class="wl-s">Benvenuto nel tuo archivio privato</div>'+
-    '<div class="wl-lock"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="wl-shackle" d="M8 11V8a4 4 0 018 0v3"/><path d="M6 11h12v9H6z"/></svg><span>cifrato · solo su questo dispositivo</span></div></div>';
+  return '<div class="wl-glow"></div><div class="wl-in">'+
+    '<div class="wl-fig"><img class="wl-mascot" src="'+DW_IMG+'" alt="" width="720" height="720" decoding="async"></div>'+
+    '<div class="wl-word" aria-hidden="true"><span>DWARF</span></div>'+
+    '<div class="wl-rule"><i></i></div>'+
+    '<div class="wl-t">'+sal+', <em>Simone</em></div><div class="wl-s">Il tuo archivio privato</div>'+
+    '<div class="wl-lock"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="wl-shackle" d="M8 11V8a4 4 0 018 0v3"/><path d="M6 11h12v9H6z"/></svg><span>Cifrato · solo su questo dispositivo</span></div></div>';
 }
 function benvenuto(){
   if(document.getElementById('welcome'))return;
   const el=document.createElement('div');el.id='welcome';el.className='wl';el.setAttribute('aria-hidden','true');el.innerHTML=benvenutoHTML();
   document.body.appendChild(el);
-  let via=false;const chiudi=()=>{if(via)return;via=true;el.classList.add('wl-out');setTimeout(()=>el.remove(),650)};
-  el.addEventListener('pointerdown',chiudi);
   let rid=false;try{rid=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}
-  setTimeout(chiudi,rid?1300:3300);
+  let via=false,timer=null;
+  const chiudi=()=>{if(via)return;via=true;clearTimeout(timer);el.classList.add('wl-out');setTimeout(()=>el.remove(),1000)};
+  el.addEventListener('pointerdown',chiudi);
+  /* parte quando la mascotte è decodificata (al massimo dopo mezzo secondo): niente scatti al primo fotogramma */
+  let partito=false;const parti=()=>{if(partito||via)return;partito=true;requestAnimationFrame(()=>{el.classList.add('wl-go');timer=setTimeout(chiudi,rid?1400:4600)})};
+  const img=el.querySelector('.wl-mascot');try{img.decode().then(parti,parti)}catch(e){parti()}
+  setTimeout(parti,500);
 }
 A.benvenuto=benvenuto;
-/* nelle prove automatiche (browser comandato da programma) non compare, per non coprire i pulsanti */
-/* dopo il resto del codice (la mascotte è definita più avanti) */
+/* nelle prove automatiche (browser comandato da programma) non compare, per non coprire i pulsanti;
+   parte dopo il resto del codice (la mascotte è definita più avanti) */
 try{if(!navigator.webdriver)setTimeout(benvenuto,0)}catch(e){}
 
 /* ---------- Accesso con Face ID / portachiavi di iPhone ----------
