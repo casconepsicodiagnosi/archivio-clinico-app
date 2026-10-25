@@ -1329,12 +1329,13 @@ mark{background:#f3d77a;color:#222;border-radius:3px;padding:0 1px}
 .lrd-bot input{width:76px;padding:8px 6px;border-radius:10px;border:1px solid #DDD0B8;font-size:16px}
 .detimpb{display:inline-flex;align-items:center;gap:8px;margin:2px 0 12px}.detimpb svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 #detimp{width:100%;font-size:17px;line-height:1.5;padding:12px;border-radius:12px;border:1px solid var(--line)}
-/* Agenda: pulsante a parte, a destra della barra in basso */
-.cnav.cnav-fuori{right:calc(max(12px,env(safe-area-inset-right,0px)) + 76px)!important}
-.cnav-ag{position:fixed;z-index:56;right:max(12px,env(safe-area-inset-right,0px));bottom:max(10px,calc(env(safe-area-inset-bottom,0px) - 8px));width:66px;height:68px;border-radius:24px;border:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:var(--terra);color:#FFF8EE;font:600 10.5px var(--f-b);box-shadow:0 14px 30px -10px rgba(143,69,39,.6),0 2px 6px rgba(20,22,10,.18)}
-.cnav-ag svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.cnav-ag.on{background:var(--terra-dark)}
-html.typing .cnav-ag,html.kb .cnav-ag{opacity:0;pointer-events:none}
+/* Agenda al centro della barra in basso, in un cerchio terracotta sollevato */
+.cnav.cnav-centro{overflow:visible;--ag:var(--terra);--ag-on:var(--terra-dark)}
+html[data-eff="dark"] .cnav.cnav-centro{--ag:#7E3B24;--ag-on:#62301E}
+.cnav .cnav-mid,.cnav .cnav-mid.on{background:transparent!important;color:inherit!important}
+.cnav .cnav-mid svg{width:50px!important;height:50px!important;padding:13px;margin-top:-30px;border-radius:50%;background:var(--ag);stroke:#FFF8EE!important;box-shadow:0 10px 20px -8px rgba(90,40,22,.7),0 0 0 4px var(--card);box-sizing:border-box}
+.cnav .cnav-mid.on svg{background:var(--ag-on)}.cnav .cnav-mid.on span{color:var(--ag-on);font-weight:700}
+html[data-eff="dark"] .cnav .cnav-mid.on span{color:#E3A486}
 
 /* tema scuro */
 html[data-eff=dark]{--glass:32,36,26;--glass2:19,21,14;--green:#3B4122;--green-deep:#2A2E17;--green-soft:#7F8A56;--gtx:#CBD39E;--cream:#13150E;--cream-2:#1C1F14;--paper:#1A1D13;--card:#20241A;--hero:#1E2216;--terra:#D27C58;--terra-dark:#E5A07F;--terra-light:#C0724F;--terra-bg:#3A261C;--ink:#EEE7D7;--body:#D3CCBA;--mut:#B5AB96;--line:#363B2B;--sand:#4C5239;--pri2:#2C3220;--ok:#BDD596;--ok2:#27311B;--warn:#EBC57E;--warn2:#3A2F15;--bad:#F3A898;--bad2:#40211B;color-scheme:dark}
@@ -1703,7 +1704,7 @@ html[data-eff=dark] .nqs .nq.cam .ctile-i{background:#40261C;color:#E9A98B}
 <div id="root"></div><div id="modal"></div><div id="print"></div><div id="toast" role="status" aria-live="polite"></div>
 <noscript>Questa applicazione richiede JavaScript.</noscript>
 <script>
-const APP_VER='2026-10-25 · 84c44da';
+const APP_VER='2026-10-25 · 9f8262d';
 'use strict';
 /* =====================================================================
    ARCHIVIO CLINICO  v0.3  -  file unico, offline, dati cifrati nel browser
@@ -4761,11 +4762,10 @@ function renderComp(){
    '<main class="cmain'+(enter?' enter':'')+'">'+compView(v)+'</main>'+
    cnavHTML(NAV,v)+'</div>';
 }
-/* barra in basso: le quattro voci in una capsula; l'Agenda è un pulsante terracotta a parte, a destra, comodo da raggiungere col pollice */
+/* barra in basso: Nuovo e In uscita · Agenda al centro, in rilievo · Esporta e Impostazioni */
 function cnavHTML(NAV,v){
-  const b=n=>'<button class="'+(v===n[0]?'on':'')+'" data-act="cgo" data-v="'+n[0]+'"'+(v===n[0]?' aria-current="page"':'')+'>'+svgI(n[2])+'<span>'+n[1]+'</span>'+(n[3]?'<i class="cbadge">'+n[3]+'</i>':'')+'</button>';
-  return '<nav class="cnav cnav-fuori" aria-label="Navigazione">'+NAV.map(b).join('')+'</nav>'+
-    '<button class="cnav-ag'+(v==='cag'?' on':'')+'" data-act="cgo" data-v="cag" aria-label="Agenda"'+(v==='cag'?' aria-current="page"':'')+'>'+svgI(CI.cal)+'<span>Agenda</span></button>'}
+  const b=(n,cls)=>'<button class="'+(cls||'')+(v===n[0]?' on':'')+'" data-act="cgo" data-v="'+n[0]+'"'+(v===n[0]?' aria-current="page"':'')+'>'+svgI(n[2])+'<span>'+n[1]+'</span>'+(n[3]?'<i class="cbadge">'+n[3]+'</i>':'')+'</button>';
+  return '<nav class="cnav cnav-centro" aria-label="Navigazione">'+NAV.slice(0,2).map(n=>b(n)).join('')+b(['cag','Agenda',CI.cal],'cnav-mid')+NAV.slice(2).map(n=>b(n)).join('')+'</nav>'}
 const _render11=render;
 render=function(){
   if(S.screen!=='app'){S.pkg=null;S.pkgRc=null}
