@@ -1341,6 +1341,14 @@ html[data-eff="dark"] .cnav .cnav-mid.on span{color:#E3A486}
 .pcv.pl{border-left-color:#7C9CBF}
 .badge.lvb{background:#E1E8F0;color:#2D4D70;border-color:#B9CBDE}
 
+/* ---------- agenda aperta (telefono): il calendario sopra la schermata d'accesso ---------- */
+.oa{position:fixed;top:0;left:0;right:0;bottom:0;z-index:60;background:var(--cream);color:var(--ink);display:flex;flex-direction:column}
+.oa-top{flex:none;padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-left,0px)) 4px;max-width:640px;width:100%;margin:0 auto}
+.oa-x{display:inline-flex;align-items:center;gap:4px;padding-left:10px}
+.oa-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.oa-sc{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px max(16px,env(safe-area-inset-left,0px)) calc(32px + env(safe-area-inset-bottom,0px));max-width:640px;width:100%;margin:0 auto}
+.oa-sc h1{margin:4px 0 6px}
+
 /* tema scuro */
 html[data-eff=dark]{--glass:32,36,26;--glass2:19,21,14;--green:#3B4122;--green-deep:#2A2E17;--green-soft:#7F8A56;--gtx:#CBD39E;--cream:#13150E;--cream-2:#1C1F14;--paper:#1A1D13;--card:#20241A;--hero:#1E2216;--terra:#D27C58;--terra-dark:#E5A07F;--terra-light:#C0724F;--terra-bg:#3A261C;--ink:#EEE7D7;--body:#D3CCBA;--mut:#B5AB96;--line:#363B2B;--sand:#4C5239;--pri2:#2C3220;--ok:#BDD596;--ok2:#27311B;--warn:#EBC57E;--warn2:#3A2F15;--bad:#F3A898;--bad2:#40211B;color-scheme:dark}
 html[data-eff=dark] body{background:var(--cream);color:var(--ink)}
@@ -1708,7 +1716,7 @@ html[data-eff=dark] .nqs .nq.cam .ctile-i{background:#40261C;color:#E9A98B}
 <div id="root"></div><div id="modal"></div><div id="print"></div><div id="toast" role="status" aria-live="polite"></div>
 <noscript>Questa applicazione richiede JavaScript.</noscript>
 <script>
-const APP_VER='2026-10-25 · ff45cf6';
+const APP_VER='2026-10-29 · 685e4b3';
 'use strict';
 /* =====================================================================
    ARCHIVIO CLINICO  v0.3  -  file unico, offline, dati cifrati nel browser
@@ -4478,6 +4486,7 @@ const CT_ORDER=['seduta','appuntamento','nota','nuovo','episodio','diagnosi','mo
 function pzLabel(pz){if(!pz)return '';const e=PLI().pz.find(x=>x.c===pz);return e?pz+' · '+e.i:pz}
 function pzOptions(){
   const o=[],seen=new Set();
+  if(!S.db)return agCodici().map(c=>'<option value="'+esc(c)+'"></option>').join(''); /* agenda aperta: archivio chiuso, solo i codici già in agenda */
   PLI().pz.forEach(x=>{if(!seen.has(x.c)){seen.add(x.c);o.push('<option value="'+esc(x.c)+'" label="'+esc(x.i)+'"></option>')}});
   OUT().filter(i=>i.type==='nuovo').forEach(i=>{const n=i.v.cod||(fz(i.v.cognome)+' '+fz(i.v.nome));if(!seen.has(n)){seen.add(n);o.push('<option value="'+esc(n)+'" label="nuovo, da importare"></option>')}});
   return o.join('')}
@@ -4513,9 +4522,9 @@ function ctOpen(type,it){
   formModal((it?'Modifica · ':'')+T.l,T.f(),it?Object.assign({pz:it.pz},it.v):{},async o=>{await ctSave(type,o,it&&it.id)},
     '<datalist id="pzl">'+pzOptions()+'</datalist>'+(T.photo?'<p class="small mut">La foto viene ridotta e resta cifrata sul telefono finché non la esporti.</p>':''));
 }
-async function ctSave(type,o,editId){
+/* controlla i campi di una voce e dice cosa manca; vale per le voci in uscita e per quelle del calendario */
+function ctValida(type,o){
   const T=CT[type];if(!T)throw new Error('Tipo non valido');
-  if(type==='nuovo')o=pzConCodice(o,editId); /* codice PZ automatico: js_codici.js */
   const v={};Object.keys(o).forEach(k=>{if(k!=='foto'&&k!=='pz')v[k]=typeof o[k]==='string'?o[k].trim():o[k]});
   const fl=T.f();
   const miss=fl.filter(f=>f.req&&f.k!=='pz'&&f.t!=='file'&&(v[f.k]==null||v[f.k]===''));
@@ -4524,6 +4533,13 @@ async function ctSave(type,o,editId){
   let pz='';
   if(T.pz){pz=normPz(o.pz);if(!pz&&(T.pz!==2||String(o.pz||'').trim()))throw new Error('Scrivi il codice del paziente (per esempio PZ-0001) oppure «Cognome Nome» di un paziente nuovo creato qui.')}
   if(T.chk){const e=T.chk(v);if(e)throw new Error(e)}
+  return {v,pz}}
+const ctTrova=id=>(S.db&&OUT().find(x=>x.id===id))||agItems().find(x=>x.id===id);
+async function ctSave(type,o,editId){
+  const T=CT[type];if(!T)throw new Error('Tipo non valido');
+  if(CAL_TYPES.includes(type))return agSalva(type,o,editId); /* il calendario sta nell'agenda aperta: js_agenda_aperta.js */
+  if(type==='nuovo')o=pzConCodice(o,editId); /* codice PZ automatico: js_codici.js */
+  const {v,pz}=ctValida(type,o);
   const old=editId?OUT().find(x=>x.id===editId):null;
   if(T.photo&&!o.foto&&!(old&&old.photo))throw new Error('Scegli la foto da allegare.');
   let photo=old?old.photo:null;
@@ -4537,7 +4553,7 @@ async function ctSave(type,o,editId){
   await save();render();toast('In uscita: '+T.l.toLowerCase());
 }
 A.cnewT=d=>ctOpen(d.t);
-A.cedit=d=>{const it=OUT().find(x=>x.id===d.id);if(it&&!it.batch)ctOpen(it.type,it)};
+A.cedit=d=>{const it=ctTrova(d.id);if(it&&!it.batch)ctOpen(it.type,it)};
 async function ctDrop(pred){
   const L=OUT(),gone=L.filter(pred);
   for(const it of gone){for(const a of [it.photo,it.allegato])if(a){try{await idbDel('docs',a.id)}catch(e){}}}
@@ -4570,8 +4586,9 @@ async function ctFiles(items){
     const fo=await risFotoFile(it,z);if(fo)files.push({n:nome(fo.base,fo.ext),m:fo.mime,d:b64(fo.bytes),i:it.id}); /* foto del foglio: js_foto_test.js */
   }
   return files}
-async function ctBuild(pw,all){
-  const items=OUT().filter(x=>all||!x.batch);
+/* incCal: portare nel pacchetto anche le voci del calendario (si decide a ogni esportazione) */
+async function ctBuild(pw,all,incCal){
+  const cal=incCal?agItems().filter(x=>!x.batch||(all&&agRecente(x))):[],items=OUT().filter(x=>all||!x.batch).concat(cal);
   if(!items.length)throw new Error('Non c’è niente da esportare.');
   const files=await ctFiles(items),batch='B'+uid(),t=new Date();
   const payload={kind:'raccolta',batch,t:t.toISOString(),files},sealed=pw?await pkSeal(pw,payload):await pkSealK(D().set.tk,payload);
@@ -4579,7 +4596,8 @@ async function ctBuild(pw,all){
   const name='Raccolta_'+today()+'_'+p2_(t.getHours())+p2_(t.getMinutes())+'.acpk';
   const file=new File([sealed],name,{type:'application/octet-stream'});
   items.forEach(it=>{it.batch=batch;it.sentAt=t.toISOString()});
-  log('Pacchetto di raccolta creato',items.length+' voci');await save();
+  if(cal.length)agSalvaStore();
+  log('Pacchetto di raccolta creato',items.length+' voci'+(cal.length?' (di cui '+cal.length+' del calendario)':''));await save();
   S.pkg={file,batch,n:items.length};return S.pkg}
 forms.cexp=async f=>{
   const err=f.querySelector('.err');err.textContent='';
@@ -4590,7 +4608,10 @@ forms.cexp=async f=>{
   }
   const b=f.querySelector('button:not([type=button])'),h0=b?b.innerHTML:'';if(b){b.disabled=true;b.textContent='Cifratura in corso…'}
   try{if(typed){D().set.tk=typed}
-    await ctBuild(null,!!(f.elements.all&&f.elements.all.checked));render()}
+    const nc=agItems().filter(x=>!x.batch).length,all=!!(f.elements.all&&f.elements.all.checked);
+    let inc=false;
+    if(nc||(all&&agItems().some(agRecente))){inc=await askCalendario(nc);if(inc===null){if(typed)D().set.tk=prev;if(b){b.disabled=false;b.innerHTML=h0}return}} /* sì / no / annulla */
+    await ctBuild(null,all,inc);render()}
   catch(e){if(typed)D().set.tk=prev;err.textContent=e.message;if(b){b.disabled=false;b.innerHTML=h0}}
 };
 A.cagain=()=>{S.pkg=null;render()};
@@ -4720,7 +4741,7 @@ function vCOut(){
   if(s.length)h+='<h3 class="csec">Esportate, in attesa del Mac · '+s.length+'</h3><div class="clist">'+s.map(crowHTML).join('')+'</div><p class="small mut">Restano sul telefono finché il Mac non conferma (ricevuta) o le cancelli tu da Impostazioni.</p>';
   return h}
 function vCExp(){
-  const L=OUT(),p=L.filter(x=>!x.batch).length,s=L.filter(x=>x.batch).length,K=S.pkg;
+  const L=OUT().concat(agItems().filter(x=>!x.batch||agRecente(x))),p=L.filter(x=>!x.batch).length,s=L.filter(x=>x.batch).length,K=S.pkg;
   let h='<h1>Esporta</h1>';
   if(K)h+='<div class="card cdone"><h3>Pacchetto pronto</h3><p><b>'+esc(K.file.name)+'</b><br><span class="small mut">'+K.n+(K.n===1?' voce':' voci')+' · cifrato con la chiave di trasferimento</span></p><div class="row"><button class="btn pri" data-share="1">Invia con AirDrop o salva</button><button class="btn" data-act="cdl">Scarica</button></div><p class="small mut">Sul Mac: Importa › Apri un pacchetto. Dopo l’importazione il Mac ti dà una ricevuta: aprila qui in Impostazioni e il telefono cancella da solo le voci.</p></div>';
   if(K&&!p)return h+'<p class="small mut">Se il Mac non riceve il pacchetto puoi ricrearlo.</p><button class="btn" data-act="cagain">Ricrea il pacchetto</button>';
@@ -4740,7 +4761,7 @@ function vCSet(){
    '<div class="card"><h3>Svuota il telefono</h3><p class="small mut">Dopo aver importato sul Mac, apri la ricevuta che il Mac ti ha dato: il telefono cancella da solo le voci importate.</p><div class="row"><button class="btn pri" data-act="crcPick">Apri la ricevuta</button><button class="btn" data-act="cclear"'+(ex?'':' disabled')+'>Cancella le '+ex+' già esportate</button></div></div>'+
    '<div class="card"><h3>Blocco automatico</h3><form data-form="lockset"><div class="grid">'+fieldHTML({k:'idleMin',l:'Blocca dopo',t:'select',o:opts.map(m=>[String(m),m===1?'1 minuto':m+' minuti'])},String(cur))+fieldHTML({k:'pw',l:'Password per confermare',t:'password',req:1})+'</div>'+
    '<label class="chkrow"><input type="checkbox" name="hideLock"'+(s.hideLock!==false?' checked':'')+'> Blocca anche se l’app resta in secondo piano per più di un minuto</label>'+
-   '<label class="chkrow"><input type="checkbox" name="loginCal"'+(s.loginCal!==false?' checked':'')+'> <span>Mostra nella schermata di accesso il calendario con i colori dei giorni (appuntamenti e formazione). Non mostra nomi.</span></label><div class="err"></div><div class="row"><button class="btn pri">Salva</button><button type="button" class="btn" data-act="lock">Blocca adesso</button></div></form></div>'+
+   '<p class="small mut"><b>Calendario senza password.</b> Si apre anche dall’icona della data nella schermata d’ingresso. Contiene orari, titoli e codici dei pazienti (mai nomi), salvati in chiaro su questo telefono: li protegge il blocco di iPhone.</p><div class="err"></div><div class="row"><button class="btn pri">Salva</button><button type="button" class="btn" data-act="lock">Blocca adesso</button></div></form></div>'+
    modeCardHTML()+
    '<p class="small mut">Per cambiare la password o fare un backup passa alla modalità Completa.</p>'}
 function vCAg(){
@@ -6157,7 +6178,7 @@ const _plApply38=plApply;
 plApply=async function(p){
   const pr=_plApply38.apply(this,arguments),s=x=>String(x==null?'':x).slice(0,80),okd=x=>/^\d{4}-\d{2}-\d{2}$/.test(x);
   const ev=(Array.isArray(p&&p.ev)?p.ev:[]).slice(0,2000).map(x=>({d:s(x.d),f:okd(s(x.f))?s(x.f):'',o:/^\d{2}:\d{2}$/.test(s(x.o))?s(x.o):'',e:/^\d{2}:\d{2}$/.test(s(x.e))?s(x.e):'',t:s(x.t),k:x.k==='pers'||x.k==='lav'?x.k:'form'})).filter(x=>okd(x.d));
-  await pr;D().plist.ev=ev;await save();render()};
+  await pr;D().plist.ev=ev;agMacAggiorna(D().plist.ag,ev);await save();render()};
 
 /* ---------- telefono: nuovo tipo «Impegno personale» ---------- */
 CT.impegno={l:'Impegno personale',s:'Un tuo impegno nel calendario',ic:'M12 21s-7-4.5-7-11a7 7 0 0114 0c0 6.5-7 11-7 11zM12 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z',
@@ -6181,14 +6202,14 @@ CT_ORDER.splice(CT_ORDER.indexOf('formazione')+1,0,'impegno','lavoro');
 function phoneDayMap(){
   const m={},pts={},inc=(k,i)=>{(m[k]=m[k]||[0,0,0,0])[i]++};
   const addP=(dt,who)=>{if(/^\d{4}-\d{2}-\d{2}$/.test(dt||''))(pts[dt]=pts[dt]||new Set()).add(String(who||'?'))};
-  OUT().forEach(i=>{if(i.type==='seduta')addP((i.v||{}).data,i.pz)});
+  if(S.db)OUT().forEach(i=>{if(i.type==='seduta')addP((i.v||{}).data,i.pz)}); /* a archivio chiuso le sedute (cifrate) non si vedono */
   calSrc().forEach(i=>{const v=i.v||{};
     if(i.type==='appuntamento')addP(v.data,i.pz);
     if(i.type==='formazione')spanDays(v.data,v.dataFine,k=>inc(k,1));
     if(i.type==='impegno')spanDays(v.data,v.dataFine,k=>inc(k,2));
     if(i.type==='lavoro')spanDays(v.data,v.dataFine,k=>inc(k,3))});
-  PLI().ag.forEach(a=>addP(a.d,a.c));
-  (PLI().ev||[]).forEach(e=>spanDays(e.d,e.f,k=>inc(k,e.k==='pers'?2:e.k==='lav'?3:1)));
+  agMac().ag.forEach(a=>addP(a.d,a.c));
+  agMac().ev.forEach(e=>spanDays(e.d,e.f,k=>inc(k,e.k==='pers'?2:e.k==='lav'?3:1)));
   Object.keys(pts).forEach(k=>{(m[k]=m[k]||[0,0,0,0])[0]=pts[k].size});
   return m}
 const _calSum38=calSummary;
@@ -6224,84 +6245,82 @@ lcHTML=function(off){
 const PCAT={appuntamento:['Appuntamento','pp'],formazione:['Formazione','pf'],impegno:['Impegno personale','px'],lavoro:['Lavoro','pl']};
 function pcItems(k){
   const L=[];
-  PLI().ag.forEach(a=>{if(a.d===k)L.push({o:a.o,t:a.c+' · '+a.i,s:(a.u||50)+' min · dal Mac',c:'pp'})});
-  (PLI().ev||[]).forEach(e=>{let hit=false;spanDays(e.d,e.f,x=>{if(x===k)hit=true});if(hit)L.push({o:e.o?e.o+(e.e?'–'+e.e:''):'',t:e.t,s:(e.k==='pers'?'impegno personale':e.k==='lav'?'lavoro':'formazione')+' · dal Mac',c:e.k==='pers'?'px':e.k==='lav'?'pl':'pf'})});
+  agMac().ag.forEach(a=>{if(a.d===k)L.push({o:a.o,t:agChi(a.c),s:(a.u||50)+' min · dal Mac',c:'pp'})});
+  agMac().ev.forEach(e=>{let hit=false;spanDays(e.d,e.f,x=>{if(x===k)hit=true});if(hit)L.push({o:e.o?e.o+(e.e?'–'+e.e:''):'',t:e.t,s:(e.k==='pers'?'impegno personale':e.k==='lav'?'lavoro':'formazione')+' · dal Mac',c:e.k==='pers'?'px':e.k==='lav'?'pl':'pf'})});
   calSrc().forEach(i=>{const v=i.v||{},P=PCAT[i.type];if(!P)return;let hit=false;
     if(i.type==='appuntamento')hit=v.data===k;else spanDays(v.data,v.dataFine,x=>{if(x===k)hit=true});
-    if(hit)L.push({o:i.type==='appuntamento'?(v.ora||''):oraTxt(v),t:i.type==='appuntamento'?pzLabel(i.pz):v.titolo,s:P[0]+(i.type==='appuntamento'?' · '+(v.durata||50)+' min':'')+(i.batch||i.kept?' · già esportato':' · su questo telefono'),c:P[1],id:i.batch||i.kept?'':i.id,del:i.id})});
+    if(hit)L.push({o:i.type==='appuntamento'?(v.ora||''):oraTxt(v),t:i.type==='appuntamento'?agChi(i.pz):v.titolo,s:P[0]+(i.type==='appuntamento'?' · '+(v.durata||50)+' min':'')+(i.batch?' · già esportato':' · su questo telefono'),c:P[1],id:i.batch?'':i.id,del:i.id})});
   return L.sort((a,b)=>(a.o||'~').localeCompare(b.o||'~'))}
-vCAg=function(){
+/* corpo dell'agenda: è lo stesso a archivio aperto (vista «Agenda») e a archivio chiuso (agenda aperta dall'ingresso) */
+function agCorpo(){
   const now=new Date(),off=S.pcm||0,d=new Date(now.getFullYear(),now.getMonth()+off,1),cm=d.getFullYear()+'-'+p2(d.getMonth()+1);
   const dm=phoneDayMap(),sel=S.pcd||today(),L=pcItems(sel),dk=calDk();
   const title=d.toLocaleDateString('it-IT',{month:'long',year:'numeric'});
-  let h='<h1>Calendario</h1><p class="small mut">Lo stesso calendario che vedi prima dell’accesso. Tocca un giorno per vedere o aggiungere impegni: arrivano sul Mac con l’esportazione.</p>'+
-   '<button class="btn pri detimpb" data-act="dettaImpegno">'+svgI(micIc)+' Detta impegni</button>'+
-   '<div class="card pcal"><div class="lc-h"><button type="button" class="lc-n" data-act="pcNav" data-n="-1" aria-label="Mese precedente"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><b>'+esc(title)+'</b><button type="button" class="lc-n" data-act="pcNav" data-n="1" aria-label="Mese successivo"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div>'+
+  let h='<div class="card pcal"><div class="lc-h"><button type="button" class="lc-n" data-act="pcNav" data-n="-1" aria-label="Mese precedente"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><b>'+esc(title)+'</b><button type="button" class="lc-n" data-act="pcNav" data-n="1" aria-label="Mese successivo"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div>'+
    '<div class="lc-g">'+lcCells(cm,k=>dm[k],true,sel)+'</div><div class="lc-f">'+lcLeg(dk)+'</div></div>'+
    '<h3 class="csec">'+esc(new Date(sel+'T12:00:00').toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'}))+'</h3>';
   h+=L.length?L.map(a=>'<div class="cag pcv '+a.c+'">'+(a.id?'<button type="button" class="pcm" data-act="cedit" data-id="'+a.id+'" aria-label="Modifica">':'<div class="pcm">')+'<b>'+esc(a.o||'—')+'</b><span>'+esc(a.t)+'<small>'+esc(a.s)+(a.del?'':' · si elimina sul Mac')+'</small></span>'+(a.id?'</button>':'</div>')+
      (a.del?'<button type="button" class="crow-x pcx" data-act="pcDel" data-id="'+a.del+'" aria-label="Elimina">'+svgI(CI.del)+'</button>':'')+'</div>').join('')
     :'<p class="small mut">Niente in questo giorno.</p>';
   h+='<div class="pcadd"><button class="btn pri" data-act="pcNew" data-t="appuntamento">+ Appuntamento</button><button class="btn" data-act="pcNew" data-t="formazione">+ Formazione</button><button class="btn" data-act="pcNew" data-t="lavoro">+ Lavoro</button><button class="btn" data-act="pcNew" data-t="impegno">+ Impegno personale</button></div>';
-  return h};
-A.pcNav=d=>{S.pcm=Math.max(-12,Math.min(24,(S.pcm||0)+Number(d.n)));render()};
-A.pcDay=d=>{S.pcd=d.d;const now=new Date(),x=new Date(d.d+'T12:00:00');S.pcm=(x.getFullYear()-now.getFullYear())*12+x.getMonth()-now.getMonth();render()};
+  return h}
+vCAg=function(){
+  return '<h1>Calendario</h1><p class="small mut">Lo stesso calendario che vedi prima dell’accesso. Tocca un giorno per vedere o aggiungere impegni: arrivano sul Mac con l’esportazione, se rispondi di sì alla domanda sul calendario.</p>'+
+   '<button class="btn pri detimpb" data-act="dettaImpegno">'+svgI(micIc)+' Detta impegni</button>'+agCorpo()};
+A.pcNav=d=>{S.pcm=Math.max(-12,Math.min(24,(S.pcm||0)+Number(d.n)));agRender()};
+A.pcDay=d=>{S.pcd=d.d;const now=new Date(),x=new Date(d.d+'T12:00:00');S.pcm=(x.getFullYear()-now.getFullYear())*12+x.getMonth()-now.getMonth();agRender()};
 A.pcNew=d=>{const T=CT[d.t];if(!T)return;const dt=S.pcd||today();
   formModal(T.l,T.f(),{data:dt},async o=>{await ctSave(d.t,o,null)},'<datalist id="pzl">'+pzOptions()+'</datalist>')};
 
 /* eliminare un impegno dal calendario del telefono */
 A.pcDel=async d=>{
-  const it=OUT().find(x=>x.id===d.id)||PCK().find(x=>x.id===d.id);if(!it)return;const T=CT[it.type],v=it.v||{};
+  const it=agItems().find(x=>x.id===d.id);if(!it)return;const T=CT[it.type],v=it.v||{};
   const what=esc((T?T.l:'Voce')+(v.titolo?' «'+v.titolo+'»':'')+' del '+fd(v.data));
-  if(!await ask('<p>Eliminare '+what+'?</p>'+(it.batch||it.kept?'<p class="small">È già stato esportato: se l’hai importato sul Mac, lì resta e va eliminato anche sul Mac.</p>':'<p class="small"><b>Non è ancora stato esportato</b>: non arriverà sul Mac.</p>'),{ok:'Elimina'}))return;
-  D().pcal=PCK().filter(x=>x.id!==it.id);await ctDrop(x=>x.id===it.id,{cal:false});await save();toast('Eliminato dal calendario del telefono');render()};
+  if(!await ask('<p>Eliminare '+what+'?</p>'+(it.batch?'<p class="small">È già stato esportato: se l’hai importato sul Mac, lì resta e va eliminato anche sul Mac.</p>':'<p class="small"><b>Non è ancora stato esportato</b>: non arriverà sul Mac.</p>'),{ok:'Elimina'}))return;
+  await agElimina(it.id);toast('Eliminato dal calendario del telefono')};
 
 /* ====================================================================
    v39 · Esportate e calendario: decide l'utente
    - le voci esportate restano nella lista finché non le elimini tu (anche senza ricevuta del Mac);
    - la ricevuta del Mac, se la apri, segna soltanto quali voci sono arrivate;
    - appuntamenti, formazione e impegni esportati restano nel calendario del telefono finché non li
-     elimini dal calendario, anche se li togli dalla lista delle esportate.
+     elimini dal calendario. Il calendario sta nell'agenda aperta (js_agenda_aperta.js), fuori
+     dall'archivio cifrato; per questo non ci sono più «voci conservate» da parte.
    ==================================================================== */
 const CAL_TYPES=['appuntamento','formazione','impegno','lavoro'];
-const PCK=()=>Array.isArray(D().pcal)?D().pcal:(D().pcal=[]);
-/* voci del calendario del telefono: quelle ancora in uscita + quelle conservate dopo l'esportazione,
-   senza doppioni con l'elenco arrivato dal Mac */
+/* voci del calendario del telefono: tutte quelle dell'agenda aperta, senza i doppioni con l'elenco
+   arrivato dal Mac (quelli già esportati che il Mac ha rimandato indietro) */
 function calSrc(){
-  const P=PLI(),ag=new Set(P.ag.map(a=>a.d+'|'+(a.o||'')+'|'+a.c)),ev=new Set((P.ev||[]).map(e=>e.d+'|'+(e.k==='pers'?'impegno':e.k==='lav'?'lavoro':'formazione')+'|'+e.t));
+  const M=agMac(),ag=new Set(M.ag.map(a=>a.d+'|'+(a.o||'')+'|'+a.c)),ev=new Set(M.ev.map(e=>e.d+'|'+(e.k==='pers'?'impegno':e.k==='lav'?'lavoro':'formazione')+'|'+e.t));
   const dup=i=>{const v=i.v||{};return i.type==='appuntamento'?ag.has(v.data+'|'+(v.ora||'')+'|'+i.pz):ev.has(v.data+'|'+i.type+'|'+String(v.titolo||'').slice(0,80))};
-  const out=OUT().filter(i=>CAL_TYPES.includes(i.type)&&!(i.batch&&dup(i))),ids=new Set(out.map(i=>i.id));
-  return out.concat(PCK().filter(i=>!ids.has(i.id)&&!dup(i)))}
+  return agItems().filter(i=>!(i.batch&&dup(i)))}
+/* all'apertura dell'archivio sul telefono, le voci di calendario che stavano dentro passano nell'agenda aperta */
 const _mig39=migrate;
-migrate=function(d){const r=_mig39.apply(this,arguments);if(r&&!Array.isArray(r.pcal))r.pcal=[];return r};
-/* togliere voci dalla lista: gli impegni già esportati passano nel calendario conservato */
-const _drop39=ctDrop;
-ctDrop=async function(pred,opt){
-  if(!(opt&&opt.cal===false)){const keep=OUT().filter(x=>pred(x)&&x.batch&&CAL_TYPES.includes(x.type));
-    keep.forEach(x=>{if(!PCK().some(y=>y.id===x.id))PCK().push({id:x.id,type:x.type,v:Object.assign({},x.v),pz:x.pz||'',kept:today()})})}
-  return _drop39.apply(this,arguments)};
+migrate=function(d){const r=_mig39.apply(this,arguments);agMigra(r);return r};
 /* ricevuta del Mac: segna come arrivate, non cancella */
 A.crcPick=()=>formModal('Ricevuta del Mac',[{k:'file',l:'File RICEVUTA_….acrc',t:'file',req:1,accept:'.acrc'}],{},async o=>{
   let r;try{r=JSON.parse(await o.file.text())}catch(e){throw new Error('Questo file non è una ricevuta.')}
   if(!r||r.fmt!=='acrc'||!Array.isArray(r.ids))throw new Error('Questo file non è una ricevuta.');
-  const ids=new Set(r.ids.map(String));let n=0;OUT().forEach(x=>{if(ids.has(x.id)&&!x.rcv){x.rcv=today();n++}});
-  await save();render();toast(n?n+(n===1?' voce segnata come arrivata sul Mac':' voci segnate come arrivate sul Mac')+'. Le elimini tu quando vuoi.':'Nessuna voce nuova in questa ricevuta.')});
+  const ids=new Set(r.ids.map(String));let n=0;OUT().concat(agItems()).forEach(x=>{if(ids.has(x.id)&&!x.rcv){x.rcv=today();n++}});
+  agSalvaStore();await save();render();toast(n?n+(n===1?' voce segnata come arrivata sul Mac':' voci segnate come arrivate sul Mac')+'. Le elimini tu quando vuoi.':'Nessuna voce nuova in questa ricevuta.')});
 A.cclear=async()=>{
   const n=OUT().filter(x=>x.batch).length;if(!n){toast('Non ci sono voci già esportate.');return}
-  const c=OUT().filter(x=>x.batch&&CAL_TYPES.includes(x.type)).length;
-  if(!await ask('<p>Eliminare dalla lista le <b>'+n+'</b> voci già esportate?</p>'+(c?'<p class="small">Appuntamenti e impegni ('+c+') restano nel calendario del telefono.</p>':'')+'<p class="small">Se il pacchetto non è ancora arrivato sul Mac, conservalo finché non l’hai importato.</p>',{ok:'Elimina dalla lista'}))return;
+  if(!await ask('<p>Eliminare dalla lista le <b>'+n+'</b> voci già esportate?</p><p class="small">Appuntamenti e impegni restano nel calendario del telefono.</p><p class="small">Se il pacchetto non è ancora arrivato sul Mac, conservalo finché non l’hai importato.</p>',{ok:'Elimina dalla lista'}))return;
   await ctDrop(x=>!!x.batch);render();toast('Voci esportate eliminate dalla lista')};
 A.cdel=async d=>{
-  const it=OUT().find(x=>x.id===d.id);if(!it)return;const cal=CAL_TYPES.includes(it.type);
-  if(!await ask('<p>Eliminare questa voce dalla lista?'+(it.batch?'':' <b>Non è ancora stata esportata.</b>')+'</p>'+(it.batch&&cal?'<p class="small">Resta nel calendario del telefono: da lì la elimini quando vuoi.</p>':''),{ok:'Elimina'}))return;
-  await ctDrop(x=>x.id===it.id);render()};
+  const it=ctTrova(d.id);if(!it)return;const cal=CAL_TYPES.includes(it.type);
+  if(!await ask('<p>Eliminare questa voce'+(cal?' dal calendario':' dalla lista')+'?'+(it.batch?'':' <b>Non è ancora stata esportata.</b>')+'</p>',{ok:'Elimina'}))return;
+  if(cal)await agElimina(it.id);else{await ctDrop(x=>x.id===it.id);render()}};
 const _crow39=crowHTML;
 crowHTML=function(it){const h=_crow39.apply(this,arguments);return it&&it.rcv?h.replace('</small></span></button>',' · arrivata sul Mac</small></span></button>'):h};
 const _vCOut39=vCOut;
 vCOut=function(){
-  const n=OUT().filter(x=>x.batch).length;
+  const n=OUT().filter(x=>x.batch).length,cp=agItems().filter(x=>!x.batch);
+  /* le voci del calendario non partono da sole: sono qui in attesa della risposta «sì» all'esportazione */
+  const cal=cp.length?'<h3 class="csec">Calendario · '+cp.length+'</h3><div class="clist">'+cp.map(crowHTML).join('')+'</div><p class="small mut">Partono con il pacchetto solo se, quando esporti, rispondi «sì» alla domanda sul calendario.</p>':'';
+  if(cal&&!OUT().length)return '<h1>In uscita</h1>'+cal;
   return _vCOut39.apply(this,arguments).replace('Esportate, in attesa del Mac · ','Esportate · ')
-    .replace(/<p class="small mut">Restano sul telefono finché[^<]*<\/p>/,'<p class="small mut">Restano qui finché non le elimini tu (una per una con il cestino, oppure tutte insieme). Appuntamenti e impegni restano comunque nel calendario.</p>'+(n?'<button class="btn" data-act="cclear">Elimina le '+n+' esportate</button>':''))};
+    .replace(/<p class="small mut">Restano sul telefono finché[^<]*<\/p>/,'<p class="small mut">Restano qui finché non le elimini tu (una per una con il cestino, oppure tutte insieme). Appuntamenti e impegni restano comunque nel calendario.</p>'+(n?'<button class="btn" data-act="cclear">Elimina le '+n+' esportate</button>':''))+cal};
 const _vCExp39=vCExp;
 vCExp=function(){return _vCExp39.apply(this,arguments).replace('Dopo l’importazione il Mac ti dà una ricevuta: aprila qui in Impostazioni e il telefono cancella da solo le voci.','Le voci esportate restano in «In uscita» finché non le elimini tu; appuntamenti e impegni restano nel calendario.')};
 const _vCSet39=vCSet;
@@ -7802,7 +7821,7 @@ A.dettaImpegnoOk=()=>{
   const s=String(($('#detimp')||{}).value||'').trim();if(!s){const e=$('#detimperr');if(e)e.textContent='Detta o scrivi almeno un impegno.';return}
   const G=detImpegni(s);if(!G.length)return;
   if(G.length===1){const g=G[0],tipo=g.tipo,T=CT[tipo];
-    formModal(T.l+' · controlla e salva',T.f(),detVoce(g),async o=>{await ctSave(tipo,o,null);render();toast(T.l+' aggiunto: arriva sul Mac con l’esportazione.')},
+    formModal(T.l+' · controlla e salva',T.f(),detVoce(g),async o=>{await ctSave(tipo,o,null);render();toast(T.l+' aggiunto'+(CAL_TYPES.includes(tipo)?' al calendario.':': arriva sul Mac con l’esportazione.'))},
       '<datalist id="pzl">'+pzOptions()+'</datalist>'+(g.avviso?'<div class="banner warn small">'+esc(g.avviso)+'</div>':''));return}
   /* più impegni: la stessa revisione della Dettatura, già divisa */
   D().dettBozza={testo:s,pz:'',data:today(),segs:G};closeModal();save().then(()=>{S.view='cdet';render();try{scrollTo(0,0)}catch(e){}toast(G.length+' impegni da controllare: poi «Crea».')})};
@@ -8016,10 +8035,111 @@ function dwMascot(role){const a=!DW_SEEN[role];DW_SEEN[role]=1;return DwarfDesig
     const onLock=S.screen==='lock',onDash=S.screen==='app'&&S.view==='dash'&&!(typeof isComp==='function'&&isComp());
     if(!onLock)DW_SEEN.login=0;if(!onDash)DW_SEEN.dashboard=0;
     const x=_r.apply(this,arguments);
-    /* calendario prelogin: aperto all'ingresso solo se i colori dei giorni sono attivi (Impostazioni › Blocco automatico) */
+    /* calendario prelogin (Mac): aperto all'ingresso solo se i colori dei giorni sono attivi (Impostazioni › Blocco automatico). Sul telefono c'è l'agenda aperta: parte solo se la tocchi */
     try{if(onLock&&!lockIn){let on=false;try{on=!!localStorage.getItem('ac-cal')}catch(e){}
-      const p=document.getElementById('lkmc');if(on&&p&&p.hidden&&document.querySelector('.gate.dwarf-login'))A.loginCal()}}catch(e){}
+      const p=document.getElementById('lkmc');if(on&&!agEsiste()&&p&&p.hidden&&document.querySelector('.gate.dwarf-login'))A.loginCal()}}catch(e){}
     lockIn=onLock;return x}})();
+
+/* ====================================================================
+   Agenda aperta · il calendario del telefono, fuori dall'archivio cifrato
+   - Si consulta e si modifica dall'ingresso (icona della data) senza password.
+   - Contiene solo date, orari, titoli e codici dei pazienti: mai nomi, iniziali o note.
+   - Sta in localStorage (chiave ac-agenda), NON cifrata: la protegge il blocco di iPhone.
+   - Dentro l'archivio (con la password) si vede la stessa agenda, con le iniziali dei pazienti.
+   - Gli impegni passano al Mac solo se, al momento di esportare, rispondi «sì».
+   Vale solo per il telefono (modalità Raccolta); sul Mac l'ingresso resta com'era.
+   ==================================================================== */
+const AG_KEY='ac-agenda';
+let AG_RAW=null,AG_M=null;
+const agVuoto=()=>({v:1,items:[],mac:{at:'',ag:[],ev:[]}});
+
+/* l'agenda, riletta se è cambiata fuori da qui; se la memoria del browser non risponde resta quella in corso */
+function agLoad(){
+  let raw=null,ok=true;try{raw=localStorage.getItem(AG_KEY)}catch(e){ok=false}
+  if(AG_M&&(!ok||raw===AG_RAW))return AG_M;
+  let m=null;try{m=raw?JSON.parse(raw):null}catch(e){}
+  if(!m||m.v!==1||!Array.isArray(m.items))m=agVuoto();
+  m.mac=Object.assign({at:'',ag:[],ev:[]},m.mac||{});
+  AG_RAW=raw;AG_M=m;return m}
+const agItems=()=>agLoad().items;
+const agMac=()=>agLoad().mac;
+function agEsiste(){try{return localStorage.getItem(AG_KEY)!==null}catch(e){return false}}
+function agSalvaStore(){
+  const t=JSON.stringify(agLoad());
+  try{localStorage.setItem(AG_KEY,t);AG_RAW=t;return true}catch(e){return false}}
+/* esportata da poco: l'unica che si può rimandare se il Mac non l'ha ricevuta */
+const agRecente=x=>!!x.batch&&Date.now()-Date.parse(x.sentAt||0)<7*86400000;
+const agCodici=()=>{const s=new Set();agItems().forEach(i=>{if(i.pz&&PZ_RE.test(i.pz))s.add(i.pz)});agMac().ag.forEach(a=>s.add(a.c));return [...s].sort()};
+/* chi è il paziente: con l'archivio aperto codice e iniziali, altrimenti solo il codice */
+const agChi=c=>S.db?pzLabel(c):c;
+
+/* l'elenco arrivato dal Mac: la parte di calendario (senza iniziali) */
+function agMacAggiorna(ag,ev){
+  const m=agLoad();
+  m.mac={at:today(),
+    ag:(ag||[]).map(a=>({d:a.d,o:a.o||'',u:a.u||50,c:a.c})),
+    ev:(ev||[]).map(e=>({d:e.d,f:e.f||'',o:e.o||'',e:e.e||'',t:e.t,k:e.k}))};
+  agSalvaStore()}
+
+/* all'apertura dell'archivio: le voci di calendario che stavano dentro passano nell'agenda aperta.
+   Si può ripetere senza danni (le voci già passate si riconoscono dal numero). */
+function agMigra(d){
+  if(!d||!d.set||d.set.mode!=='comp')return;
+  const m=agLoad(),ids=new Set(m.items.map(x=>x.id)),prima=agEsiste();
+  const dentro=(d.out||[]).filter(x=>CAL_TYPES.includes(x.type)).concat((d.pcal||[]).map(x=>Object.assign({batch:'prima'},x)));
+  dentro.forEach(x=>{if(!ids.has(x.id)){ids.add(x.id);m.items.push({id:x.id,type:x.type,v:x.v,pz:x.pz||'',t:x.t||'',batch:x.batch||null,sentAt:x.sentAt||null,rcv:x.rcv})}});
+  d.out=(d.out||[]).filter(x=>!CAL_TYPES.includes(x.type));d.pcal=[];
+  if(!m.mac.at&&d.plist&&d.plist.at)m.mac={at:d.plist.at,ag:(d.plist.ag||[]).map(a=>({d:a.d,o:a.o||'',u:a.u||50,c:a.c})),ev:(d.plist.ev||[]).slice()};
+  if(!prima||dentro.length)agSalvaStore()}
+/* se si passa a Raccolta con l'archivio già aperto, l'agenda nasce al primo blocco */
+const _lockAg=lock;
+lock=function(){try{if(S.db&&isComp()&&!agEsiste())agMigra(S.db)}catch(e){}return _lockAg.apply(this,arguments)};
+
+/* salvare ed eliminare: stessa cosa con l'archivio aperto o chiuso */
+async function agSalva(type,o,editId){
+  const T=CT[type],{v,pz}=ctValida(type,o);
+  if(type==='appuntamento'&&!PZ_RE.test(pz))throw new Error('Nel calendario si scrive solo il codice del paziente (per esempio PZ-0004), mai il nome: il calendario si legge anche senza password.');
+  const L=agItems(),old=editId?L.find(x=>x.id===editId):null;
+  const it=old||{id:uid(),type,t:new Date().toISOString()};
+  it.v=v;it.pz=pz;it.batch=null;it.sentAt=null;
+  if(!old)L.push(it);
+  if(!agSalvaStore()){if(!old)L.pop();throw new Error('Non riesco a salvare il calendario: lo spazio dell’app sul telefono è pieno.')}
+  if(S.db){log(old?'Voce modificata':'Voce aggiunta',T.l);await save()}
+  agRender();toast('Nel calendario: '+T.l.toLowerCase())}
+async function agElimina(id){
+  const m=agLoad();m.items=m.items.filter(x=>x.id!==id);agSalvaStore();
+  if(S.db){log('Voce eliminata dal calendario','');await save()}
+  agRender()}
+function agRender(){if(S.oa)oaDisegna();else render()}
+
+/* «Esporto anche gli appuntamenti dal calendario?»: true = sì, false = no, null = annulla */
+function askCalendario(n){
+  return new Promise(res=>{
+    modal('<h3>Calendario</h3><p>Esporto anche gli appuntamenti dal calendario?</p><p class="small mut">'+n+(n===1?' voce del calendario non è ancora stata esportata':' voci del calendario non sono ancora state esportate')+'. Se rispondi no, restano nel calendario e le potrai esportare un’altra volta.</p>'+
+      '<div class="row end"><button class="btn" data-act="agqNo">No, solo il resto</button><button class="btn pri" data-act="agqSi">Sì, esportali</button></div><div class="row end"><button class="btn" data-act="close">Annulla</button></div>');
+    ASK={res:r=>res(r===true?true:r==='no'?false:null),typed:null}})}
+const agqRisposta=r=>{const f=ASK&&ASK.res;ASK=null;closeModal();if(f)f(r)};
+A.agqSi=()=>agqRisposta(true);
+A.agqNo=()=>agqRisposta('no');
+
+/* ---------- l'agenda aperta dall'ingresso ---------- */
+function oaDisegna(){
+  let el=document.getElementById('oa');
+  if(!el){el=document.createElement('div');el.id='oa';el.className='oa';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label','Calendario');document.body.appendChild(el)}
+  const sc=el.querySelector('.oa-sc'),y=sc?sc.scrollTop:0;
+  el.innerHTML='<div class="oa-top"><button type="button" class="btn oa-x" data-act="oaChiudi" aria-label="Torna all’accesso"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg><span>Accesso</span></button></div>'+
+    '<div class="oa-sc"><h1>Calendario</h1><p class="small mut">Aperto senza password: contiene orari, titoli e codici dei pazienti, mai i nomi. Le voci nuove arrivano sul Mac solo se, quando esporti, rispondi di sì alla domanda sul calendario.</p>'+agCorpo()+'</div>';
+  el.querySelector('.oa-sc').scrollTop=y}
+function oaApri(){S.oa=true;S.pcm=0;S.pcd=today();oaDisegna()}
+function oaChiudi(){S.oa=false;const el=document.getElementById('oa');if(el)el.remove()}
+A.oaChiudi=oaChiudi;
+/* l'icona della data: sul telefono apre l'agenda, altrove il piccolo calendario di prima */
+const _loginCalAg=A.loginCal;
+A.loginCal=()=>{if(agEsiste())oaApri();else _loginCalAg()};
+/* entrando nell'archivio l'agenda aperta si chiude da sola */
+const _renderAg=render;
+render=function(){if(S.oa&&S.screen!=='lock')oaChiudi();return _renderAg.apply(this,arguments)};
+addEventListener('keydown',e=>{if(e.key==='Escape'&&S.oa&&!($('#modal')&&$('#modal').innerHTML))oaChiudi()});
 
 /* ---------- 10. AVVIO ---------- */
 async function selfTest(){
