@@ -1716,7 +1716,7 @@ html[data-eff=dark] .nqs .nq.cam .ctile-i{background:#40261C;color:#E9A98B}
 <div id="root"></div><div id="modal"></div><div id="print"></div><div id="toast" role="status" aria-live="polite"></div>
 <noscript>Questa applicazione richiede JavaScript.</noscript>
 <script>
-const APP_VER='2026-10-29 · 685e4b3';
+const APP_VER='2026-10-29 · d01eab4';
 'use strict';
 /* =====================================================================
    ARCHIVIO CLINICO  v0.3  -  file unico, offline, dati cifrati nel browser
@@ -4075,6 +4075,7 @@ forms.lockset=async f=>{
   const meta=await idbGet('kv','meta');
   try{await decB(await kek(pw,meta.salt,meta.iter),meta.wrapPw)}catch(e){err.textContent='Password non corretta: il blocco automatico non è stato modificato.';return}
   const s=D().set;s.idleMin=Math.max(1,Number(f.elements.idleMin.value)||5);s.hideLock=!!f.elements.hideLock.checked;s.loginCal=!!(f.elements.loginCal&&f.elements.loginCal.checked);if(!s.loginCal){try{localStorage.removeItem('ac-cal')}catch(e){}}
+  if(isComp()&&f.elements.agAperta)agImposta(!!f.elements.agAperta.checked); /* calendario del telefono: js_agenda_aperta.js */
   log('Blocco automatico modificato',s.idleMin+' min');await save();bump();toast('Blocco automatico impostato a '+s.idleMin+(s.idleMin===1?' minuto':' minuti'));render();
 };
 let _hid;
@@ -4418,7 +4419,7 @@ A.pkgKey=async()=>{
   const s=D().set;if(!s.tk){s.tk=tkMake();log('Chiave di trasferimento creata','');await save()}
   modal('<h3>Chiave per il telefono</h3><p class="small">Scrivila sul telefono <b>una sola volta</b> (Impostazioni › Chiave di trasferimento). Dopo, esportare e importare non chiede più nessuna password.</p>'+
    '<div class="tkbox" id="tkv">'+esc(tkFmt(s.tk))+'</div>'+
-   '<p class="small mut">Il modo più comodo è Copia, poi incolla sul telefono (gli appunti passano da soli dal Mac all’iPhone se hanno lo stesso Apple ID). Non mandarla per messaggio o email: è la chiave dei tuoi pacchetti.</p>'+
+   '<p class="small mut">Il modo più comodo è Copia, poi incolla sul telefono (gli appunti passano da soli dal Mac all’iPhone se hanno lo stesso Apple ID: passano da Apple, quindi dopo averla incollata <b>copia qualcos’altro</b> per svuotare gli appunti). Non mandarla per messaggio o email: è la chiave dei tuoi pacchetti.</p>'+
    '<div class="row"><button class="btn pri" data-act="tkCopy">Copia</button><button class="btn" data-act="tkNew">Nuova chiave</button><button class="btn" data-act="tkSet">Ho già una chiave</button><button class="btn" data-act="close">Chiudi</button></div>')};
 A.tkCopy=async()=>{
   const k=tkFmt(D().set.tk||'');let ok=false;
@@ -4761,7 +4762,7 @@ function vCSet(){
    '<div class="card"><h3>Svuota il telefono</h3><p class="small mut">Dopo aver importato sul Mac, apri la ricevuta che il Mac ti ha dato: il telefono cancella da solo le voci importate.</p><div class="row"><button class="btn pri" data-act="crcPick">Apri la ricevuta</button><button class="btn" data-act="cclear"'+(ex?'':' disabled')+'>Cancella le '+ex+' già esportate</button></div></div>'+
    '<div class="card"><h3>Blocco automatico</h3><form data-form="lockset"><div class="grid">'+fieldHTML({k:'idleMin',l:'Blocca dopo',t:'select',o:opts.map(m=>[String(m),m===1?'1 minuto':m+' minuti'])},String(cur))+fieldHTML({k:'pw',l:'Password per confermare',t:'password',req:1})+'</div>'+
    '<label class="chkrow"><input type="checkbox" name="hideLock"'+(s.hideLock!==false?' checked':'')+'> Blocca anche se l’app resta in secondo piano per più di un minuto</label>'+
-   '<p class="small mut"><b>Calendario senza password.</b> Si apre anche dall’icona della data nella schermata d’ingresso. Contiene orari, titoli e codici dei pazienti (mai nomi), salvati in chiaro su questo telefono: li protegge il blocco di iPhone.</p><div class="err"></div><div class="row"><button class="btn pri">Salva</button><button type="button" class="btn" data-act="lock">Blocca adesso</button></div></form></div>'+
+   '<label class="chkrow"><input type="checkbox" name="agAperta"'+(s.agAperta!==false?' checked':'')+'> <span>Calendario consultabile dall’ingresso, senza password<small class="mut" style="display:block">Orari, titoli e codici dei pazienti (mai nomi) restano in chiaro su questo telefono, protetti solo dal blocco di iPhone. Se lo spegni il calendario passa dentro l’archivio cifrato e si vede solo dopo la password.</small></span></label><div class="err"></div><div class="row"><button class="btn pri">Salva</button><button type="button" class="btn" data-act="lock">Blocca adesso</button></div></form></div>'+
    modeCardHTML()+
    '<p class="small mut">Per cambiare la password o fare un backup passa alla modalità Completa.</p>'}
 function vCAg(){
@@ -6263,7 +6264,8 @@ function agCorpo(){
      (a.del?'<button type="button" class="crow-x pcx" data-act="pcDel" data-id="'+a.del+'" aria-label="Elimina">'+svgI(CI.del)+'</button>':'')+'</div>').join('')
     :'<p class="small mut">Niente in questo giorno.</p>';
   h+='<div class="pcadd"><button class="btn pri" data-act="pcNew" data-t="appuntamento">+ Appuntamento</button><button class="btn" data-act="pcNew" data-t="formazione">+ Formazione</button><button class="btn" data-act="pcNew" data-t="lavoro">+ Lavoro</button><button class="btn" data-act="pcNew" data-t="impegno">+ Impegno personale</button></div>';
-  return h}
+  const at=agMac().at;
+  return h+'<p class="small mut">'+(at?'Appuntamenti del Mac: elenco caricato il '+esc(fd(at))+'. Se li sposti sul Mac, carica un elenco nuovo.':'Nessun elenco dal Mac caricato: gli appuntamenti fissati sul Mac non compaiono qui.')+'</p>'}
 vCAg=function(){
   return '<h1>Calendario</h1><p class="small mut">Lo stesso calendario che vedi prima dell’accesso. Tocca un giorno per vedere o aggiungere impegni: arrivano sul Mac con l’esportazione, se rispondi di sì alla domanda sul calendario.</p>'+
    '<button class="btn pri detimpb" data-act="dettaImpegno">'+svgI(micIc)+' Detta impegni</button>'+agCorpo()};
@@ -7412,7 +7414,7 @@ A.libStop=()=>{LIB.stop=true};
 const libNomeFile=n=>String(n||'PDF').replace(/\.pdf$/i,'').replace(/[_]+/g,' ').trim().slice(0,80)||'PDF';
 function vCLib(){
   setTimeout(libPopola,0);
-  return '<h1>Libreria</h1><p class="small mut">I tuoi PDF (DSM-5-TR, ICD…) restano <b>solo su questo telefono</b>, separati dall’archivio clinico: non vanno nei backup né in GitHub.</p>'+
+  return '<h1>Libreria</h1><p class="small mut">I tuoi PDF (DSM-5-TR, ICD…) restano <b>solo su questo telefono</b>, separati dall’archivio clinico: non vanno nei backup né in GitHub. <b>La libreria non è cifrata</b>: ci vanno solo i manuali, mai documenti dei pazienti.</p>'+
    '<div class="libsearch"><input id="libq" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" placeholder="Cerca: panic disorder, F41.0, «lutto prolungato»" value="'+esc(LIB.q)+'"></div>'+
    '<div id="libfil"></div><div id="libres" class="libres"></div><div id="libprog" class="libprog"></div>'+
    '<h3 class="libh">I tuoi PDF</h3><div id="libbooks"></div>'+
@@ -7651,7 +7653,7 @@ A.libChiudiLettore=()=>{LRD.tok++;const el=document.getElementById('lrd');if(el)
 document.addEventListener('keydown',e=>{if(!document.getElementById('lrd'))return;if(e.key==='Escape')A.libChiudiLettore();else if(e.key==='ArrowRight')A.libVai({d:1});else if(e.key==='ArrowLeft')A.libVai({d:-1})});
 
 /* ---------- Dettatura (telefono) ----------
-   Detti con il microfono della tastiera di iPhone: l'app riceve solo testo (nessun audio, nessuna rete).
+   Detti con il microfono della tastiera di iPhone: l'app riceve solo testo e non usa la rete; il riconoscimento della voce lo fa iPhone.
    Prima di ogni parte dici il nome della sezione («Seduta…», «Domanda…», «Diagnosi…», «Nota…»): l'app divide il testo,
    prepara una voce per sezione, tu controlli e correggi, poi le voci vanno in «In uscita» come quelle scritte a mano.
    La parola-sezione vale solo all'inizio del testo, di una riga o di una frase. I punteggi dei test restano fuori. */
@@ -7762,7 +7764,7 @@ function detVoce(g){
 const detStato=()=>D().dettBozza||(D().dettBozza={testo:'',pz:'',data:today(),segs:null});
 function vCDet(){
   const st=detStato(),fld=(l,h)=>'<label class="fld"><span>'+l+'</span>'+h+'</label>';
-  let h='<h1>Dettatura</h1><p class="small mut">Tocca il riquadro e usa il <b>microfono della tastiera</b>. Prima di ogni parte di’ il nome della sezione: «Seduta…», «Domanda…», «Diagnosi F41.1 confermata…», «Nota…», «Nota personale…», «Relazione…». Per cambiare paziente: «Paziente PZ 3». Per il calendario: «Impegno…», «Appuntamento…», «Formazione…», «Lavoro…», oppure di’ il colore: giallo personale, verde paziente, arancione formazione, blu lavoro. La sezione si riconosce solo all’inizio di una frase. Controlli tutto prima di creare le voci.</p>'+
+  let h='<h1>Dettatura</h1><p class="small mut">Tocca il riquadro e usa il <b>microfono della tastiera</b>. Prima di ogni parte di’ il nome della sezione: «Seduta…», «Domanda…», «Diagnosi F41.1 confermata…», «Nota…», «Nota personale…», «Relazione…». Per cambiare paziente: «Paziente PZ 3». Per il calendario: «Impegno…», «Appuntamento…», «Formazione…», «Lavoro…», oppure di’ il colore: giallo personale, verde paziente, arancione formazione, blu lavoro. La sezione si riconosce solo all’inizio di una frase. Controlli tutto prima di creare le voci.</p><p class="small mut"><b>Riservatezza:</b> a trascrivere la voce è la tastiera di iPhone, non questa app. Se la dettatura non avviene sul telefono, l’audio può passare da Apple. L’app non può verificarlo: nei dettati usa i codici dei pazienti, mai nomi e cognomi.</p>'+
    '<datalist id="pzl">'+pzOptions()+'</datalist><div class="detrow">'+fld('Paziente','<input data-dk="pz" list="pzl" autocomplete="off" autocapitalize="characters" placeholder="PZ-0001" value="'+esc(st.pz)+'">')+fld('Data','<input data-dk="data" type="date" value="'+esc(st.data)+'">')+'</div>'+
    fld('Testo dettato','<textarea id="det-t" data-dk="testo" rows="10" placeholder="Seduta. Il paziente riferisce…">'+esc(st.testo)+'</textarea>')+
    '<div class="row"><button class="btn pri" data-act="detDividi">Dividi in sezioni</button><button class="btn" data-act="detSvuota">Svuota</button><button class="btn" data-act="dettaImpegno">Solo impegni</button></div>';
@@ -8053,18 +8055,22 @@ const AG_KEY='ac-agenda';
 let AG_RAW=null,AG_M=null;
 const agVuoto=()=>({v:1,items:[],mac:{at:'',ag:[],ev:[]}});
 
+/* l'agenda sta in localStorage (aperta) oppure, se lo scegli in Impostazioni, dentro l'archivio cifrato (privata) */
+const agPrivata=()=>!!(S.db&&S.db.set&&S.db.set.agAperta===false);
+function agNormalizza(m){m.mac=Object.assign({at:'',ag:[],ev:[]},m.mac||{});return m}
 /* l'agenda, riletta se è cambiata fuori da qui; se la memoria del browser non risponde resta quella in corso */
 function agLoad(){
+  if(agPrivata())return agNormalizza(S.db.agPriv||(S.db.agPriv=agVuoto()));
   let raw=null,ok=true;try{raw=localStorage.getItem(AG_KEY)}catch(e){ok=false}
   if(AG_M&&(!ok||raw===AG_RAW))return AG_M;
   let m=null;try{m=raw?JSON.parse(raw):null}catch(e){}
   if(!m||m.v!==1||!Array.isArray(m.items))m=agVuoto();
-  m.mac=Object.assign({at:'',ag:[],ev:[]},m.mac||{});
-  AG_RAW=raw;AG_M=m;return m}
+  AG_RAW=raw;AG_M=agNormalizza(m);return m}
 const agItems=()=>agLoad().items;
 const agMac=()=>agLoad().mac;
 function agEsiste(){try{return localStorage.getItem(AG_KEY)!==null}catch(e){return false}}
 function agSalvaStore(){
+  if(agPrivata())return true; /* nell'archivio cifrato la salva save() */
   const t=JSON.stringify(agLoad());
   try{localStorage.setItem(AG_KEY,t);AG_RAW=t;return true}catch(e){return false}}
 /* esportata da poco: l'unica che si può rimandare se il Mac non l'ha ricevuta */
@@ -8085,15 +8091,22 @@ function agMacAggiorna(ag,ev){
    Si può ripetere senza danni (le voci già passate si riconoscono dal numero). */
 function agMigra(d){
   if(!d||!d.set||d.set.mode!=='comp')return;
-  const m=agLoad(),ids=new Set(m.items.map(x=>x.id)),prima=agEsiste();
+  const priv=d.set.agAperta===false,m=priv?agNormalizza(d.agPriv||(d.agPriv=agVuoto())):agLoad(),ids=new Set(m.items.map(x=>x.id)),prima=agEsiste();
   const dentro=(d.out||[]).filter(x=>CAL_TYPES.includes(x.type)).concat((d.pcal||[]).map(x=>Object.assign({batch:'prima'},x)));
   dentro.forEach(x=>{if(!ids.has(x.id)){ids.add(x.id);m.items.push({id:x.id,type:x.type,v:x.v,pz:x.pz||'',t:x.t||'',batch:x.batch||null,sentAt:x.sentAt||null,rcv:x.rcv})}});
   d.out=(d.out||[]).filter(x=>!CAL_TYPES.includes(x.type));d.pcal=[];
   if(!m.mac.at&&d.plist&&d.plist.at)m.mac={at:d.plist.at,ag:(d.plist.ag||[]).map(a=>({d:a.d,o:a.o||'',u:a.u||50,c:a.c})),ev:(d.plist.ev||[]).slice()};
-  if(!prima||dentro.length)agSalvaStore()}
+  if(!priv&&(!prima||dentro.length))agSalvaStore()}
+/* Impostazioni: calendario aperto (senza password) o privato (dentro l'archivio cifrato). Sposta le voci da un posto all'altro. */
+function agImposta(aperta){
+  if(!isComp()||(S.db.set.agAperta!==false)===aperta)return;
+  const m=agLoad();
+  if(aperta){S.db.set.agAperta=true;delete S.db.agPriv;AG_M=m;agSalvaStore()}
+  else{S.db.agPriv=m;S.db.set.agAperta=false;try{localStorage.removeItem(AG_KEY)}catch(e){}AG_M=null;AG_RAW=null}
+  log('Calendario del telefono',aperta?'consultabile senza password':'solo dopo la password')}
 /* se si passa a Raccolta con l'archivio già aperto, l'agenda nasce al primo blocco */
 const _lockAg=lock;
-lock=function(){try{if(S.db&&isComp()&&!agEsiste())agMigra(S.db)}catch(e){}return _lockAg.apply(this,arguments)};
+lock=function(){try{if(S.db&&isComp()&&!agPrivata()&&!agEsiste())agMigra(S.db)}catch(e){}return _lockAg.apply(this,arguments)};
 
 /* salvare ed eliminare: stessa cosa con l'archivio aperto o chiuso */
 async function agSalva(type,o,editId){
@@ -8141,6 +8154,26 @@ const _renderAg=render;
 render=function(){if(S.oa&&S.screen!=='lock')oaChiudi();return _renderAg.apply(this,arguments)};
 addEventListener('keydown',e=>{if(e.key==='Escape'&&S.oa&&!($('#modal')&&$('#modal').innerHTML))oaChiudi()});
 
+/* ====================================================================
+   Sicurezza · blocco affidabile quando l'app resta in secondo piano
+   Su iPhone i timer si fermano quando l'app non è in primo piano: il blocco a tempo può non scattare.
+   Qui si guarda l'orologio: al ritorno, se è passato il tempo, l'archivio si blocca prima di mostrare qualsiasi cosa.
+   ==================================================================== */
+let _ultimaAttivita=Date.now(),_nascostoDal=0;
+['click','keydown','mousemove','touchstart','scroll'].forEach(e=>addEventListener(e,()=>{_ultimaAttivita=Date.now()},{passive:true}));
+function bloccoScaduto(){
+  if(S.screen!=='app'||!S.db)return false;
+  const s=S.db.set,ora=Date.now();
+  if(_nascostoDal&&s.hideLock&&ora-_nascostoDal>=60000)return true; /* è rimasta in secondo piano più di un minuto */
+  return ora-_ultimaAttivita>=(s.idleMin||5)*60000}             /* nessuna attività oltre il tempo scelto */
+try{
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden){_nascostoDal=Date.now();return}
+    const scaduto=bloccoScaduto();_nascostoDal=0;
+    if(scaduto)lock()});
+  addEventListener('pageshow',()=>{if(bloccoScaduto())lock()});
+}catch(e){}
+
 /* ---------- 10. AVVIO ---------- */
 async function selfTest(){
   const k=await crypto.subtle.generateKey({name:'AES-GCM',length:256},false,['encrypt','decrypt']);
@@ -8158,12 +8191,19 @@ async function selfTest(){
 })();
 </script><script>
 (function(){if(!('serviceWorker' in navigator))return;
-  var had=!!navigator.serviceWorker.controller,done=false;
-  /* quando la nuova versione prende il controllo: sulla schermata d'accesso (password vuota) si ricarica da sola */
-  navigator.serviceWorker.addEventListener('controllerchange',function(){if(!had||done)return;done=true;
-    try{var pw=document.querySelector('input[name=pw]');if((typeof S==='undefined'||S.screen!=='app')&&(!pw||!pw.value)){location.reload();return}}catch(e){}
-    try{toast('Nuova versione dell’app installata: si attiva alla prossima apertura.')}catch(e){}});
+  var voluta=false;
+  navigator.serviceWorker.addEventListener('controllerchange',function(){if(voluta)location.reload()});
+  function avviso(w){
+    if(!navigator.serviceWorker.controller||document.getElementById('ac-agg'))return;
+    var b=document.createElement('div');b.id='ac-agg';b.setAttribute('role','status');
+    b.style.cssText='position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:200;background:#414625;color:#FBF3E2;border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:center;font:14px/1.35 system-ui,sans-serif;box-shadow:0 6px 24px rgba(0,0,0,.3)';
+    b.innerHTML='<span style="flex:1">È pronta una versione nuova dell’app.</span><button type="button" id="ac-agg-no" style="background:none;border:0;color:inherit;font:inherit;opacity:.8;padding:6px">Dopo</button><button type="button" id="ac-agg-si" style="background:#FBF3E2;color:#414625;border:0;border-radius:10px;font:inherit;font-weight:600;padding:8px 12px">Aggiorna</button>';
+    document.body.appendChild(b);
+    document.getElementById('ac-agg-no').onclick=function(){b.remove()};
+    document.getElementById('ac-agg-si').onclick=function(){voluta=true;try{w.postMessage('attiva')}catch(e){location.reload()}}}
   addEventListener('load',function(){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(r){
+    if(r.waiting)avviso(r.waiting);
+    r.addEventListener('updatefound',function(){var n=r.installing;if(!n)return;n.addEventListener('statechange',function(){if(n.state==='installed'&&navigator.serviceWorker.controller)avviso(n)})});
     try{r.update()}catch(e){}
     document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){try{r.update()}catch(e){}}});
   }).catch(function(){})});
